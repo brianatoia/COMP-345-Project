@@ -2,7 +2,7 @@
 
 Map::Map() {
     this->territories = std::vector<std::shared_ptr<Territory>>(10);
-    this->continents = std::vector<std::shared_ptr<Continent>>(10);~
+    this->continents = std::vector<std::shared_ptr<Continent>>(10);
 }
 
 Map::Map(Map *map) {
