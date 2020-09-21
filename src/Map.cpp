@@ -16,6 +16,7 @@ Map::~Map() {
     this->continents.clear();
 }
 
+// TODO: rewrite to_string
 std::string Map::to_string () {
     std::string s;
 
@@ -116,7 +117,7 @@ std::shared_ptr<Territory> Map::findTerritory(std::string name) {
     for (std::shared_ptr<Territory> t : this->territories) {
         if (t == nullptr) continue;
         if (t->name == name) {
-            return t;
+            return std::shared_ptr<Territory>(t);
         }
     }
 
@@ -124,14 +125,14 @@ std::shared_ptr<Territory> Map::findTerritory(std::string name) {
 }
 
 std::shared_ptr<Territory> Map::getTerritory(unsigned int id) {
-    return this->territories[id];
+    return std::shared_ptr<Territory>(this->territories[id]);
 }
 
 std::shared_ptr<Continent> Map::findContinent(std::string name) {
     for (std::shared_ptr<Continent> c : this->continents) {
         if (c == nullptr) continue;
         if (c->name == name) {
-            return c;
+            return std::shared_ptr<Continent>(c);
         }
     }
 
@@ -139,7 +140,7 @@ std::shared_ptr<Continent> Map::findContinent(std::string name) {
 }
 
 std::shared_ptr<Continent> Map::getContinent(unsigned int id) {
-    return this->continents[id];
+    return std::shared_ptr<Continent>(this->continents[id]);
 }
 
 void Map::operator=(Map map) {

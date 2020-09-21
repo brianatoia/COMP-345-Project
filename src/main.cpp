@@ -28,7 +28,7 @@ int main() {
   std::shared_ptr<Territory> p = hello.findTerritory("Mamie");
   p->units = 1;
   
-  p
+  p.reset(new Territory(*p.get()));
 
   std::cout << hello.to_string() << std::endl;
 }
