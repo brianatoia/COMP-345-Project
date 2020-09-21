@@ -17,6 +17,9 @@ Map::~Map() {
 }
 
 // TODO: rewrite to_string
+// go through continents
+// print territories in those continents
+// print territories adjacent to territory
 std::string Map::to_string () {
     std::string s;
 
@@ -31,30 +34,48 @@ std::string Map::to_string () {
         s += c->to_string();
         s += "\n";
     }
-    // go through continents
-    // print territories in those continents
-    // print territories adjacent to territory
     return s;
 }
 
 std::shared_ptr<Territory> Map::add(Territory territory) {
-    std::cout << territory.name << std::endl;
+    if (this->getTerritory(territory.id) != nullptr) {
+        throw std::logic_error("duplicate ID: territory already exists");
+    }
 
     this->territories[territory.id] = std::shared_ptr<Territory> (new Territory(territory));
+
+    std::shared_ptr<Continent> c = getContinent(territory.continentID);
+    if (c != nullptr) {
+        if (!std::count(c->territories.begin(), c->territories.end(), territory.id)) {
+            c->territories.push_back(territory.id);
+        }
+    }
 
     return this->territories[territory.id];
 }
 
 std::shared_ptr<Continent> Map::add(Continent continent) {
-    std::cout << continent.name << std::endl;
+    if (this->getContinent(continent.id) != nullptr) {
+        throw std::logic_error("duplicate ID: continent already exists");
+    }
 
     this->continents[continent.id] = std::shared_ptr<Continent> (new Continent(continent));
+
+    for (std::shared_ptr<Territory> t : this->territories) {
+        if (t == nullptr) continue;
+        if (t->continentID == continent.id) {
+            if (!std::count(this->continents[continent.id]->territories.begin(), this->continents[continent.id]->territories.end(), t->id)) {
+                this->continents[continent.id]->territories.push_back(t->id);
+            }
+        }
+    }
 
     return this->continents[continent.id];
 }
 
-bool Map::validate() { // TODO: implement validate
-    return false;
+// TODO: implement validate
+bool Map::validate() {
+    return true;
 }
 
 bool Map::link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b) {
@@ -151,8 +172,9 @@ void Map::operator=(Map map) {
     this->continents = map.continents;
 }
 
-Territory::Territory(unsigned int id, const char *name, const char *owner) : Land(id, name, owner) {
+Territory::Territory(unsigned int id, const char *name, unsigned int continentID) : Land(id, name) {
     this->units = 0;
+    this->continentID = continentID;
 }
 
 std::string Territory::to_string() {
@@ -163,7 +185,7 @@ std::string Territory::to_string() {
     return std::string(a);
 }
 
-Continent::Continent(int id, const char *name, const char *owner) : Land(id, name, owner) {
+Continent::Continent(int id, const char *name) : Land(id, name) {
     this->territories = std::vector<unsigned int>();
 }
 
@@ -175,10 +197,9 @@ std::string Continent::to_string() {
     return std::string(a);
 }
 
-Land::Land(unsigned int id, const char *name, const char *owner) {
+Land::Land(unsigned int id, const char *name) {
     this->id = id;
     this->name = name;
-    this->owner = owner;
 
     this->borders = std::vector<unsigned int>();
 }

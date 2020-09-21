@@ -1,32 +1,33 @@
 #pragma once
 #include <vector>
+#include <algorithm>
 #include <string>
 #include <memory>
 // DEBUG
-#include <iostream>
+// #include <iostream>
 
 struct Land
 {
-    Land(unsigned int id, const char *name, const char *owner);
+    Land(unsigned int id, const char *name);
 
     unsigned int id;
     const char* name;
-    std::string owner; // TODO: change to Player*
 
     std::vector<unsigned int> borders;
 };
 
 struct Territory : Land {
-    Territory(unsigned int id, const char *name, const char *owner);
+    Territory(unsigned int id, const char *name, unsigned int continentID);
 
     unsigned int units;
+    unsigned int continentID;
 
     std::string to_string ();
 };
 
 struct Continent : Land
 {
-    Continent(int id, const char* name, const char* owner);
+    Continent(int id, const char* name);
 
     std::vector<unsigned int> territories;
 
