@@ -182,7 +182,7 @@ Continent::Continent(int id, const char *name, unsigned int bonus) : Land(id, na
 std::string Continent::to_string() {
     char a[1024];
 
-    sprintf(a, "Continent %d %s: %li territories(s), %li border(s)", this->id, this->name, this->territories.size(), this->borders.size());
+    sprintf(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name, this->bonus, this->territories.size(), this->borders.size());
 
     return std::string(a);
 }

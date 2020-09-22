@@ -12,7 +12,7 @@ int main() {
 
     // Add a Continent : id and name only
     // Same for keeping a reference
-    std::shared_ptr<Continent> c1 = hello.add(Continent(0, "America"));
+    std::shared_ptr<Continent> c1 = hello.add(Continent(0, "America", 2));
 
     // You can add territories and Continents in any order, but you have to make sure that all territories map to an existing continent
     hello.add(Territory(2, "Mexico", 0));
@@ -22,6 +22,7 @@ int main() {
     // Same for two continents
     hello.link(t1, t2);
 
+    // Copy constructor with full deep copy
     Map hello2 = new Map(hello);
 
     for (int b : t1->borders) {
