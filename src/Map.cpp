@@ -11,12 +11,12 @@ Map::Map(Map *map) {
 
     for (std::shared_ptr<Territory> t : map->territories) {
         if (t == nullptr) continue;
-        this->territories.push_back(std::make_shared<Territory>(Territory(*t.get())));
+        this->territories[t->id] = std::make_shared<Territory>(Territory(*t.get()));
     }
 
     for (std::shared_ptr<Continent> c : map->continents) {
         if (c == nullptr) continue;
-        this->continents.push_back(std::make_shared<Continent>(Continent(*c.get())));
+        this->continents[c->id] = std::make_shared<Continent>(Continent(*c.get()));
     }
 }
 
@@ -26,23 +26,18 @@ Map::~Map() {
     this->continents.clear();
 }
 
-// TODO: rewrite to_string
-// go through continents
-// print territories in those continents
-// print territories adjacent to territory
 std::string Map::to_string () {
     std::string s;
-
-    for (std::shared_ptr<Territory> t : territories) {
-        if (t == nullptr) continue;
-        s += t->to_string();
-        s += "\n";
-    }
 
     for (std::shared_ptr<Continent> c : continents) {
         if (c == nullptr) continue;
         s += c->to_string();
         s += "\n";
+
+        for (unsigned int index : c->territoryIDs) {
+            s += this->getTerritory(index)->to_string();
+            s += "\n";
+        }
     }
 
     return s;
@@ -57,8 +52,8 @@ std::shared_ptr<Territory> Map::add(Territory territory) {
 
     std::shared_ptr<Continent> c = getContinent(territory.continentID);
     if (c != nullptr) {
-        if (!std::count(c->territories.begin(), c->territories.end(), territory.id)) {
-            c->territories.push_back(territory.id);
+        if (!std::count(c->territoryIDs.begin(), c->territoryIDs.end(), territory.id)) {
+            c->territoryIDs.push_back(territory.id);
         }
     }
 
@@ -75,8 +70,8 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
     for (std::shared_ptr<Territory> t : this->territories) {
         if (t == nullptr) continue;
         if (t->continentID == continent.id) {
-            if (!std::count(this->continents[continent.id]->territories.begin(), this->continents[continent.id]->territories.end(), t->id)) {
-                this->continents[continent.id]->territories.push_back(t->id);
+            if (!std::count(this->continents[continent.id]->territoryIDs.begin(), this->continents[continent.id]->territoryIDs.end(), t->id)) {
+                this->continents[continent.id]->territoryIDs.push_back(t->id);
             }
         }
     }
@@ -176,13 +171,13 @@ std::string Territory::to_string() {
 
 Continent::Continent(int id, const char *name, unsigned int bonus) : Land(id, name) {
     this->bonus = bonus;
-    this->territories = std::vector<unsigned int>();
+    this->territoryIDs = std::vector<unsigned int>();
 }
 
 std::string Continent::to_string() {
     char a[1024];
 
-    sprintf(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name, this->bonus, this->territories.size(), this->borders.size());
+    sprintf_s(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name, this->bonus, this->territoryIDs.size(), this->borders.size());
 
     return std::string(a);
 }

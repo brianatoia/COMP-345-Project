@@ -32,7 +32,7 @@ struct Continent : Land
     Continent(int id, const char* name, unsigned bonus);
 
     unsigned int bonus;
-    std::vector<unsigned int> territories;
+    std::vector<unsigned int> territoryIDs;
 
     std::string to_string ();
 };
