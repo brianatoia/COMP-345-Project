@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string>
 #include <memory>
+#include <ostream>
 // DEBUG
 // #include <iostream>
 
@@ -65,3 +66,5 @@ class Map
     ~Map();
 
 };
+
+std::ostream& operator<<(std::ostream& strm, Map &map);

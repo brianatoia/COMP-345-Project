@@ -40,6 +40,7 @@ int main() {
     // Map has a to_string method
     // Same for Territory's and Continent's
     std::cout << hello.to_string() << std::endl;
+    std::cout << hello << std::endl;
 
     // Release a shared ptr
     p.reset(new Territory(*p.get()));

@@ -79,7 +79,7 @@ bool Map::validate() {
 }
 
 bool Map::link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b) {
-    bool a2b, b2a;
+    bool a2b = false, b2a = false;
 
     for (int i : a->borders) {
         if (i == b->id) {
@@ -107,7 +107,7 @@ bool Map::link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b) {
 }
 
 bool Map::link(std::shared_ptr<Continent> a, std::shared_ptr<Continent> b) {
-    bool a2b, b2a;
+    bool a2b = false, b2a = false;
 
     for (int i : a->borders) {
         if (i == b->id) {
@@ -180,7 +180,7 @@ Territory::Territory(unsigned int id, const char *name, unsigned int continentID
 std::string Territory::to_string() {
     char a[1024];
 
-    sprintf(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name, this->units, this->borders.size());
+    sprintf_s(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name, this->units, this->borders.size());
 
     return std::string(a);
 }
@@ -202,4 +202,9 @@ Land::Land(unsigned int id, const char *name) {
     this->name = name;
 
     this->borders = std::vector<unsigned int>();
+}
+
+
+std::ostream& operator<<(std::ostream& strm, Map &map) {
+    return strm << map.to_string();
 }
