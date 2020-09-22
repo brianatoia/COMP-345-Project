@@ -1,13 +1,23 @@
 #include "Map.h"
 
 Map::Map() {
-    this->territories = std::vector<std::shared_ptr<Territory>>(10);
-    this->continents = std::vector<std::shared_ptr<Continent>>(10);
+    this->territories = std::vector<std::shared_ptr<Territory>>(100);
+    this->continents = std::vector<std::shared_ptr<Continent>>(100);
 }
 
 Map::Map(Map *map) {
-    this->territories = map->territories;
-    this->continents = map->continents;
+    this->territories = std::vector<std::shared_ptr<Territory>>(100);
+    this->continents = std::vector<std::shared_ptr<Continent>>(100);
+
+    for (std::shared_ptr<Territory> t : map->territories) {
+        if (t == nullptr) continue;
+        this->territories.push_back(std::make_shared<Territory>(Territory(*t.get())));
+    }
+
+    for (std::shared_ptr<Continent> c : map->continents) {
+        if (c == nullptr) continue;
+        this->continents.push_back(std::make_shared<Continent>(Continent(*c.get())));
+    }
 }
 
 Map::~Map() {
@@ -34,6 +44,7 @@ std::string Map::to_string () {
         s += c->to_string();
         s += "\n";
     }
+
     return s;
 }
 
@@ -79,7 +90,7 @@ bool Map::validate() {
 }
 
 bool Map::link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b) {
-    bool a2b = false, b2a = false;
+    bool a2b = false;
 
     for (int i : a->borders) {
         if (i == b->id) {
@@ -92,22 +103,11 @@ bool Map::link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b) {
         a->borders.push_back(b->id);
     }
 
-    for (int i : b->borders) {
-        if (i == a->id) {
-            b2a = true;
-            continue;
-        }
-    }
-
-    if (!b2a) {
-        b->borders.push_back(a->id);
-    }
-
-    return a2b && b2a;
+    return a2b;
 }
 
 bool Map::link(std::shared_ptr<Continent> a, std::shared_ptr<Continent> b) {
-    bool a2b = false, b2a = false;
+    bool a2b = false;
 
     for (int i : a->borders) {
         if (i == b->id) {
@@ -120,18 +120,7 @@ bool Map::link(std::shared_ptr<Continent> a, std::shared_ptr<Continent> b) {
         a->borders.push_back(b->id);
     }
 
-    for (int i : b->borders) {
-        if (i == a->id) {
-            b2a = true;
-            continue;
-        }
-    }
-
-    if (!b2a) {
-        b->borders.push_back(a->id);
-    }
-
-    return a2b && b2a;
+    return a2b;
 }
 
 std::shared_ptr<Territory> Map::findTerritory(std::string name) {
@@ -185,7 +174,8 @@ std::string Territory::to_string() {
     return std::string(a);
 }
 
-Continent::Continent(int id, const char *name) : Land(id, name) {
+Continent::Continent(int id, const char *name, unsigned int bonus) : Land(id, name) {
+    this->bonus = bonus;
     this->territories = std::vector<unsigned int>();
 }
 

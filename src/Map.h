@@ -21,6 +21,7 @@ struct Territory : Land {
     Territory(unsigned int id, const char *name, unsigned int continentID);
 
     unsigned int units;
+    unsigned int ownerID;
     unsigned int continentID;
 
     std::string to_string ();
@@ -28,8 +29,9 @@ struct Territory : Land {
 
 struct Continent : Land
 {
-    Continent(int id, const char* name);
+    Continent(int id, const char* name, unsigned bonus);
 
+    unsigned int bonus;
     std::vector<unsigned int> territories;
 
     std::string to_string ();
@@ -60,11 +62,10 @@ class Map
 
     std::string to_string ();
     void operator = (Map map);
+    friend std::ostream& operator<<(std::ostream& strm, Map &map);
 
     Map();
     Map(Map* map);
     ~Map();
 
 };
-
-std::ostream& operator<<(std::ostream& strm, Map &map);

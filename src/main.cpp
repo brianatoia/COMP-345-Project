@@ -17,9 +17,12 @@ int main() {
     // You can add territories and Continents in any order, but you have to make sure that all territories map to an existing continent
     hello.add(Territory(2, "Mexico", 0));
 
-    // Link two country's borders
+    // Create a path from t1 to t2
+    // this is a directed edge
     // Same for two continents
     hello.link(t1, t2);
+
+    Map hello2 = new Map(hello);
 
     for (int b : t1->borders) {
         std::cout << b << std::endl;
@@ -41,6 +44,7 @@ int main() {
     // Same for Territory's and Continent's
     std::cout << hello.to_string() << std::endl;
     std::cout << hello << std::endl;
+    std::cout << hello2 << std::endl;
 
     // Release a shared ptr
     p.reset(new Territory(*p.get()));
