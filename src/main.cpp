@@ -39,6 +39,8 @@ int main() {
     // the first one with a corresponding name (linear)
     // the get ones return based on the id provided (constant time)
     std::shared_ptr<Territory> p = hello.findTerritory("Mexico");
+    std::shared_ptr<Territory> p2 = hello.getTerritory(p->id);
+    std::shared_ptr<Territory> p3 = std::shared_ptr<Territory>(p);
     p->units = 1;
 
     // Map has a to_string method
@@ -47,8 +49,21 @@ int main() {
     std::cout << hello << std::endl;
     std::cout << hello2 << std::endl;
 
+    std::cout << p->to_string() << std::endl;
+    std::cout << p2->to_string() << std::endl;
+    std::cout << p3->to_string() << std::endl;
+
     // Release a shared ptr
-    p.reset(new Territory(*p.get()));
+    // Only releases the one you call it on
+    p.reset();
+
+    std::cout << p << std::endl;
+    std::cout << p2 << std::endl;
+
+    p = hello.findTerritory("Mexico");
+
+    std::cout << p << std::endl;
+    std::cout << p2 << std::endl;
 
     // Validate will fail and throw if:
     // some territories belong to a non-existing continent
@@ -57,4 +72,8 @@ int main() {
     if (hello.validate()) {
         // start game
     }
+
+    p.reset();
+    p2.reset();
+    p3.reset();
 }

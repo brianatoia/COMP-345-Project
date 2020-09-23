@@ -6,8 +6,8 @@ Map::Map() {
 }
 
 Map::Map(Map *map) {
-    this->territories = std::vector<std::shared_ptr<Territory>>(100);
-    this->continents = std::vector<std::shared_ptr<Continent>>(100);
+    this->territories = std::vector<std::shared_ptr<Territory>>(map->territories.size());
+    this->continents = std::vector<std::shared_ptr<Continent>>(map->continents.size());
 
     for (std::shared_ptr<Territory> t : map->territories) {
         if (t == nullptr) continue;
@@ -81,6 +81,12 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
 
 // TODO: implement validate
 bool Map::validate() {
+    this->territories.shrink_to_fit();
+    this->continents.shrink_to_fit();
+
+    std::cout << this->territories.size() << std::endl;
+    std::cout << this->continents.size() << std::endl;
+
     return true;
 }
 
