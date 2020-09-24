@@ -65,6 +65,7 @@ class Map
     friend std::ostream& operator<<(std::ostream& strm, Map &map);
 
     Map();
+    Map(int numOfTerritories, int numOfContinents);
     Map(Map* map);
     ~Map();
 

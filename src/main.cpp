@@ -13,6 +13,7 @@ int main() {
     // Add a Continent : id and name only
     // Same for keeping a reference
     std::shared_ptr<Continent> c1 = hello.add(Continent(0, "America", 2));
+    std::shared_ptr<Continent> c2 = hello.add(Continent(2, "Europe", 4)); // Having a gap in Continent id's is not allowed.
 
     // You can add territories and Continents in any order, but you have to make sure that all territories map to an existing continent
     hello.add(Territory(2, "Mexico", 0));
@@ -21,6 +22,7 @@ int main() {
     // this is a directed edge
     // Same for two continents
     hello.link(t1, t2);
+    hello.link(t2, hello.findTerritory("Mexico"));
 
     // Copy constructor with full deep copy
     Map hello2 = new Map(hello);
