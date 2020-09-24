@@ -78,6 +78,10 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
         throw std::logic_error("duplicate ID: continent already exists");
     }
 
+    if (this->findContinent(continent.name) != nullptr) {
+        throw std::logic_error("duplicate name: continent already exists");
+    }
+
     this->continents[continent.id] = std::shared_ptr<Continent> (new Continent(continent));
 
     for (std::shared_ptr<Territory> t : this->territories) {
@@ -92,7 +96,6 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
     return this->continents[continent.id];
 }
 
-// TODO: implement validate
 bool Map::validate() {
     // resize territories and continents vectors
 
