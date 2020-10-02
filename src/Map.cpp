@@ -210,7 +210,7 @@ bool Map::link(std::shared_ptr<Continent> a, std::shared_ptr<Continent> b) {
 std::shared_ptr<Territory> Map::findTerritory(std::string name) {
     for (std::shared_ptr<Territory> t : this->territories) {
         if (t == nullptr) continue;
-        if (t->name == name) {
+        if (t->name.compare(name) == 0) {
             return std::shared_ptr<Territory>(t);
         }
     }
@@ -227,9 +227,11 @@ std::shared_ptr<Territory> Map::getTerritory(unsigned int id) {
 }
 
 std::shared_ptr<Continent> Map::findContinent(std::string name) {
+
     for (std::shared_ptr<Continent> c : this->continents) {
         if (c == nullptr) continue;
-        if (c->name == name) {
+        if (c->name.compare(name) == 0) {
+            std::cout << c->to_string() << std::endl;
             return std::shared_ptr<Continent>(c);
         }
     }
@@ -253,7 +255,7 @@ void Map::operator=(Map map) {
     this->continents = map.continents;
 }
 
-Territory::Territory(unsigned int id, const char *name, unsigned int continentID) : Land(id, name) {
+Territory::Territory(unsigned int id, std::string name, unsigned int continentID) : Land(id, name) {
     this->units = 0;
     this->continentID = continentID;
 }
@@ -261,12 +263,12 @@ Territory::Territory(unsigned int id, const char *name, unsigned int continentID
 std::string Territory::to_string() {
     char a[1024];
 
-    sprintf_s(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name, this->units, this->borders.size());
+    sprintf_s(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name.c_str(), this->units, this->borders.size());
 
     return std::string(a);
 }
 
-Continent::Continent(int id, const char *name, unsigned int bonus) : Land(id, name) {
+Continent::Continent(int id, std::string name, unsigned int bonus) : Land(id, name) {
     this->bonus = bonus;
     this->territoryIDs = std::vector<unsigned int>();
 }
@@ -274,12 +276,12 @@ Continent::Continent(int id, const char *name, unsigned int bonus) : Land(id, na
 std::string Continent::to_string() {
     char a[1024];
 
-    sprintf_s(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name, this->bonus, this->territoryIDs.size(), this->borders.size());
+    sprintf_s(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name.c_str(), this->bonus, this->territoryIDs.size(), this->borders.size());
 
     return std::string(a);
 }
 
-Land::Land(unsigned int id, const char *name) {
+Land::Land(unsigned int id, std::string name) {
     this->id = id;
     this->name = name;
 
