@@ -78,8 +78,11 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
         throw std::logic_error("duplicate ID: continent already exists");
     }
 
+    std::cout << continent.name << std::endl;
+
     if (this->findContinent(continent.name) != nullptr) {
         throw std::logic_error("duplicate name: continent already exists");
+        //std::cout << "problem" << std::endl;
     }
 
     this->continents[continent.id] = std::shared_ptr<Continent> (new Continent(continent));
@@ -227,10 +230,10 @@ std::shared_ptr<Territory> Map::getTerritory(unsigned int id) {
 }
 
 std::shared_ptr<Continent> Map::findContinent(std::string name) {
-    for (std::shared_ptr<Continent> c : this->continents) {
-        if (c == nullptr) continue;
-        if (c->name == name) {
-            return std::shared_ptr<Continent>(c);
+    for (std::shared_ptr<Continent> con : this->continents) {
+        if (con == nullptr) continue;
+        if (con.get()->name.compare(name) != 0) {
+            return std::shared_ptr<Continent>(con);
         }
     }
 
@@ -257,7 +260,6 @@ Territory::Territory(unsigned int id, const char *name, unsigned int continentID
     this->units = 0;
     this->continentID = continentID;
 }
-
 std::string Territory::to_string() {
     char a[1024];
 
