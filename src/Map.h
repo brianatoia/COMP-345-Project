@@ -9,16 +9,16 @@
 
 struct Land
 {
-    Land(unsigned int id, const char *name);
+    Land(unsigned int id, std::string name);
 
     unsigned int id;
-    const char* name;
+    std::string name;
 
     std::vector<unsigned int> borders;
 };
 
 struct Territory : Land {
-    Territory(unsigned int id, const char *name, unsigned int continentID);
+    Territory(unsigned int id, std::string name, unsigned int continentID);
 
     unsigned int units;
     unsigned int ownerID;
@@ -29,7 +29,7 @@ struct Territory : Land {
 
 struct Continent : Land
 {
-    Continent(int id, const char* name, unsigned bonus);
+    Continent(int id, std::string name, unsigned bonus);
 
     unsigned int bonus;
     std::vector<unsigned int> territoryIDs;
