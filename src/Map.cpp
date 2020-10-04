@@ -53,6 +53,10 @@ std::string Map::to_string () {
 }
 
 std::shared_ptr<Territory> Map::add(Territory territory) {
+    if (territory.id == 0) {
+        throw std::logic_error("ID's should start at 1");
+    }
+
     if (this->getTerritory(territory.id) != nullptr) {
         throw std::logic_error("duplicate ID: territory already exists");
     }
@@ -74,6 +78,10 @@ std::shared_ptr<Territory> Map::add(Territory territory) {
 }
 
 std::shared_ptr<Continent> Map::add(Continent continent) {
+    if (continent.id == 0) {
+        throw std::logic_error("ID's should start at 1");
+    }
+
     if (this->getContinent(continent.id) != nullptr) {
         throw std::logic_error("duplicate ID: continent already exists");
     }
@@ -99,6 +107,10 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
     return this->continents[continent.id];
 }
 
+// TODO: finish validate function
+// - Do a greedy connection matrix for Territories
+// - Do a connection matrix for Continents based on the Territories connection matrix
+
 bool Map::validate() {
     // resize territories and continents vectors
 
@@ -123,7 +135,9 @@ bool Map::validate() {
 
     std::vector<bool> checks = std::vector<bool>(this->territories.size());
 
-    for (std::shared_ptr<Territory> t : this->territories) {
+    for (int i = 1; i < this->territories.size(); i++) {
+        std::shared_ptr<Territory> t = this->territories[i];
+
         if (t == nullptr) {
             std::cerr << "there is an empty territory object" << std::endl;
             return false;
@@ -157,10 +171,10 @@ bool Map::validate() {
         }
     }
 
-    int index = 0;
-    for (std::shared_ptr<Continent> c : this->continents) {
+    for (int i = 1; i < this->continents.size(); i++) {
+        std::shared_ptr<Continent> c = this->continents[i];
         if (c == nullptr) {
-            std::cerr << "there is an empty continent object at index " << index << std::endl;
+            std::cerr << "there is an empty continent object at index " << i << std::endl;
             return false;
         }
 
@@ -168,8 +182,6 @@ bool Map::validate() {
             std::cerr << c->name << " has no territories" << std::endl;
             return false;
         }
-
-        index++;
     }
 
     std::cout << "map is valid" << std::endl;
