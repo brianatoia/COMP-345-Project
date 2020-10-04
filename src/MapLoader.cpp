@@ -18,10 +18,11 @@ MapLoader::~MapLoader()
 
 shared_ptr<Map> MapLoader::createMap(string fileName)
 {
+	//check for map without .map at the end
 
-	//Obtain map name from filename by removing .map extension
-	//-5 to make up for the index starting at 0
-	//string mapName = fileName.substr(0, fileName.length() - 5);
+
+	//Obtain map name from filename by removing extensions .map or .txt
+		string mapName = fileName.substr(0, fileName.length() - 4);
 
 	//debug
 	//cout << mapName << endl;
@@ -33,7 +34,8 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	//fix this?
 	if (!inputFileStream.is_open())
 	{
-		//return;
+		cerr << "Error reading file " << fileName << ", please verify it is present." << endl;
+		return nullptr;
 	}
 
 	//add checks for bad files
@@ -42,21 +44,41 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	bool inContinents = false;
 	bool inTerritories = false;
 	bool inBorders = false;
+
 	int continentID = 1;
 	string nextWord;
 
 	while (inputFileStream >> nextWord) 
 	{
-		//string nextWord;
-		//getline(inputFileStream, nextWord, ' ');
-		cout << nextWord << endl;
+		//debug
+		//cout << "~~~~~~~~~~~~~~~~~~~ " + nextWord + "~~~~~~~~~~~~~~~~~~~~~~~" << endl;
 		
+		if (nextWord == "[continents]")
+		{
+			inContinents = true;
+			inTerritories = false;
+			inBorders = false;
+			inputFileStream >> nextWord;
+		}
 
+		if (nextWord == "[countries]") 
+		{
+			inContinents = false;
+			inTerritories = true;
+			inBorders = false;
+			inputFileStream >> nextWord;
+		}
 
+		if (nextWord == "[borders]")
+		{
+			inContinents = false;
+			inTerritories = false;
+			inBorders = true;
+			inputFileStream >> nextWord;
+		}
 
-		//if in a continents line,  create new continent with name and bonus and add to map
-		
-		//if in continents section, take current word and next two
+		//if in a continents line,  create new continent with name and bonus and add to map		
+		//Take Current word and next two
 		if (inContinents)
 		{
 			string continentName, bonus, temp;
@@ -66,14 +88,16 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			inputFileStream >> temp;
 
 			//creating continent and adding to map
-			//c_str() transforms string to char[] and stoi transforms string to int
-			map->add(Continent(continentID, continentName.c_str() , stoi(bonus)));
+			//stoi transforms string to int
+			map->add(Continent(continentID, continentName, stoi(bonus)));
 			
 			//debug
-			cout << " | " << continentName << " | " << bonus << " | " + temp << endl;
+			//cout << "New Continent: " << continentName << " Bonus of: " << bonus << " Garbage value of: " + temp << endl;
 			continentID++;
 		}
 
+		//If in territories, create new territory and add to map with ID, name, contitnent ID, and discard two garbage values.
+		//Add to map once created. 
 		if (inTerritories)
 		{
 			string territoryID, territoryName, continentID, temp1, temp2;
@@ -83,38 +107,41 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			inputFileStream >> temp1;
 			inputFileStream >> temp2;
 
-			map->add(Territory(stoi(continentID), territoryName.c_str(), stoi(continentID)));
+			map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
 
+			//debug
+			//cout << "New territory with ID: " << territoryID << " Name: " << territoryName << " ContinentID: " << continentID << " Garbage values: " << temp1 << " | " << temp2 << endl;
 		}
 
-		if (nextWord == "[continents]")
+		//if in borders, link first id with id's that follow. Treat line by line.
+		if (inBorders)
 		{
-			inContinents = true;
-			inTerritories = false;
-			inBorders = false;
-		}
+			string territoryID = nextWord;
+			string territoryToLink;
 
-		if (nextWord == "[countries]") 
-		{
-			inContinents = false;
-			inTerritories = true;
-			inBorders = false;
+			//seperate border data by lines
+			while (inputFileStream.peek() != '\n') {
+				inputFileStream >> territoryToLink;
+				map->link(map->getTerritory(stoi(territoryID)), map->getTerritory(stoi(territoryToLink)));
+				
+				//debug
+				cout << "Linking " + nextWord << " and " << territoryToLink << endl;
+			}
+			
+			//debug
+			//cout << "end of border" << endl;
 		}
-
-		if (nextWord == "[borders]")
-		{
-			inContinents = false;
-			inTerritories = false;
-			inBorders = true;
-		}
-
-		//make other loop for borders?
-		//use mix of get line '\n'
 	}
 
+	//validating created map.
+	if (!map->validate())
+	{
+		cerr << "Map " << mapName << " is invalid and was rejected by the mapLoader" << endl;
+		return nullptr;
+	}
+
+
 	inputFileStream.close();
-
-
-
+	std::cout << "Creation of map " << mapName << " succesful!\n" << endl;
 	return map;
 }

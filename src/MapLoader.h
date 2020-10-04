@@ -8,10 +8,11 @@ using namespace std;
 struct MapLoader 
 {
 
+
 	MapLoader();
 	MapLoader(MapLoader* mapLoader);
 	~MapLoader();
-
+	//add copy, stream overloads
 
 	shared_ptr<Map> createMap(string fileName);
 
