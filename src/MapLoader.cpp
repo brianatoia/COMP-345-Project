@@ -1,9 +1,5 @@
 #include "MapLoader.h"
 
-//file stream
-ifstream inputFileStream;
-
-
 MapLoader::MapLoader()
 {
 }
@@ -16,29 +12,34 @@ MapLoader::~MapLoader()
 {
 }
 
+void MapLoader::operator=(MapLoader MapLoader)
+{
+}
+
+ostream& operator<<(std::ostream& strm, MapLoader& mapLoader)
+{
+	return strm << "This is a map loader. It can be used to load .map and .txt files";
+}
+
 shared_ptr<Map> MapLoader::createMap(string fileName)
 {
-	//check for map without .map at the end
-
-
 	//Obtain map name from filename by removing extensions .map or .txt
-		string mapName = fileName.substr(0, fileName.length() - 4);
+	string mapName = fileName.substr(0, fileName.length() - 4);
 
 	//debug
 	//cout << mapName << endl;
 
 	shared_ptr<Map> map(new Map);
 
+	//file stream
+	ifstream inputFileStream;
 	inputFileStream.open(fileName);
 
-	//fix this?
 	if (!inputFileStream.is_open())
 	{
 		cerr << "Error reading file " << fileName << ", please verify it is present." << endl;
 		return nullptr;
 	}
-
-	//add checks for bad files
 
 	//indicate to the loader about the current section of the file it's in
 	bool inContinents = false;

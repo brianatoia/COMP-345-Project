@@ -12,15 +12,8 @@ struct MapLoader
 	MapLoader();
 	MapLoader(MapLoader* mapLoader);
 	~MapLoader();
-	//add copy, stream overloads
+	void operator = (MapLoader MapLoader);
+	friend ostream& operator<<(std::ostream& strm, MapLoader& mapLoader);
 
 	shared_ptr<Map> createMap(string fileName);
-
-	//needed here?
-	ifstream inputFileStream;
-
-	
-
-
-
 };

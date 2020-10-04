@@ -4,7 +4,7 @@
 int main()
 {
 	//declaring map loader 
-	shared_ptr<MapLoader> mapLoader( new MapLoader);
+	shared_ptr<MapLoader> mapLoader( new MapLoader());
 	
 	//implement while loop to ask for file names
 	
