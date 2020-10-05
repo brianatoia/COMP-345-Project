@@ -6,11 +6,13 @@ Order::Order()
 {
 	orderType = "Undefined";
 	orderDescription = "Undefined";
+	orderEffect = "";
 }
 
 Order::Order(string orderType)
 {
 	this->orderType = orderType;
+	this->orderEffect = "";
 	if (orderType == "Deploy")
 	{
 		this->orderDescription = "Place some armies on one of the current player's territories.";
@@ -55,6 +57,11 @@ string Order::getOrderDescription()
 	return orderDescription;
 }
 
+string Order::getOrderEffect()
+{
+	return orderEffect;
+}
+
 //Order Setters
 void Order::setOrderType(string orderType)
 {
@@ -64,6 +71,11 @@ void Order::setOrderType(string orderType)
 void Order::setOrderDescription(string orderDescription)
 {
 	this->orderDescription = orderDescription;
+}
+
+void Order::setOrderEffect(string orderEffect)
+{
+	this->orderEffect = orderEffect;
 }
 
 
@@ -195,6 +207,7 @@ void Deploy::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Deploying..." << endl;
+		setOrderEffect("Effect of Deploying");
 	}
 }
 
@@ -219,6 +232,7 @@ void Advance::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Advancing..." << endl;
+		setOrderEffect("Effect of Advancing");
 	}
 }
 
@@ -243,6 +257,7 @@ void Bomb::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Bombing..." << endl;
+		setOrderEffect("Effect of Bombing");
 	}
 }
 
@@ -267,6 +282,7 @@ void Blockade::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Blockading..." << endl;
+		setOrderEffect("Effect of Blockading");
 	}
 }
 
@@ -291,6 +307,7 @@ void Airlift::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Airlifting..." << endl;
+		setOrderEffect("Effect of Airlifting");
 	}
 
 }
@@ -316,6 +333,7 @@ void Negotiate::execute()
 		//EXECUTE ACTION
 		//to be implemented
 		cout << "Negotiating..." << endl;
+		setOrderEffect("Effect of Negotiating");
 	}
 }
 
@@ -324,6 +342,7 @@ Order::Order(const Order& order)
 {
 	this->orderType = order.orderType;
 	this->orderDescription = order.orderDescription;
+	this->orderEffect = order.orderEffect;
 }
 
 OrderList::OrderList(const OrderList& orderList)
@@ -366,6 +385,7 @@ Order& Order::operator=(const Order& rightSide)
 {
 	this->orderType = rightSide.orderType;
 	this->orderDescription = rightSide.orderDescription;
+	this->orderEffect = rightSide.orderEffect;
 	return *this;
 }
 
@@ -421,6 +441,10 @@ Negotiate& Negotiate::operator=(const Negotiate& rightSide)
 string Order::to_string()
 {
 	string str = "Order: " + orderType + "\nDescription: " + orderDescription;
+	if (orderEffect != "")
+	{
+		str += "\nEffect: " + orderEffect;
+	}
 	return str;
 }
 

@@ -8,11 +8,15 @@ class Order
 private:
 	string orderType;
 	string orderDescription;
+	string orderEffect;
+protected:
+	void setOrderEffect(string);
 public:
 	Order();
 	Order(string);
 	string getOrderType();
 	string getOrderDescription();
+	string getOrderEffect();
 	void setOrderType(string);
 	void setOrderDescription(string);
 	virtual bool validate();
