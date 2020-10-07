@@ -325,12 +325,14 @@ std::shared_ptr<Continent> Map::getContinent(unsigned int id) {
     return std::shared_ptr<Continent>(this->continents[id]);
 }
 
-void Map::operator=(Map map) {
+Map& Map::operator=(const Map& map) {
     this->territories.clear();
     this->continents.clear();
 
     this->territories = map.territories;
     this->continents = map.continents;
+
+    return *this;
 }
 
 Territory::Territory(unsigned int id, std::string name, unsigned int continentID) : Land(id, name) {

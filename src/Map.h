@@ -62,7 +62,7 @@ class Map
     bool validate();
 
     std::string to_string ();
-    void operator = (Map map);
+    Map& Map::operator=(const Map& map);
     friend std::ostream& operator<<(std::ostream& strm, Map &map);
 
     Map();
