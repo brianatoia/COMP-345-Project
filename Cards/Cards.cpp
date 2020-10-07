@@ -1,5 +1,5 @@
 #include "Cards.h"
-
+#include <random>
 using namespace std;
 
 Card::Card()
@@ -90,6 +90,7 @@ void Deck::initialize_vec_deck()
 		}
 
 	}
+	random_shuffle(vec_deck.begin(), vec_deck.end());
 }
 
 void Deck::print_vec_deck_size()
@@ -108,15 +109,11 @@ void Deck::print_vec_deck()
 
 Card* Deck::draw()
 {
-	//draw randomly from the remaining of the deck
-	//random is from 0 to the size of current vec_deck, [0, size). (rand()%(b-a))+a is [a,b).
 	print_vec_deck_size();
-	int temp = (rand() % vec_deck.size());
-	temp_card = vec_deck[temp];
+	temp_card = vec_deck[0];
 
 	//remove this card from the deck vector
-	vec_deck.erase(vec_deck.begin() + temp);
-
+	vec_deck.erase(vec_deck.begin());
 	return temp_card;
 }
 

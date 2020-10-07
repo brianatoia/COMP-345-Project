@@ -11,13 +11,24 @@ int main() {
 
 	//draw() method example
 	Hand aHandCard;
+	Hand bHandCard;
+	Hand cHandCard;
+	Hand dHandCard;
 	Deck1.print_vec_deck_size();
 	cout << " test to assign 5 random cards into hand \n" << endl;
 	for (int i = 0; i < 5; i++) {
 		aHandCard.set_vec_hand(Deck1.draw());
+		bHandCard.set_vec_hand(Deck1.draw());
+		cHandCard.set_vec_hand(Deck1.draw());
+		dHandCard.set_vec_hand(Deck1.draw());
 	}
+	
 	cout << aHandCard;
+	cout << bHandCard;
+	cout << cHandCard;
+	cout << dHandCard;
 	Deck1.print_vec_deck_size();
+
 
 	//test the play cards order of HandCard
 	//traverse to set all HandCards will play
