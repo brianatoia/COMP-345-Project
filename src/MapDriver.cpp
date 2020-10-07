@@ -78,12 +78,11 @@ int main() {
     // some continents dont have any territories
     if (hello.validate()) {
         // start game
-        std::cout << "hello is valid? " << hello.validate() << std::endl;
+        std::cout << "hello is valid? " << ((hello.validate() == true) ? "true" : "false") << std::endl;
     }
 
-    if (hello2.validate()) {
-        std::cout << "hello2 (deep copy of hello without link from U.S. to France)?" << std::endl;
-    }
+    std::cout << "What about hello2?" << std::endl;
+    hello2.validate(); // will print error;
 
     p.reset();
     p2.reset();
