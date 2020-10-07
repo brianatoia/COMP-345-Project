@@ -345,7 +345,11 @@ Territory::Territory(unsigned int id, std::string name, unsigned int continentID
 std::string Territory::to_string() {
     char a[1024];
 
+#if __APPLE__
+    sprintf(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name.c_str(), this->units, this->borders.size());
+#else
     sprintf_s(a, "Territory %d %s: %i unit(s), %li border(s)", this->id, this->name.c_str(), this->units, this->borders.size());
+#endif
 
     return std::string(a);
 }
@@ -358,8 +362,11 @@ Continent::Continent(int id, std::string name, unsigned int bonus) : Land(id, na
 std::string Continent::to_string() {
     char a[1024];
 
+#if __APPLE__
+    sprintf(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name.c_str(), this->bonus, this->territoryIDs.size(), this->borders.size());
+#else
     sprintf_s(a, "Continent %d %s: %d bonus points, %li territories(s), %li border(s)", this->id, this->name.c_str(), this->bonus, this->territoryIDs.size(), this->borders.size());
-
+#endif
     return std::string(a);
 }
 
