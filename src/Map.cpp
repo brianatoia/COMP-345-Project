@@ -104,10 +104,6 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
     return this->continents[continent.id];
 }
 
-// TODO: finish validate function
-// - Do a greedy connection matrix for Territories
-// - Do a connection matrix for Continents based on the Territories connection matrix
-
 bool Map::validate() {
     // resize territories and continents vectors
 
