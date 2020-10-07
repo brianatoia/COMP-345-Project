@@ -204,6 +204,8 @@ bool Map::validate() {
 
             for (std::list<unsigned int> listToMerge : listsToMerge) {
                 connectedLists.remove(listToMerge);
+                listToMerge.sort();
+                connectedTerritories.sort();
                 connectedTerritories.merge(listToMerge);
                 connectedTerritories.unique();
             }
