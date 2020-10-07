@@ -8,25 +8,31 @@ int main() {
 
     // Add a territory : with its id, its name and the continent's id to which it belongs
     // Doing so, you can keep a reference to via the object returned from the add()
-    std::shared_ptr<Territory> t1 = hello.add(Territory(0, "Canada", 0));
-    std::shared_ptr<Territory> t2 = hello.add(Territory(1, "U.S.", 0));
+    std::shared_ptr<Territory> t1 = hello.add(Territory(1, "Canada", 1));
+    std::shared_ptr<Territory> t2 = hello.add(Territory(2, "U.S.", 1));
 
     // Add a Continent : id and name only
     // Same for keeping a reference
-    std::shared_ptr<Continent> c1 = hello.add(Continent(0, "America", 2));
+    std::shared_ptr<Continent> c1 = hello.add(Continent(1, "America", 2));
     std::shared_ptr<Continent> c2 = hello.add(Continent(2, "Europe", 4)); // Having a gap in Continent id's is not allowed.
 
     // You can add territories and Continents in any order, but you have to make sure that all territories map to an existing continent
-    hello.add(Territory(2, "Mexico", 0));
+    hello.add(Territory(3, "Mexico", 1));
+    hello.add(Territory(4, "France", 2));
+    hello.add(Territory(5, "Spain", 2));
 
     // Create a path from t1 to t2
     // this is a directed edge
     // Same for two continents
     hello.link(t1, t2);
     hello.link(t2, hello.findTerritory("Mexico"));
+    hello.link(hello.getTerritory(4), hello.getTerritory(5));
+
 
     // Copy constructor with full deep copy
     Map hello2 = new Map(hello);
+
+    hello.link(t2, hello.findTerritory("France"));
 
     for (int b : t1->borders) {
         std::cout << b << std::endl;
@@ -71,10 +77,13 @@ int main() {
     // Validate will fail and throw if:
     // some territories belong to a non-existing continent
     // some continents dont have any territories
-    // TODO: finish this validate
     if (hello.validate()) {
         // start game
+        std::cout << "hello is valid? " << ((hello.validate() == true) ? "true" : "false") << std::endl;
     }
+
+    std::cout << "What about hello2?" << std::endl;
+    hello2.validate(); // will print error;
 
     p.reset();
     p2.reset();

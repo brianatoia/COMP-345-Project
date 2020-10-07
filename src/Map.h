@@ -1,11 +1,12 @@
 #pragma once
 #include <vector>
+#include <list>
 #include <algorithm>
 #include <string>
 #include <memory>
 #include <ostream>
 // DEBUG
- #include <iostream>
+#include <iostream>
 
 struct Land
 {
@@ -17,7 +18,8 @@ struct Land
     std::vector<unsigned int> borders;
 };
 
-struct Territory : Land {
+struct Territory : Land
+{
     Territory(unsigned int id, std::string name, unsigned int continentID);
 
     unsigned int units;
@@ -57,11 +59,10 @@ class Map
     std::shared_ptr<Continent> findContinent(std::string name);
     std::shared_ptr<Continent> getContinent(unsigned int id);
 
-    // TODO: make this verify integrity of map
     bool validate();
 
     std::string to_string ();
-    void operator = (Map map);
+    Map& Map::operator=(const Map& map);
     friend std::ostream& operator<<(std::ostream& strm, Map &map);
 
     Map();
