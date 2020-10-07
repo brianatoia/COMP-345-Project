@@ -6,4 +6,4 @@ include_directories("./src")
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(COMP345-A1-Part1 src/main.cpp src/Map.cpp)
+add_executable(COMP345-A1-Part1 src/MapDriver.cpp src/Map.cpp)
