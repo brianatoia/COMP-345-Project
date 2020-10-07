@@ -127,9 +127,6 @@ bool Map::validate() {
         }
     }
 
-    std::cout << this->territories.size() << std::endl;
-    std::cout << this->continents.size() << std::endl;
-
     std::vector<bool> checks = std::vector<bool>(this->territories.size());
 
     for (int i = 1; i < this->territories.size(); i++) {
@@ -157,9 +154,6 @@ bool Map::validate() {
             std::cerr << t->to_string() << " doesn't have a valid continent. Either the continent is missing or the territory has a bad continentID." << std::endl;
         }
     }
-
-    std::cout << this->territories.size() << std::endl;
-    std::cout << checks.size() << std::endl;
 
     for (int i = 1; i < checks.size(); i++) {
         bool b = checks[i];
@@ -259,8 +253,6 @@ bool Map::validate() {
         return false;
     }
 
-    std::cout << "map is valid" << std::endl;
-
     return true;
 }
 
@@ -322,7 +314,6 @@ std::shared_ptr<Continent> Map::findContinent(std::string name) {
     for (std::shared_ptr<Continent> c : this->continents) {
         if (c == nullptr) continue;
         if (c->name.compare(name) == 0) {
-            std::cout << c->to_string() << std::endl;
             return std::shared_ptr<Continent>(c);
         }
     }

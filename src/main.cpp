@@ -27,11 +27,11 @@ int main() {
     hello.link(t2, hello.findTerritory("Mexico"));
     hello.link(hello.getTerritory(4), hello.getTerritory(5));
 
-    hello.link(t2, hello.findTerritory("France"));
-
 
     // Copy constructor with full deep copy
     Map hello2 = new Map(hello);
+
+    hello.link(t2, hello.findTerritory("France"));
 
     for (int b : t1->borders) {
         std::cout << b << std::endl;
@@ -76,10 +76,13 @@ int main() {
     // Validate will fail and throw if:
     // some territories belong to a non-existing continent
     // some continents dont have any territories
-    // TODO: finish this validate
     if (hello.validate()) {
         // start game
-        return 1;
+        std::cout << "hello is valid? " << hello.validate() << std::endl;
+    }
+
+    if (hello2.validate()) {
+        std::cout << "hello2 (deep copy of hello without link from U.S. to France)?" << std::endl;
     }
 
     p.reset();
