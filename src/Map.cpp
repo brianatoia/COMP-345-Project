@@ -136,7 +136,7 @@ bool Map::validate() {
         std::shared_ptr<Territory> t = this->territories[i];
 
         if (t == nullptr) {
-            std::cerr << "there is an empty territory object" << std::endl;
+            std::cerr << "there is an empty territory object at index " << i << std::endl;
             return false;
         }
 
@@ -161,9 +161,10 @@ bool Map::validate() {
     std::cout << this->territories.size() << std::endl;
     std::cout << checks.size() << std::endl;
 
-    for (bool b : checks) {
+    for (int i = 1; i < checks.size(); i++) {
+        bool b = checks[i];
         if (!b) {
-            std::cerr << "there is a territory with no path to any other territory and that isn't accessed by any territory" << std::endl;
+            std::cerr << "territory at index " << i << " has no path to any other territory and isn't accessed by any territory" << std::endl;
             return false;
         }
     }
@@ -181,7 +182,85 @@ bool Map::validate() {
         }
     }
 
+    std::list<unsigned int> unconnectedTerritories = std::list<unsigned int>();
+    std::list<std::list<unsigned int>> connectedLists = std::list<std::list<unsigned int>>();
+
+    for (int i = 1; i < this->territories.size(); i++) {
+        std::shared_ptr<Territory> t = this->territories[i];
+        if (t->borders.size() > 0) {
+            std::list<unsigned int> connectedTerritories = std::list<unsigned int>();
+            connectedTerritories.push_back(t->id);
+
+            for (unsigned int b : t->borders) {
+                connectedTerritories.push_back(b);
+                unconnectedTerritories.remove(b);
+            }
+
+            std::list<std::list<unsigned int>> listsToMerge = std::list<std::list<unsigned int>>();
+            for (unsigned int b : connectedTerritories) {
+                if (connectedLists.size() == 0) break;
+                for (std::list<unsigned int> listToCheck : connectedLists) {
+                    for (unsigned int c : listToCheck) {
+                        if (b == c) {
+                            listsToMerge.push_back(listToCheck);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            for (std::list<unsigned int> listToMerge : listsToMerge) {
+                connectedLists.remove(listToMerge);
+                connectedTerritories.merge(listToMerge);
+                connectedTerritories.unique();
+            }
+
+            connectedLists.push_back(connectedTerritories);
+        } else {
+            bool isConnected = false;
+            for (std::list<unsigned int> listToCheck : connectedLists) {
+                for (unsigned int c : listToCheck) {
+                    if (t->id == c) {
+                        isConnected = true;
+                        break;
+                    }
+                }
+                if (isConnected) break;
+            }
+
+            if (!isConnected) {
+                unconnectedTerritories.push_back(t->id);
+            }
+        }
+
+    }
+
+    if (unconnectedTerritories.size() > 0) {
+        std::cerr << "Map contains " << unconnectedTerritories.size() << " lonely island(s) at " << std::endl;
+
+        for (unsigned int li : unconnectedTerritories) {
+            std::cerr << li << " ";
+        }
+        std::cerr << std::endl;
+
+        return false;
+    }
+
+    if (connectedLists.size() > 1) {
+        std::cerr << "Map contains " << connectedLists.size() << " unconnected islands:" << std::endl;
+
+        for (std::list<unsigned int> island : connectedLists) {
+            for (unsigned int i : island) {
+                std::cerr << i << " ";
+            }
+            std::cerr << std::endl;
+        }
+
+        return false;
+    }
+
     std::cout << "map is valid" << std::endl;
+
     return true;
 }
 
