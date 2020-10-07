@@ -76,7 +76,7 @@ int main()
 	cout << "\nNew Order List after Assignment" << endl;
 	cout << "------------------" << endl;
 	cout << *orderList1 << endl;
-	cout << "New Order5" << endl;
+	cout << "\nNew Order5" << endl;
 	cout << "------------------" << endl;
 	cout << *order5 << endl;
 	cout << "\nNew Order1" << endl;
@@ -84,7 +84,7 @@ int main()
 	cout << *order1 << endl;
 
 	//Demonstrating copy constructor
-	shared_ptr<Order> order6(new Order("Invalid"));
+	shared_ptr<Order> order6(new Order);
 	shared_ptr<Order> order7 = order6;
 	cout << "\nOrder Copy Constructor" << endl;
 	cout << "------------------" << endl;

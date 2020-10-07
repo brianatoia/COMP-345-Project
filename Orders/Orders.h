@@ -11,9 +11,9 @@ private:
 	string orderEffect;
 protected:
 	void setOrderEffect(string);
+	Order(string);
 public:
 	Order();
-	Order(string);
 	string getOrderType();
 	string getOrderDescription();
 	string getOrderEffect();
