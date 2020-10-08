@@ -157,10 +157,12 @@ void OrderList::move(shared_ptr<Order> order, int moveOption)
 	{
 		orders.splice(orders.begin(), orders, it);
 	}
+	//Move order to end of list
 	else if(moveOption == 2)
 	{
 		orders.splice(orders.end(), orders, it);
 	}
+	//Move order up one position
 	else if (moveOption == 3)
 	{
 		//check that it's not the first element
@@ -171,6 +173,7 @@ void OrderList::move(shared_ptr<Order> order, int moveOption)
 			orders.splice(itUp, orders, it);
 		}
 	}
+	//Move order down one position
 	else if (moveOption == 4)
 	{
 		//check that it's not the last element
