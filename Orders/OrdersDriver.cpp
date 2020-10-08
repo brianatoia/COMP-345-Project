@@ -1,6 +1,6 @@
 #include "Orders.h"
 
-int main()
+/*int main()
 {
 	shared_ptr<Order> order1 (new Deploy);
 	shared_ptr<Order> order2 (new Advance);
@@ -101,4 +101,4 @@ int main()
 	cout << *orderList2 << endl; 
 
 	return 0;
-}
+}*/

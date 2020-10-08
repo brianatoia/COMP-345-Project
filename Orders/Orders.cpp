@@ -6,13 +6,13 @@ Order::Order()
 {
 	orderType = "Undefined";
 	orderDescription = "Undefined";
-	orderEffect = "";
+	orderEffect = "Undefined";
 }
 
 Order::Order(string orderType)
 {
 	this->orderType = orderType;
-	this->orderEffect = "";
+	this->orderEffect = "Undefined";
 	if (orderType == "Deploy")
 	{
 		this->orderDescription = "Place some armies on one of the current player's territories.";
@@ -450,7 +450,7 @@ Negotiate& Negotiate::operator=(const Negotiate& rightSide)
 string Order::to_string()
 {
 	string str = "Order: " + orderType + "\nDescription: " + orderDescription;
-	if (orderEffect != "")
+	if (orderEffect != "Undefined")
 	{
 		str += "\nEffect: " + orderEffect;
 	}
