@@ -93,6 +93,10 @@ OrderList::OrderList()
 //OrderList Destructor
 OrderList::~OrderList()
 {
+	for (std::shared_ptr<Order> order : this->orders) 
+	{
+		order.reset();
+	}
 	//will clear the list, deleting all the shared_ptrs (which does so themselves)
 	orders.clear();
 }
@@ -118,14 +122,13 @@ void OrderList::addOrder(shared_ptr<Order> order)
 }
 
 //Removes an Order from the List
-void OrderList::remove(shared_ptr<Order> order)
+void OrderList::remove(shared_ptr<Order> orderToRemove)
 { 
-	list<shared_ptr<Order>>::iterator it = orders.begin();
-	for (it = orders.begin(); it != orders.end(); advance(it, 1))
+	for (std::shared_ptr<Order> order : this->orders) 
 	{
-		if (*it == order)
+		if (order == orderToRemove)
 		{
-			orders.remove(order);
+			orders.remove(orderToRemove);
 			return;
 		}
 	}
@@ -347,7 +350,9 @@ Order::Order(const Order& order)
 
 OrderList::OrderList(const OrderList& orderList)
 {
-	this->orders = orderList.orders;
+	for (std::shared_ptr<Order> order : orderList.orders) {
+		this->orders.push_back(order);
+	}
 }
 
 Deploy::Deploy(const Deploy& order) : Order(order)
@@ -391,6 +396,7 @@ Order& Order::operator=(const Order& rightSide)
 
 OrderList& OrderList::operator=(const OrderList& rightSide)
 {
+	this->orders.clear();
 	this->orders = rightSide.orders;
 	return *this;
 }
@@ -451,11 +457,9 @@ string Order::to_string()
 string OrderList::to_string()
 {
 	string str = "";
-	list<shared_ptr<Order>>::iterator it = orders.begin();
-	for (it = orders.begin(); it != orders.end(); advance(it, 1))
+	for (std::shared_ptr<Order> order : this->orders) 
 	{
-		shared_ptr<Order> o = *it;
-		str += o->getOrderType() + "\n";
+		str += order->getOrderType() + "\n";
 	}
 	return str;
 }
