@@ -10,9 +10,9 @@ struct MapLoader
 
 
 	MapLoader();
-	MapLoader(MapLoader* mapLoader);
+	MapLoader(const MapLoader&);
 	~MapLoader();
-	void operator = (MapLoader MapLoader);
+	MapLoader& operator=(const MapLoader&);
 	friend ostream& operator<<(std::ostream& strm, MapLoader& mapLoader);
 
 	shared_ptr<Map> createMap(string fileName);

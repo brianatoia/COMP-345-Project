@@ -4,7 +4,7 @@ MapLoader::MapLoader()
 {
 }
 
-MapLoader::MapLoader(MapLoader* mapLoader)
+MapLoader::MapLoader(const MapLoader&)
 {
 }
 
@@ -12,7 +12,7 @@ MapLoader::~MapLoader()
 {
 }
 
-void MapLoader::operator=(MapLoader MapLoader)
+MapLoader& MapLoader::operator=(const MapLoader&)
 {
 }
 
@@ -52,7 +52,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	while (inputFileStream >> nextWord) 
 	{
 		//debug
-		//cout << "~~~~~~~~~~~~~~~~~~~ " + nextWord + "~~~~~~~~~~~~~~~~~~~~~~~" << endl;
+		//cout << nextWord << endl;
 		
 		if (nextWord == "[continents]")
 		{
@@ -90,11 +90,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 			//creating continent and adding to map
 			//stoi transforms string to int
-			
-			
-				map->add(Continent(continentID, continentName, stoi(bonus)));
-			
-			
+			map->add(Continent(continentID, continentName, stoi(bonus)));
 			
 			//debug
 			//cout << "New Continent: " << continentName << " Bonus of: " << bonus << " Garbage value of: " + temp << endl;
@@ -151,7 +147,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 		cerr << "Map " << mapName << " is invalid and was rejected by the mapLoader\n" << endl;
 		return nullptr;
 	}
-
 
 	inputFileStream.close();
 	std::cout << "Creation of map " << mapName << " succesful!\n" << endl;
