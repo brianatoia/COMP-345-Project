@@ -64,7 +64,7 @@ std::shared_ptr<Territory> Map::add(Territory territory) {
     if (this->findTerritory(territory.name) != nullptr) {
         throw std::logic_error("duplicate name: territory already exists");
     }
-
+    
     this->territories[territory.id] = std::shared_ptr<Territory> (new Territory(territory));
 
     std::shared_ptr<Continent> c = getContinent(territory.continentID);
@@ -86,11 +86,8 @@ std::shared_ptr<Continent> Map::add(Continent continent) {
         throw std::logic_error("duplicate ID: continent already exists");
     }
 
-    std::cout << continent.name << std::endl;
-
     if (this->findContinent(continent.name) != nullptr) {
         throw std::logic_error("duplicate name: continent already exists");
-        //std::cout << "problem" << std::endl;
     }
 
     this->continents[continent.id] = std::shared_ptr<Continent> (new Continent(continent));

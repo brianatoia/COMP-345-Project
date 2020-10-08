@@ -37,7 +37,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 	if (!inputFileStream.is_open())
 	{
-		cerr << "Error reading file " << fileName << ", please verify it is present." << endl;
+		cerr << "Error reading file " << fileName << ", please verify it is present.\n" << endl;
 		return nullptr;
 	}
 
@@ -90,7 +90,11 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 			//creating continent and adding to map
 			//stoi transforms string to int
-			map->add(Continent(continentID, continentName, stoi(bonus)));
+			
+			
+				map->add(Continent(continentID, continentName, stoi(bonus)));
+			
+			
 			
 			//debug
 			//cout << "New Continent: " << continentName << " Bonus of: " << bonus << " Garbage value of: " + temp << endl;
@@ -107,9 +111,16 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			inputFileStream >> continentID;
 			inputFileStream >> temp1;
 			inputFileStream >> temp2;
-
-			map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
-
+			try
+			{
+				map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
+			}
+			
+			catch (logic_error e)
+			{
+				cerr << "Verify territory " << territoryName << " for errors. Map is invalid and was rejected by the mapLoader" << endl;
+				return nullptr;
+			}
 			//debug
 			//cout << "New territory with ID: " << territoryID << " Name: " << territoryName << " ContinentID: " << continentID << " Garbage values: " << temp1 << " | " << temp2 << endl;
 		}
@@ -126,7 +137,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 				map->link(map->getTerritory(stoi(territoryID)), map->getTerritory(stoi(territoryToLink)));
 				
 				//debug
-				cout << "Linking " + nextWord << " and " << territoryToLink << endl;
+				//cout << "Linking " + nextWord << " and " << territoryToLink << endl;
 			}
 			
 			//debug
@@ -137,7 +148,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	//validating created map.
 	if (!map->validate())
 	{
-		cerr << "Map " << mapName << " is invalid and was rejected by the mapLoader" << endl;
+		cerr << "Map " << mapName << " is invalid and was rejected by the mapLoader\n" << endl;
 		return nullptr;
 	}
 
