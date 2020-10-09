@@ -14,13 +14,13 @@
     Land(const Land& land);
     ~Land();
 
-    std::string name;
+    std::string name; // Both Territory and Continent need a name
 
 public:
     unsigned int getID();
 
 private:
-    unsigned int id;
+    unsigned int id; // Both Territory and Continent need an id
 };
 
 struct Territory : Land
@@ -57,8 +57,8 @@ struct Continent : Land
 class Map
 {
   private:
-    std::vector<std::shared_ptr<Territory>> territories;
-    std::vector<std::shared_ptr<Continent>> continents;
+    std::vector<std::shared_ptr<Territory>> territories; // these are vectors because they are accessed using ID's
+    std::vector<std::shared_ptr<Continent>> continents; // ID's =:= index
 
   public:
     std::shared_ptr<Territory> add(Territory territory);
