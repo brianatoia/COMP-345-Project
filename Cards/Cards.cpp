@@ -110,8 +110,8 @@ void Deck::print_vec_deck()
 Card* Deck::draw()
 {
 	print_vec_deck_size();
-	temp_card = vec_deck[0];
-
+	//temp_card = vec_deck[0];
+	temp_card = *vec_deck.begin();
 	//remove this card from the deck vector
 	vec_deck.erase(vec_deck.begin());
 	return temp_card;
