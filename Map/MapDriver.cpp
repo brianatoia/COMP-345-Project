@@ -1,10 +1,11 @@
+#pragma once
 #include <iostream>
 #include <memory>
 #include "Map.h"
 
 /*
 int main() {
-    Map hello = new Map();
+    Map hello = Map();
 
     // Add a territory : with its id, its name and the continent's id to which it belongs
     // Doing so, you can keep a reference to via the object returned from the add()
@@ -30,7 +31,11 @@ int main() {
 
 
     // Copy constructor with full deep copy
-    Map hello2 = new Map(hello);
+    Map hello2 = Map(hello);
+    Map* hello3 = new Map(hello2);
+    std::cout << hello3 << std::endl;
+    Map* hello4 = new Map(*hello3);
+    std::cout << hello4 << std::endl;
 
     hello.link(t2, hello.findTerritory("France"));
 
@@ -48,7 +53,7 @@ int main() {
     // the first one with a corresponding name (linear)
     // the get ones return based on the id provided (constant time)
     std::shared_ptr<Territory> p = hello.findTerritory("Mexico");
-    std::shared_ptr<Territory> p2 = hello.getTerritory(p->id);
+    std::shared_ptr<Territory> p2 = hello.getTerritory(p->getID());
     std::shared_ptr<Territory> p3 = std::shared_ptr<Territory>(p);
     p->units = 1;
 
@@ -84,6 +89,11 @@ int main() {
 
     std::cout << "What about hello2?" << std::endl;
     hello2.validate(); // will print error;
+
+    hello3->add(Continent(3, "Asia", 7));
+    hello3->add(Territory(6, "Japan", 3));
+    std::cout << "And hello3?" << std::endl;
+    hello3->validate();
 
     p.reset();
     p2.reset();
