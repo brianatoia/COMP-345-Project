@@ -8,35 +8,50 @@
 // DEBUG
 #include <iostream>
 
-struct Land
+ struct Land
 {
     Land(unsigned int id, std::string name);
+    Land(const Land& land);
+    ~Land();
 
-    unsigned int id;
     std::string name;
 
-    std::vector<unsigned int> borders;
+public:
+    unsigned int getID();
+
+private:
+    unsigned int id;
 };
 
 struct Territory : Land
 {
     Territory(unsigned int id, std::string name, unsigned int continentID);
+    Territory(const Territory& territory);
+    ~Territory();
 
     unsigned int units;
     unsigned int ownerID;
     unsigned int continentID;
 
-    std::string to_string ();
+    std::vector<unsigned int> borders;
+
+    std::string to_string();
+    Territory& operator=(const Territory& territory);
+    friend std::ostream& operator<<(std::ostream& strm, Territory &territory);
 };
 
 struct Continent : Land
 {
-    Continent(int id, std::string name, unsigned bonus);
-
     unsigned int bonus;
     std::vector<unsigned int> territoryIDs;
 
     std::string to_string ();
+    Continent& operator=(const Continent& continent);
+    friend std::ostream& operator<<(std::ostream& strm, Continent &continent);
+
+    Continent(int id, std::string name, unsigned bonus);
+    Continent(const Continent& continent);
+    ~Continent();
 };
 
 class Map
@@ -46,12 +61,10 @@ class Map
     std::vector<std::shared_ptr<Continent>> continents;
 
   public:
-    std::shared_ptr<Territory> add (Territory territory);
-    std::shared_ptr<Continent> add (Continent continent);
+    std::shared_ptr<Territory> add(Territory territory);
+    std::shared_ptr<Continent> add(Continent continent);
 
-    // TODO: make this a template function instead
     bool link(std::shared_ptr<Territory> a, std::shared_ptr<Territory> b);
-    bool link(std::shared_ptr<Continent> a, std::shared_ptr<Continent> b);
 
     std::shared_ptr<Territory> findTerritory(std::string name);
     std::shared_ptr<Territory> getTerritory(unsigned int id);
@@ -62,12 +75,12 @@ class Map
     bool validate();
 
     std::string to_string ();
-    Map& Map::operator=(const Map& map);
+    Map& operator=(const Map& map);
     friend std::ostream& operator<<(std::ostream& strm, Map &map);
 
     Map();
     Map(int numOfTerritories, int numOfContinents);
-    Map(Map* map);
+    Map(const Map& map);
     ~Map();
 
 };
