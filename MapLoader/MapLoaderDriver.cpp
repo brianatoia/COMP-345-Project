@@ -7,7 +7,7 @@ solarError.map features an empty continent
 europeError.map features a territory with no borders either way
 */
 
-/*
+
 int main()
 {
 	//declaring map loader 
@@ -51,4 +51,3 @@ int main()
 
 	return 0;
 }
-*/

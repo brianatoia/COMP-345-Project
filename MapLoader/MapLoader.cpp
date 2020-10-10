@@ -14,6 +14,7 @@ MapLoader::~MapLoader()
 
 MapLoader& MapLoader::operator=(const MapLoader&)
 {
+	return *this;
 }
 
 ostream& operator<<(std::ostream& strm, MapLoader& mapLoader)
@@ -37,7 +38,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 	if (!inputFileStream.is_open())
 	{
-		cerr << "Error reading file " << fileName << ", please verify it is present.\n" << endl;
+		cout << "Error reading file " << fileName << ", please verify it is present.\n" << endl;
 		return nullptr;
 	}
 
@@ -107,16 +108,9 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			inputFileStream >> continentID;
 			inputFileStream >> temp1;
 			inputFileStream >> temp2;
-			try
-			{
-				map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
-			}
 			
-			catch (logic_error e)
-			{
-				cerr << "Verify territory " << territoryName << " for errors. Map is invalid and was rejected by the mapLoader" << endl;
-				return nullptr;
-			}
+			map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
+			
 			//debug
 			//cout << "New territory with ID: " << territoryID << " Name: " << territoryName << " ContinentID: " << continentID << " Garbage values: " << temp1 << " | " << temp2 << endl;
 		}
@@ -144,7 +138,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	//validating created map.
 	if (!map->validate())
 	{
-		cerr << "Map " << mapName << " is invalid and was rejected by the mapLoader\n" << endl;
+		cout << "Map " << mapName << " is invalid and was rejected by the mapLoader\n" << endl;
 		return nullptr;
 	}
 
