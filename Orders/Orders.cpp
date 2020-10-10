@@ -4,39 +4,39 @@
 //Order Constructors
 Order::Order() 
 {
-	orderType = "Undefined";
+	orderType = Undefined;
 	orderDescription = "Undefined";
 	orderEffect = "Undefined";
 }
 
-Order::Order(string orderType)
+Order::Order(OrderType orderType)
 {
 	this->orderType = orderType;
 	this->orderEffect = "Undefined";
-	if (orderType == "Deploy")
+	if (orderType == Deploy)
 	{
 		this->orderDescription = "Place some armies on one of the current player's territories.";
 	}
-	else if (orderType == "Advance")
+	else if (orderType == Advance)
 	{
 		this->orderDescription = "Move some armies from one of the current player's territories (source) to an adjacent territory " 
 		"(target). If the target territory belongs to the current player, the armies are moved to the target " 
 			"territory. If the target territory belongs to another player, an attack happens between the two territories.";
 	}
-	else if (orderType == "Bomb")
+	else if (orderType == Bomb)
 	{
 		this->orderDescription = "Destroy half of the armies located on an opponent's territory that is adjacent to one of the current " 
 			"player's territories.";
 	}
-	else if (orderType == "Blockade")
+	else if (orderType == Blockade)
 	{
 		this->orderDescription = "Triple the number of armies on one of the current player's territories and make it a neutral territory.";
 	}
-	else if (orderType == "Airlift")
+	else if (orderType == Airlift)
 	{
 		this->orderDescription = "Advance some armies from one of the current player's territories to any another territory.";
 	}
-	else if (orderDescription == "Negotiate")
+	else if (orderType == Negotiate)
 	{
 		this->orderDescription = "Prevent attacks between the current player and another player until the end of the turn.";
 	}
@@ -47,9 +47,23 @@ Order::Order(string orderType)
 }
 
 //Order Getters
-string Order::getOrderType()
+Order::OrderType Order::getOrderType()
 {
 	return orderType;
+}
+
+string Order::getOrderTypeString()
+{
+	switch (this->orderType)
+		{
+			case Deploy: return "Deploy";
+			case Advance: return "Advance";
+			case Bomb: return "Bomb";
+			case Blockade: return "Blockade";
+			case Airlift: return "Airlift";
+			case Negotiate: return "Negotiate";
+			case Undefined: return "Undefined";
+		}
 }
 
 string Order::getOrderDescription()
@@ -63,7 +77,7 @@ string Order::getOrderEffect()
 }
 
 //Order Setters
-void Order::setOrderType(string orderType)
+void Order::setOrderType(OrderType orderType)
 {
 	this->orderType = orderType;
 }
@@ -81,7 +95,7 @@ void Order::setOrderEffect(string orderEffect)
 
 bool Order::validate() { return false; } //inherited & implemented in subclasses, false if invalid order type is created
 
-void Order::execute(){} //inherited & implemented in subclasses
+void Order::execute() {} //inherited & implemented in subclasses
 
 
 //OrderList Default Constructor
@@ -135,7 +149,7 @@ void OrderList::remove(shared_ptr<Order> orderToRemove)
 }
 
 //Moves an Order in the List: up, down, top or bottom
-void OrderList::move(shared_ptr<Order> order, int moveOption)
+void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 {
 	bool orderExists = false;
 	list<shared_ptr<Order>>::iterator it = orders.begin();
@@ -153,17 +167,17 @@ void OrderList::move(shared_ptr<Order> order, int moveOption)
 		return;
 	}
 	//Move order to beginnning of list
-	if (moveOption == 1)
+	if (moveOption == moveToBeginning)
 	{
 		orders.splice(orders.begin(), orders, it);
 	}
 	//Move order to end of list
-	else if(moveOption == 2)
+	else if(moveOption == moveToEnd)
 	{
 		orders.splice(orders.end(), orders, it);
 	}
 	//Move order up one position
-	else if (moveOption == 3)
+	else if (moveOption == moveUp)
 	{
 		//check that it's not the first element
 		if (it != orders.begin())
@@ -174,7 +188,7 @@ void OrderList::move(shared_ptr<Order> order, int moveOption)
 		}
 	}
 	//Move order down one position
-	else if (moveOption == 4)
+	else if (moveOption == moveDown)
 	{
 		//check that it's not the last element
 		list<shared_ptr<Order>>::iterator itEnd = orders.end();
@@ -192,7 +206,7 @@ void OrderList::move(shared_ptr<Order> order, int moveOption)
 	}
 }
 
-Deploy::Deploy() : Order("Deploy")
+Deploy::Deploy() : Order(Order::Deploy)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented 
@@ -217,7 +231,7 @@ void Deploy::execute()
 	}
 }
 
-Advance::Advance() : Order("Advance")
+Advance::Advance() : Order(Order::Advance)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented 
@@ -242,7 +256,7 @@ void Advance::execute()
 	}
 }
 
-Bomb::Bomb() : Order("Bomb")
+Bomb::Bomb() : Order(Order::Bomb)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented 
@@ -267,7 +281,7 @@ void Bomb::execute()
 	}
 }
 
-Blockade::Blockade() : Order("Blockade")
+Blockade::Blockade() : Order(Order::Blockade)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented
@@ -292,7 +306,7 @@ void Blockade::execute()
 	}
 }
 
-Airlift::Airlift() : Order("Airlift")
+Airlift::Airlift() : Order(Order::Airlift)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented
@@ -318,7 +332,7 @@ void Airlift::execute()
 
 }
 
-Negotiate::Negotiate() : Order("Negotiate")
+Negotiate::Negotiate() : Order(Order::Negotiate)
 {
 	//initialize attributes needed to perform this action
 	//to be implemented
@@ -380,7 +394,7 @@ Blockade::Blockade(const Blockade& order) : Order(order)
 
 Airlift::Airlift(const Airlift& order) : Order(order)
 {
-	//future attrubutes
+	//future attributes
 }
 
 Negotiate::Negotiate(const Negotiate& order) : Order(order)
@@ -407,49 +421,50 @@ OrderList& OrderList::operator=(const OrderList& rightSide)
 Deploy& Deploy::operator=(const Deploy& rightSide) 
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 Advance& Advance::operator=(const Advance& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 Bomb& Bomb::operator=(const Bomb& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 Blockade& Blockade::operator=(const Blockade& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 Airlift& Airlift::operator=(const Airlift& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 Negotiate& Negotiate::operator=(const Negotiate& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attibutes
+	//future attributes
 	return *this;
 }
 
 //to_String functions
 string Order::to_string()
 {
-	string str = "Order: " + orderType + "\nDescription: " + orderDescription;
+	string str = "Order: " + getOrderTypeString();
+	str += "\nDescription: " + orderDescription;
 	if (orderEffect != "Undefined")
 	{
 		str += "\nEffect: " + orderEffect;
@@ -462,7 +477,7 @@ string OrderList::to_string()
 	string str = "";
 	for (std::shared_ptr<Order> order : this->orders) 
 	{
-		str += order->getOrderType() + "\n";
+		str += order->getOrderTypeString() + "\n";
 	}
 	return str;
 }

@@ -1,6 +1,6 @@
 #include "Orders.h"
 
-/*int main()
+int main()
 {
 	shared_ptr<Order> order1 (new Deploy);
 	shared_ptr<Order> order2 (new Advance);
@@ -27,7 +27,7 @@
 	cout << "\nOrder Subclass Object (Deploy)" << endl;
 	cout << "------------------" << endl;
 	cout << *order1 << endl;
-
+	
 	//Demonstrating remove
 	cout << "\nDemonstrating remove()" << endl;
 	cout << "------------------" << endl;
@@ -38,22 +38,22 @@
 	//Demonstrating move
 	cout << "Demonstrating move(): Move 'Negotiate' to the top" << endl;
 	cout << "------------------" << endl;
-	orderList->move(order4, 1);
+	orderList->move(order4, OrderList::moveToBeginning);
 	cout << *orderList << endl;
 
 	cout << "Demonstrating move(): Move 'Negotiate' back to the bottom" << endl;
 	cout << "------------------" << endl;
-	orderList->move(order4, 2);
+	orderList->move(order4, OrderList::moveToEnd);
 	cout << *orderList << endl;
 
 	cout << "Demonstrating move(): Move 'Bomb' up" << endl;
 	cout << "------------------" << endl;
-	orderList->move(order3, 3);
+	orderList->move(order3, OrderList::moveUp);
 	cout << *orderList << endl;
 	
 	cout << "Demonstrating move(): Move 'Bomb' down" << endl;
 	cout << "------------------" << endl;
-	orderList->move(order3, 4);
+	orderList->move(order3, OrderList::moveDown);
 	cout << *orderList << endl;
 
 	cout << "\nDemonstrating execute()" << endl;
@@ -101,4 +101,4 @@
 	cout << *orderList2 << endl; 
 
 	return 0;
-}*/
+}

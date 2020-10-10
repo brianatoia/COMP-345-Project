@@ -5,19 +5,23 @@ using namespace std;
 
 class Order
 {
-private:
-	string orderType;
-	string orderDescription;
-	string orderEffect;
-protected:
-	void setOrderEffect(string);
-	Order(string);
 public:
+	enum OrderType
+	{
+		Undefined,
+		Deploy,
+		Advance,
+		Bomb,
+		Blockade,
+		Airlift, 
+		Negotiate
+	};
 	Order();
-	string getOrderType();
+	enum OrderType getOrderType();
+	string getOrderTypeString();
 	string getOrderDescription();
 	string getOrderEffect();
-	void setOrderType(string);
+	void setOrderType(OrderType);
 	void setOrderDescription(string);
 	virtual bool validate();
 	virtual void execute();
@@ -25,24 +29,38 @@ public:
 	Order(const Order&);
 	Order& operator=(const Order&);
 	friend ostream& operator<<(ostream&, Order&);
+private:
+	OrderType orderType;
+	string orderDescription;
+	string orderEffect;
+protected:
+	void setOrderEffect(string);
+	Order(OrderType);
 };
 
 class OrderList
 {
-private:
-	list<shared_ptr<Order>> orders;
 public:
+	enum MoveOption
+	{
+		moveToBeginning,
+		moveToEnd,
+		moveUp,
+		moveDown
+	};
 	OrderList();
 	~OrderList();
 	list<shared_ptr<Order>> getOrders();
 	void setOrders(list<shared_ptr<Order>>);
 	void addOrder(shared_ptr<Order>);
 	void remove(shared_ptr<Order>);
-	void move(shared_ptr<Order>, int);
+	void move(shared_ptr<Order>, MoveOption);
 	string to_string();
 	OrderList(const OrderList&);
 	OrderList& operator=(const OrderList&);
 	friend ostream& operator<<(ostream&, OrderList&);
+private:
+	list<shared_ptr<Order>> orders;
 };
 
 
