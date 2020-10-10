@@ -1,7 +1,7 @@
 //
 //  main.cpp
 //  Player
-//
+//  Defines player class and its methods. A player has a list of territories, a hand of warzone cards and a list of orders. A player can call the issueOrder method to create a new order. Additionally the player can see all territories that are either to be attacked or to be defended with the toAttack ad toDefend methods.
 //
 //
 //  Created by Lina Kretzschmar on 2020-09-27.
@@ -17,82 +17,215 @@
 
 using namespace std;
     
-    //***********  Constructors ************
-
     //Default constructor
-    Player::Player(){
+    Player::Player()
+    {
         playerCount++;
-        string tempName = "Player" + to_string(playerCount);
-        cout << "Generic Name: "  << tempName << endl;
+        string tempName = "Player" + ::to_string(playerCount);
         this->name = tempName;
-        
-        //add all three lists
-        
+        this->playerID = playerCount;
+        this->territoryList = list<shared_ptr<Territory>>();
         this->orderList = new OrderList();
+        this->handOfCards = new Hand();
+    }
+
+    //Destructor which clears all parameters of pointer type
+    Player::~Player()
+    {
+        territoryList.clear();//go through list and reset before clearing
+        orderList->~OrderList();
+        handOfCards->~Hand();
+    };
+    
+    //Parameterized constructor
+    Player::Player(string playerName)
+    {
+        playerCount++;
+        this->name = playerName;
+        this->playerID = playerCount;
+        this->territoryList = list<shared_ptr<Territory>>();
+        this->orderList = new OrderList();
+        this->handOfCards = new Hand();
+    };
+
+    //Copy constructor enables deep copy of pointer attributes
+    Player::Player(const Player& aPlayer)
+    {
+        this->name = aPlayer.name;
+        this->playerID = aPlayer.playerID;
+        this->territoryList = aPlayer.territoryList;
+        this->orderList = aPlayer.orderList;
+        this->handOfCards = aPlayer.handOfCards;
+    }
+
+    //ToString method of Player
+    string Player::to_string()
+    {
+        string str = "\n\nPlayer " + name + " has ID " + ::to_string(playerID) + " and owns:\n";
+        str += "\nList of Territories:\n";
+        str += printList(getTerritoryList());
+        str += "\nList of Orders:\n";
+        OrderList * o = getOrderList();
+        str += o->to_string();
+        //Add HandOfCards here
+        return str;
+    }
+
+    //Stream insertion operator
+    ostream& operator<<(ostream& strm, Player &player)
+    {
+        return strm << player.to_string();
     }
     
-    //Initialized constructor
-    Player::Player(string playerName){
-        playerCount++;
-        this->name = playerName;
-     
-    //territory List = new Territory List(); list with territory objects
-    //CollectionOfCards = new CollectionOfCards(); List with card objects
-        this->orderList = new OrderList();
-    };
+    //********** Mutators and accessors *************//
 
-
-    //Copy Constructor
-    //String insertion operator
-    
-    //********** Mutators and accessors *************
-    void Player::setName(string playerName){
+    void Player::setName(string playerName)
+    {
         this->name = playerName;
     };
     
-   
-        
-  
-    
-    int Player::getPlayerCount(){
-        return playerCount;
-    };
-
-    string Player::getName (){
+    string Player::getName ()
+    {
         return name;
     };
 
-    OrderList * Player::getOrderList(){
+    int Player::getPlayerCount()
+    {
+        return playerCount;
+    };
+
+    unsigned int Player::getPlayerID()
+    {
+        return playerID;
+    };
+
+    //********** Order methods *************//
+
+    OrderList * Player::getOrderList()
+    {
         return orderList;
     }
-    
-//********* Special methods **********
-    
-/**
-    territory <list> toDefend(){
- return territory list including every territory the player owns}
- 
-    territory <llist> toAttack(){
- return territory list including ever territory but the players}
- 
- */
- 
 
-    //Check the string and create order according to that
-    //If print out cerror and say invalid error
-    void Player::issueOrder(string orderType){
-        shared_ptr<Order> order (new Order(orderType));
-        
-        
-        
-        this->orderList->addOrder(order);
-        
-//        cout << *orderList << endl;
-////        OrderList testList ();
-//        cout << orderList->getOrders().size() << endl;
+    //Method issueOrder - creates a new order objects according to orderType and adds it to the players OrderList
+    void Player::issueOrder(string orderType)
+    {
+        if(orderType == "Deploy")
+        {
+            shared_ptr<Order> order (new Deploy);
+            this->orderList->addOrder(order);
+        }
+        else if(orderType == "Advance")
+        {
+            shared_ptr<Order> order (new Advance);
+            this->orderList->addOrder(order);
+        }
+        else if(orderType == "Bomb")
+        {
+            shared_ptr<Order> order (new Bomb);
+            this->orderList->addOrder(order);
+        }
+        else if(orderType == "Blockade")
+        {
+            shared_ptr<Order> order (new Blockade);
+            this->orderList->addOrder(order);
+        }
+        else if(orderType == "Airlift")
+        {
+            shared_ptr<Order> order (new Airlift);
+            this->orderList->addOrder(order);
+        }
+        else if(orderType == "Negotiate")
+        {
+            shared_ptr<Order> order (new Negotiate);
+            this->orderList->addOrder(order);
+        }
+            else
+        {
+            cerr << "Invalid Order Type" << endl;
+        }
     }
- 
 
+    //********* Card methods **********//
+
+
+//    string getHandOfCards(){
+//        return handOfCards.to_String;
+//    }
+
+//    void drawCard(Deck aDeck){
+//        handOfCards.set_vec_hand(aDeck.draw());
+//    };
+
+    //********* Territory methods **********//
+
+    //Returning TerritoryList
+    list<shared_ptr<Territory>> Player::getTerritoryList()
+    {
+        return territoryList;
+    }
+
+    //Adding a territory to the TerritoryList and assigning the ownerId to the playerID
+    void Player::addTerritory(shared_ptr<Territory> newTerritoryPtr)
+    {
+        territoryList.push_back(newTerritoryPtr);
+        newTerritoryPtr->ownerID = playerID;
+    }
+
+    //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
+    list<shared_ptr<Territory>> Player::toAttack(Map aMap)
+    {
+        list<shared_ptr<Territory>> copyList;
+        list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+        
+        
+        for(i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+        {
+            vector <unsigned int> territoryIDs = (*i)->borders;
+            for(auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+            {
+                if(aMap.getTerritory(*iD)->ownerID != playerID)
+                {
+                    copyList.push_back(aMap.getTerritory(*iD));
+                }
+            }
+        }
+         return copyList;
+    }
+        
+    //Method toDefend - returns list of pointers to territory objects having adjacent territory owned by the player
+    list<shared_ptr<Territory>> Player::toDefend(Map aMap)
+    {
+        list<shared_ptr<Territory>> copyList;
+        list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+    
+    
+        for(i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+        {
+            vector <unsigned int> territoryIDs = (*i)->borders;
+            for(auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+            {
+                if(aMap.getTerritory(*iD)->ownerID == playerID)
+                {
+                    copyList.push_back(aMap.getTerritory(*iD));
+                }
+            }
+        }
+        return copyList;
+    }
+
+    //method that takes any list or pointers as input and returns it as string
+    string Player::printList(list<shared_ptr<Territory>> aList)
+    {
+        string tList = "";
+        list<shared_ptr<Territory>>::iterator it = aList.begin();
+        for(it = aList.begin(); it != aList.end(); advance(it, 1))
+        {
+            shared_ptr<Territory> t = *it;
+            tList += t->to_string() + "\n";
+        }
+        return tList;
+    }
+    
     
 
 

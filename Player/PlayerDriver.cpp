@@ -19,134 +19,83 @@ int Player::playerCount = 0;
 int main(){
     
     
-    
-    Player player1;
-//    Player player2;
-//    Player player3("Lina");
-//
-//
-    cout << player1.getName() << endl;
-//    cout << player2.getName() << endl;
-//    cout << player3.getName() << endl;
-    
-//        shared_ptr<Order> order1 (new Deploy);
-//        shared_ptr<Order> order2 (new Advance);
-//        shared_ptr<Order> order3 (new Bomb);
-//        shared_ptr<Order> order4 (new Negotiate);
-//        shared_ptr<Order> order5 (new Order); //invalid order
-//
-//        OrderList* orderList = new OrderList();
-//
-//        //Adding to the order list
-//        orderList->addOrder(order1);
-//        orderList->addOrder(order2);
-//        orderList->addOrder(order3);
-//        orderList->addOrder(order4);
-//        orderList->addOrder(order5); //invalid order will not appear in list
-//
-//        //Stream insertion example
-//        cout << "\nOrder List" << endl;
-//        cout << "------------------" << endl;
-//        cout << *orderList << endl;
-//        cout << "\nOrder Object" << endl;
-//        cout << "------------------" << endl;
-//        cout << *order5 << endl;
-//        cout << "\nOrder Subclass Object (Deploy)" << endl;
-//        cout << "------------------" << endl;
-//        cout << *order1 << endl;
+    //Creating two players
+    Player player1("Berta");
+    Player player2;
 
-    //Talked with B, this is supposed to recognize Deploy as a valid Order but it doesnt. She will look into it.
+    //Creating a map
+    Map testMap = new Map();
+    
+    //Creating two continents
+    shared_ptr<Continent> c1 = testMap.add(Continent(1, "America", 1));
+    shared_ptr<Continent> c2 = testMap.add(Continent(2, "Europe", 5));
+    
+    //Creating new territories of type ptr and adding them to the testMap
+    shared_ptr<Territory> t1 = testMap.add(Territory(1, "Canada", 1));
+    shared_ptr<Territory> t2 = testMap.add(Territory(2, "Iceland", 2));
+    shared_ptr<Territory> t3 = testMap.add(Territory(3, "United Kingdom", 2));
+    shared_ptr<Territory> t4 = testMap.add(Territory(4, "France", 2));
+    shared_ptr<Territory> t5 = testMap.add(Territory(5, "Spain", 2));
+    shared_ptr<Territory> t6 = testMap.add(Territory(6, "Italy", 2));
+    
+    //Connecting territories via directed graphs
+    testMap.link(t1, t2);
+    testMap.link(t2, t3);
+    testMap.link(t3, t4);
+    testMap.link(t4, t5);
+    testMap.link(t4, t1);
+    testMap.link(t5, t6);
+    testMap.link(t6, t3);
+    testMap.link(t6, t4);
+    
+    //Printing the map
+    cout << "Testing map: \n" <<  testMap.to_string() << "\n";
+    
+    //Adding two territories to player1
+    player1.addTerritory(t3);
+    player1.addTerritory(t4);
+
+    //Displaying territoryList containing territories currently owned by player2
+    cout << "Player " << player1.getName() << " owns the following territories:\n" + player1.printList(player1.getTerritoryList());
+//    player1.printList(player1.getTerritoryList());
+
+
+    //Test issueOrder() creates an order objects and adds it to the OrderList
+    cout << "\nIssueing Orders:\n";
+    
     player1.issueOrder("Deploy");
+    player1.issueOrder("Advance");
+    player1.issueOrder("Bomb");
+    player1.issueOrder("Blockade");
+    player1.issueOrder("Airlift");
+    player1.issueOrder("Negotiate");
     
-    cout << "Test orderList " << *(player1.getOrderList()) << " END" << endl;
+    cout << "\nOrderList from player " << player1.getName() << ":\n" << *(player1.getOrderList()) << endl;
     
     
-    Map hello = new Map();
-
-        // Add a territory : with its id, its name and the continent's id to which it belongs
-        // Doing so, you can keep a reference to via the object returned from the add()
-        std::shared_ptr<Territory> t1 = hello.add(Territory(1, "Canada", 1));
-        std::shared_ptr<Territory> t2 = hello.add(Territory(2, "U.S.", 1));
-
-        // Add a Continent : id and name only
-        // Same for keeping a reference
-        std::shared_ptr<Continent> c1 = hello.add(Continent(1, "America", 2));
-        std::shared_ptr<Continent> c2 = hello.add(Continent(2, "Europe", 4)); // Having a gap in Continent id's is not allowed.
-
-        // You can add territories and Continents in any order, but you have to make sure that all territories map to an existing continent
-        hello.add(Territory(3, "Mexico", 1));
-        hello.add(Territory(4, "France", 2));
-        hello.add(Territory(5, "Spain", 2));
-
-        // Create a path from t1 to t2
-        // this is a directed edge
-        // Same for two continents
-        hello.link(t1, t2);
-        hello.link(t2, hello.findTerritory("Mexico"));
-        hello.link(hello.getTerritory(4), hello.getTerritory(5));
-
-
-        // Copy constructor with full deep copy
-        Map hello2 = new Map(hello);
-
-        hello.link(t2, hello.findTerritory("France"));
-
-        for (int b : t1->borders) {
-            std::cout << b << std::endl;
-        }
-
-        for (int b : t2->borders) {
-            std::cout << b << std::endl;
-        }
-
-        // You can get the shared ptr to a territory or continent with
-        // the methods findTerritory, findContinent, getTerritory, getContinent
-        // the find ones look through all territories/continent and return
-        // the first one with a corresponding name (linear)
-        // the get ones return based on the id provided (constant time)
-        std::shared_ptr<Territory> p = hello.findTerritory("Mexico");
-        std::shared_ptr<Territory> p2 = hello.getTerritory(p->id);
-        std::shared_ptr<Territory> p3 = std::shared_ptr<Territory>(p);
-        p->units = 1;
-
-        // Map has a to_string method
-        // Same for Territory's and Continent's
-        std::cout << hello.to_string() << std::endl;
-        std::cout << hello << std::endl;
-        std::cout << hello2 << std::endl;
-
-        std::cout << p->to_string() << std::endl;
-        std::cout << p2->to_string() << std::endl;
-        std::cout << p3->to_string() << std::endl;
-
-        // Release a shared ptr
-        // Only releases the one you call it on
-        p.reset();
-
-        std::cout << p << std::endl;
-        std::cout << p2 << std::endl;
-
-        p = hello.findTerritory("Mexico");
-
-        std::cout << p << std::endl;
-        std::cout << p2 << std::endl;
-
-        // Validate will fail and throw if:
-        // some territories belong to a non-existing continent
-        // some continents dont have any territories
-        if (hello.validate()) {
-            // start game
-            std::cout << "hello is valid? " << ((hello.validate() == true) ? "true" : "false") << std::endl;
-        }
-
-        std::cout << "What about hello2?" << std::endl;
-        hello2.validate(); // will print error;
-
-        p.reset();
-        p2.reset();
-        p3.reset();
+    //test toAttack()
+    cout << "Territories to Attack:\n" + player1.printList(player1.toAttack(testMap));
     
+    
+    //test toDefend()
+    cout << "\nTerritories to Defend:\n" + player1.printList(player1.toDefend(testMap));
+    
+    
+    //Creating, initializing a deck of cards
+    cout << "Testing Hand of Cards: \n";
+    Deck testDeck;
+    testDeck.initialize_vec_deck();
+    cout << testDeck;
+    
+
+    //drawing the card returns a card pointer for now
+    cout << "Testing hand of cards:\n";
+    player1.handOfCards->set_vec_hand(testDeck.draw());
+    cout << *(player1.handOfCards);
+    
+    //Testing players to_string method
+    //    cout << "\nTesting toString() method:" << player1.to_string() << endl;
+
     
     return 0;
 };
-

@@ -1,5 +1,5 @@
 //
-//  Header.h
+//  Player.h
 //  Player
 //
 //  Created by Lina Kretzschmar on 2020-09-27.
@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <iostream>
-
+#include <string>
 
 
 using namespace std;
@@ -25,43 +25,37 @@ class Player
     
 private:
     static int playerCount;
+    unsigned int playerID;
     string name;
-    Card * card;
-    Map * map;
-    Map * territory;
-    OrderList * orderList;
+    
+    OrderList * orderList;  //Orderlist holding pointers to orders
+    list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     
 public:
+    Hand * handOfCards;
     
     Player();
+    ~Player();
     Player(string playerName);
-    
+    Player(const Player&);
+    Player& operator=(const Player&);
+    string to_string();
+    friend ostream& operator <<(ostream&, Player&);
     
     void setName (string playerName);
-    
-    
+    string getName();
     static int getPlayerCount();
-    
-    
-    string getName ();
+    unsigned int getPlayerID();
     
     OrderList * getOrderList();
-    
-    
-    
-    
-    
-    /**
-     territory  <list>  showTerritories()--> List of pointers to territories returns list of territories
-     card  <list> showCards()
-     order  <list> showOrder()
-     
-     territory <> toDefend() --> returns arbitrary list of territories
-     territory <> toAttack()
-     */
-    
     void issueOrder(string orderType);
     
+    
+    list<shared_ptr<Territory>> getTerritoryList();
+    void addTerritory(shared_ptr<Territory> newTerritoryPtr);
+    string printList(list<shared_ptr<Territory>> aList);
+    list<shared_ptr<Territory>> toDefend(Map aMap);
+    list<shared_ptr<Territory>> toAttack(Map aMap);
     
 };
 
@@ -73,7 +67,8 @@ public:
 
 // Player contains methods toDefend() and toAttack() that return a list of territories that are to be defended and to be attaked, respectively
 
-// Players contains a issueOrder() method that creates an order object and adds it to the list of orders
+// Players contains an issueOrder() method that creates an order object and adds it to the list of orders
 
 // Driver creates players and demonstrates that the above features are available
+
 
