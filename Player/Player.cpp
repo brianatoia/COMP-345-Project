@@ -25,16 +25,16 @@ using namespace std;
         this->name = tempName;
         this->playerID = playerCount;
         this->territoryList = list<shared_ptr<Territory>>();
-        this->orderList = new OrderList();
         this->handOfCards = new Hand();
+        this->orderList = new OrderList();
     }
 
     //Destructor which clears all parameters of pointer type
     Player::~Player()
     {
         territoryList.clear();//go through list and reset before clearing
-        orderList->~OrderList();
         handOfCards->~Hand();
+        orderList->~OrderList();
     };
     
     //Parameterized constructor
@@ -44,18 +44,34 @@ using namespace std;
         this->name = playerName;
         this->playerID = playerCount;
         this->territoryList = list<shared_ptr<Territory>>();
-        this->orderList = new OrderList();
         this->handOfCards = new Hand();
+        this->orderList = new OrderList();
     };
 
     //Copy constructor enables deep copy of pointer attributes
     Player::Player(const Player& aPlayer)
     {
         this->name = aPlayer.name;
-        this->playerID = aPlayer.playerID;
+        this->playerID = playerCount;
         this->territoryList = aPlayer.territoryList;
-        this->orderList = aPlayer.orderList;
         this->handOfCards = aPlayer.handOfCards;
+        this->orderList = aPlayer.orderList;
+    }
+
+    //Assignment opertor
+    Player& Player::operator=(const Player& aPlayer)
+    {
+        this->territoryList.clear();
+        this->handOfCards->~Hand();
+        this->orderList->~OrderList();
+
+        this->name = aPlayer.name;
+        this->playerID = playerCount;
+        this->territoryList = aPlayer.territoryList;
+        this->handOfCards = aPlayer.handOfCards;
+        this->orderList = aPlayer.orderList;
+
+        return *this;
     }
 
     //ToString method of Player
@@ -64,10 +80,12 @@ using namespace std;
         string str = "\n\nPlayer " + name + " has ID " + ::to_string(playerID) + " and owns:\n";
         str += "\nList of Territories:\n";
         str += printList(getTerritoryList());
+        str += "\nHand of Warzone cards:\n";
+        Hand * h = getHandOfCards();
+        str+= h->to_string();
         str += "\nList of Orders:\n";
         OrderList * o = getOrderList();
         str += o->to_string();
-        //Add HandOfCards here
         return str;
     }
 
@@ -147,14 +165,10 @@ using namespace std;
 
     //********* Card methods **********//
 
-
-//    string getHandOfCards(){
-//        return handOfCards.to_String;
-//    }
-
-//    void drawCard(Deck aDeck){
-//        handOfCards.set_vec_hand(aDeck.draw());
-//    };
+    Hand * Player::getHandOfCards()
+    {
+        return handOfCards;
+    }
 
     //********* Territory methods **********//
 
@@ -168,7 +182,9 @@ using namespace std;
     void Player::addTerritory(shared_ptr<Territory> newTerritoryPtr)
     {
         territoryList.push_back(newTerritoryPtr);
+//        cout << "In function owner id 1: " << newTerritoryPtr->ownerID << "\n";
         newTerritoryPtr->ownerID = playerID;
+//        cout << "In function owner id 2: " << newTerritoryPtr->ownerID << "\n";
     }
 
     //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
@@ -197,13 +213,16 @@ using namespace std;
     {
         list<shared_ptr<Territory>> copyList;
         list<shared_ptr<Territory>>::iterator i = territoryList.begin();
-    
-    
+
+
         for(i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
         {
             vector <unsigned int> territoryIDs = (*i)->borders;
             for(auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
             {
+//                cout << "Owner ID: " << aMap.getTerritory(*iD)->ownerID << "\n";
+//                cout << "TerritoryID: " << *(iD) << "\n";
+//                cout << "Player Id: " << playerID << "\n";
                 if(aMap.getTerritory(*iD)->ownerID == playerID)
                 {
                     copyList.push_back(aMap.getTerritory(*iD));
