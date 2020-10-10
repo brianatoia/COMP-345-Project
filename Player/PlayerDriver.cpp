@@ -1,10 +1,9 @@
 //
 //  PlayerDriver.cpp
 //  Player
-//
+//  The driver of the player class tests all classes implemented with the Player class. The player can own a collection of territories, a hand of warzone cards and a list of orders to be executed. In addition, the player can print all territories that can be attacked and all territories that can be defended as well as issueing an order and adding it to the list of orders.
 //  Created by Lina Kretzschmar on 2020-09-27.
 //
-
 
 
 #include <stdio.h>
@@ -18,13 +17,22 @@ int Player::playerCount = 0;
 
 int main(){
     
-    
     //Creating two players
-    Player player1("Berta");
-    Player player2;
+    Player player1("Berta");    //Created player1 using the paramterized constructor
+    Player player2;             //Created player2 with the default constructor
+    Player player3("Kevin");
+    
+    
+    //Testing copy constructor
+    
+    
+    
+    //Testing stream insertion opertor
+    
+    
 
     //Creating a map
-    Map testMap = new Map();
+    Map testMap = Map();
     
     //Creating two continents
     shared_ptr<Continent> c1 = testMap.add(Continent(1, "America", 1));
@@ -56,12 +64,10 @@ int main(){
     player1.addTerritory(t4);
 
     //Displaying territoryList containing territories currently owned by player2
-    cout << "Player " << player1.getName() << " owns the following territories:\n" + player1.printList(player1.getTerritoryList());
-//    player1.printList(player1.getTerritoryList());
-
+    cout << "\nTesting players list of territories:\n" + player1.printList(player1.getTerritoryList());
 
     //Test issueOrder() creates an order objects and adds it to the OrderList
-    cout << "\nIssueing Orders:\n";
+    cout << "\nTest issueing orders:\n";
     
     player1.issueOrder("Deploy");
     player1.issueOrder("Advance");
@@ -70,32 +76,34 @@ int main(){
     player1.issueOrder("Airlift");
     player1.issueOrder("Negotiate");
     
-    cout << "\nOrderList from player " << player1.getName() << ":\n" << *(player1.getOrderList()) << endl;
+    //Printing the list of orders
+    cout << "\nTest printing players list of orders" << player1.getName() << ":\n" << *(player1.getOrderList()) << endl;
+    
+    //Test toAttack() which returns a list of territories that can be attacked
+    cout << "Test printing players territories to attack:\n" + player1.printList(player1.toAttack(testMap));
     
     
-    //test toAttack()
-    cout << "Territories to Attack:\n" + player1.printList(player1.toAttack(testMap));
     
+    //Test toDefend()  which returns a list of territories that can be defended
+    cout << "\nTest printing players territories to defend:\n" + player1.printList(player1.toDefend(testMap));
     
-    //test toDefend()
-    cout << "\nTerritories to Defend:\n" + player1.printList(player1.toDefend(testMap));
-    
-    
-    //Creating, initializing a deck of cards
-    cout << "Testing Hand of Cards: \n";
-    Deck testDeck;
-    testDeck.initialize_vec_deck();
-    cout << testDeck;
-    
+////    cout << player1.printList(player1.toDefend(testMap)) << " Printed toDefend()";
+//    
+//    //Creating, initializing a deck of cards
+//    Deck testDeck;
+//    testDeck.initialize_vec_deck();
+//    
+//    //Test drawing two cards from the deck and adding them to the player hand and printing the hand
+//    cout << "\nDrawing cards from the deck:\n";
+//    player1.handOfCards->set_vec_hand(testDeck.draw());
+//    player1.handOfCards->set_vec_hand(testDeck.draw());
+//    cout << *(player1.getHandOfCards());
+//    
+//    //Testing players to_string method
+//    cout << "\nTesting players toString() method:" << player1.to_string() << endl;
 
-    //drawing the card returns a card pointer for now
-    cout << "Testing hand of cards:\n";
-    player1.handOfCards->set_vec_hand(testDeck.draw());
-    cout << *(player1.handOfCards);
+    //Test destructor
     
-    //Testing players to_string method
-    //    cout << "\nTesting toString() method:" << player1.to_string() << endl;
-
     
     return 0;
 };
