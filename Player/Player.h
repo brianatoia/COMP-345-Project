@@ -38,7 +38,7 @@ public:
     ~Player();
     Player(string playerName);
     Player(const Player&);
-    Player& operator=(const Player&);
+    Player& operator=(const Player& aPlayer);
     string to_string();
     friend ostream& operator <<(ostream&, Player&);
     
@@ -46,6 +46,7 @@ public:
     string getName();
     static int getPlayerCount();
     unsigned int getPlayerID();
+    
     
     OrderList * getOrderList();
     void issueOrder(string orderType);
@@ -56,6 +57,8 @@ public:
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(Map aMap);
     list<shared_ptr<Territory>> toAttack(Map aMap);
+    
+    Hand * getHandOfCards();
     
 };
 
