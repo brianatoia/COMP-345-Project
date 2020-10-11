@@ -27,9 +27,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 	//Obtain map name from filename by removing extensions .map or .txt
 	string mapName = fileName.substr(0, fileName.length() - 4);
 
-	//debug
-	//cout << mapName << endl;
-
 	shared_ptr<Map> map(new Map);
 
 	//file stream
@@ -52,9 +49,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 	while (inputFileStream >> nextWord) 
 	{
-		//debug
-		//cout << nextWord << endl;
-		
 		if (nextWord == "[continents]")
 		{
 			inContinents = true;
@@ -93,8 +87,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			//stoi transforms string to int
 			map->add(Continent(continentID, continentName, stoi(bonus)));
 			
-			//debug
-			//cout << "New Continent: " << continentName << " Bonus of: " << bonus << " Garbage value of: " + temp << endl;
+			temp << endl;
 			continentID++;
 		}
 
@@ -110,9 +103,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			inputFileStream >> temp2;
 			
 			map->add(Territory(stoi(territoryID), territoryName, stoi(continentID)));
-			
-			//debug
-			//cout << "New territory with ID: " << territoryID << " Name: " << territoryName << " ContinentID: " << continentID << " Garbage values: " << temp1 << " | " << temp2 << endl;
 		}
 
 		//if in borders, link first id with id's that follow. Treat line by line.
@@ -125,13 +115,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			while (inputFileStream.peek() != '\n') {
 				inputFileStream >> territoryToLink;
 				map->link(map->getTerritory(stoi(territoryID)), map->getTerritory(stoi(territoryToLink)));
-				
-				//debug
-				//cout << "Linking " + nextWord << " and " << territoryToLink << endl;
 			}
-			
-			//debug
-			//cout << "end of border" << endl;
 		}
 	}
 
