@@ -1,12 +1,14 @@
 #include "Cards.h"
+#include <time.h>
 
 
 
 int main() {
 
+	srand(time(0));
 	//Fill deck with cards example
 	Deck Deck1;
-	Deck1.initialize_vec_deck();
+	Deck1.initializeVecDeck(4);
 	cout << Deck1;
 
 	//draw() method example
@@ -14,48 +16,51 @@ int main() {
 	Hand bHandCard;
 	Hand cHandCard;
 	Hand dHandCard;
-	Deck1.print_vec_deck_size();
+	Deck1.printVecDeckSize();
 	cout << " test to assign 5 random cards into hand \n" << endl;
 	for (int i = 0; i < 5; i++) {
-		aHandCard.set_vec_hand(Deck1.draw());
-		bHandCard.set_vec_hand(Deck1.draw());
-		cHandCard.set_vec_hand(Deck1.draw());
-		dHandCard.set_vec_hand(Deck1.draw());
+		aHandCard.addCard(Deck1.draw());
+		bHandCard.addCard(Deck1.draw());
+		cHandCard.addCard(Deck1.draw());
+		dHandCard.addCard(Deck1.draw());
 	}
 	
 	cout << aHandCard;
 	cout << bHandCard;
 	cout << cHandCard;
 	cout << dHandCard;
-	Deck1.print_vec_deck_size();
+	Deck1.printVecDeckSize();
 
 
 	//test the play cards order of HandCard
 	//traverse to set all HandCards will play
-	cout << " test to play all Cards of the HandCards...put the cards into vec_play_cards \n" << endl;
-	for (int k = 0; k < aHandCard.get_vec_hand()->size(); k++) {
-		aHandCard.play(aHandCard.get_vec_hand()->at(k));
+	cout << " test to play all Cards of this hand..put the cards into playCards vector \n" << endl;
+	
+	int handSize = aHandCard.getVecHand()->size();
+	for (int k = 0; k < handSize ; k++) {
+		aHandCard.play(aHandCard.getVecHand()->front(), &Deck1);
 	}
 
 	//print the vec_play_cards
-	aHandCard.print_vec_play_cards();
+	//aHandCard.printVecPlayCards();
 
+	cout << aHandCard;
 	//test return played cards to deck
-	aHandCard.return_played_card_to_deck(&Deck1);
+	//aHandCard.returnPlayedCardToDeck(&Deck1);
 
 	//test remove all played cards of hand cards
-	aHandCard.remove_all_played_cards_of_hand();
+	//aHandCard.removeAllPlayedCardsOfHand();
 
 	//then clear the play cards of vec_play_cards. Notice: clean play_cards at end.
-	aHandCard.clear_play_cards();
+	//aHandCard.clearPlayCards();
 
 	//print the vec_play_cards
-	aHandCard.print_vec_play_cards();
+	//aHandCard.printVecPlayCards();
 
 	//print the current hand cards
-	aHandCard.print_vec_hand();
+	//aHandCard.printVecHand();
 
 	//test the size of current deck
-	Deck1.print_vec_deck_size();
+	Deck1.printVecDeckSize();
 
 }
