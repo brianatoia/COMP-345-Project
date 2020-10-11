@@ -341,12 +341,14 @@ Territory::Territory(unsigned int id, std::string name, unsigned int continentID
     this->units = 0;
     this->continentID = continentID;
     this->borders = std::vector<unsigned int>();
+    this->ownerID = 0;
 }
 
 Territory::Territory(const Territory &territory) : Land(territory) {
     this->units = territory.units;
     this->continentID = territory.continentID;
     this->borders = std::vector<unsigned int>();
+    this->ownerID = territory.ownerID;
 
     for (int i = 0; i < territory.borders.size(); i++) {
         this->borders.push_back(territory.borders[i]);
