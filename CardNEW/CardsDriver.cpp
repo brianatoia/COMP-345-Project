@@ -35,8 +35,10 @@ int main() {
 	//test the play cards order of HandCard
 	//traverse to set all HandCards will play
 	cout << " test to play all Cards of this hand..put the cards into playCards vector \n" << endl;
-	for (int k = 0; k < aHandCard.getVecHandSize(); k++) {
-		aHandCard.play(aHandCard.getVecHand()->at(k), &Deck1);
+	
+	int handSize = aHandCard.getVecHand()->size();
+	for (int k = 0; k < handSize ; k++) {
+		aHandCard.play(aHandCard.getVecHand()->front(), &Deck1);
 	}
 
 	//print the vec_play_cards

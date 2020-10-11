@@ -168,12 +168,19 @@ void Hand::play(Card* aCard, Deck* aDeck)
 {
 	//set this card to play order (vec_play_cards)
 
-	Card* temp = new Card(*aCard);
-	vecPlayCards.push_back(temp);
-	returnPlayedCardToDeck(aDeck);
-	removePlayedCardOfHand(aCard);
-	cout << "card played" << endl;
-	vecPlayCards.clear();
+	if (!vecHand.empty()) {
+		Card* temp = new Card(*aCard);
+		vecPlayCards.push_back(temp);
+		returnPlayedCardToDeck(aDeck);
+		removePlayedCardOfHand(aCard);
+		cout << "card played" << endl;
+		vecPlayCards.clear();
+	}
+	else 
+	{
+		cout << "You have no cards please draw" << endl;
+	}
+	
 
 }
 
@@ -215,7 +222,7 @@ void Hand::printVecPlayCards()
 vector<Card*>* Hand::getVecHand()
 {
 	if (vecHand.empty()) {
-		cout << "this hand is emtpy" << endl;
+		cout << "this hand is empty" << endl;
 		return 0;
 	}else
 	return &vecHand;
