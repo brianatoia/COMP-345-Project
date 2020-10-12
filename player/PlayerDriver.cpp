@@ -28,10 +28,10 @@ int main() {
     cout << "Testing copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
 
 
-    //Testing assignment operator --> This is currently not working. To get my code to work I currently have to comment out the Card destructor within the player destructor
+    //Testing assignment operator
     Player * player5 = new Player("Dennis");
     Player * player6 = new Player("Frida");
-    player5 = player6; /*-->Cannot test right now since I need Hand's destructor*/
+    player5 = player6;
     cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
 
 
