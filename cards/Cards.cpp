@@ -9,17 +9,10 @@ Card::Card()
 	initializeVecCardType();
 }
 
-Card::~Card()
-{
-	//delete pointer
-	//delete(cardType);
-
-}
-
 void Card::initializeVecCardType()
 {
 	//assign types to array
-
+	vecCardType = vector<string>();
 	vecCardType.push_back("bomb");
 	vecCardType.push_back("reinforcement");
 	vecCardType.push_back("blockade");
@@ -49,13 +42,14 @@ string Card::getCardType()
 
 Deck::Deck()
 {
-
+	this->ptrCard = new Card();
+	this->tempCard = new Card();
 }
 
 Deck::~Deck()
 {
-	delete(ptrCard);
-	delete(tempCard);
+	delete ptrCard;
+	delete tempCard;
 }
 
 void Deck::initializeVecDeck(int numPlayers)
@@ -65,7 +59,7 @@ void Deck::initializeVecDeck(int numPlayers)
 	int handSize = deckSize / numPlayers;
 
 	for (int i = 0; i <= deckSize; i++) {
-		ptrCard = new Card;
+		ptrCard = new Card();
 		if (i % handSize == 0 || i % handSize == 5) {
 			ptrCard->setCardTypeId(0);
 			vecDeck.push_back(ptrCard);
@@ -123,11 +117,15 @@ void Deck::addCard(Card* oneCard)
 
 Hand::Hand()
 {
+	this->vecHand = vector<Card*>();
+	this->vecPlayCards = vector<Card*>();
 }
 
 Hand::~Hand()
 {
+	vecHand.clear();//vector<Card*> vecHand;//for storing cards in player hand
 
+	vecPlayCards.clear();//vector<Card*> vecPlayCards;//for storing cards to be played this turn
 }
 
 void Hand::addCard(Card* aCard)

@@ -13,8 +13,6 @@ class Card
 public:
 	Card();
 
-	~Card();
-
 	//initialize the card type vector
 	void initializeVecCardType();
 
