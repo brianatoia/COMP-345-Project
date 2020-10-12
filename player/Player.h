@@ -1,6 +1,6 @@
 //
 //  Player.h
-//  Player
+//  Player header, provides the declarations of functions contained in the Player.cpp file.
 //
 //  Created by Lina Kretzschmar on 2020-09-27.
 //
@@ -18,13 +18,11 @@
 
 using namespace std;
 
-/* Header_h */
-
 class Player
 {
 
 private:
-    static int playerCount; //Statinc counter, counting players of the game
+    static int playerCount; //Statin counter, counting players of the game
     unsigned int playerID;
     string name;
 
@@ -42,24 +40,25 @@ public:
     string to_string();
     friend ostream& operator <<(ostream&, Player&);
 
+
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
     unsigned int getPlayerID();
 
-
-    OrderList* getOrderList();
-    void issueOrder(string orderType);
-
-
+    //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(Map aMap);
     list<shared_ptr<Territory>> toAttack(Map aMap);
 
+    //********* Card methods **********//
     Hand* getHand();
 
+    //********** Order methods *************//
+    OrderList* getOrderList();
+    void issueOrder(string orderType);
 };
 
 //*************      INSTRUCTIONS    ****************
