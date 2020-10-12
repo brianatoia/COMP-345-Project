@@ -71,8 +71,6 @@ Player::Player(const Player& aPlayer)
 Player& Player::operator=(const Player& aPlayer)
 {
     this->territoryList.clear();
-    //this->hand->getVecPlayCards()->clear();
-    //this->orderList->getOrders().clear();
 
     this->name = aPlayer.name;
     this->playerID = playerCount;

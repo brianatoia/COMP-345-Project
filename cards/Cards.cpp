@@ -123,9 +123,21 @@ Hand::Hand()
 
 Hand::~Hand()
 {
-	vecHand.clear();//vector<Card*> vecHand;//for storing cards in player hand
 
+	vecHand.clear();//vector<Card*> vecHand;//for storing cards in player hand
 	vecPlayCards.clear();//vector<Card*> vecPlayCards;//for storing cards to be played this turn
+	for(auto i : vecPlayCards)
+	{ 
+		//delete i;
+		i = nullptr;
+	}
+
+	for (auto i : vecHand)
+	{
+		//delete i;
+		i = nullptr;
+	}
+
 }
 
 void Hand::addCard(Card* aCard)
