@@ -10,6 +10,6 @@ Gabriel Desroches - 40099529
 
 Lina Kretzschmar
 
-Antoine Paulin-Bessette
+Antoine Paulin-Bessette - 40098918
 
 Briana Toia - 40097889
