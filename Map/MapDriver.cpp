@@ -3,15 +3,10 @@
 #include <memory>
 #include "Map.h"
 
-<<<<<<< HEAD
 using namespace std;
 
 int main()
 {
-=======
-
-int main() {
->>>>>>> master
     Map hello = Map();
 
     // Add a territory : with its id, its name and the continent's id to which it belongs
