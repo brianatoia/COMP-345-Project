@@ -11,8 +11,6 @@ Card::Card()
 
 Card::~Card()
 {
-	//delete pointer
-	//delete(cardType);
 
 }
 
@@ -127,6 +125,15 @@ Hand::Hand()
 
 Hand::~Hand()
 {
+	if (vecHand.empty()) {
+		for (auto p : vecHand)
+			delete p;
+	}
+	if (vecPlayCards.empty()) {
+		for (auto i : vecPlayCards)
+			delete i;
+	}
+	
 	
 }
 
