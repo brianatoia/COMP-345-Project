@@ -32,10 +32,19 @@ Player::Player()
 //Destructor which clears all parameters of pointer type
 Player::~Player()
 {
-    territoryList.clear();  //Go through list and reset before clearing
-    hand->~Hand();  //Call destructor of the Hand class
-    orderList->~OrderList();    //Call destructor of the Orderlist class
-};
+    for(shared_ptr<Territory> t: this->territoryList)
+    {
+        t.reset();      //Go through list and reset before clearing
+    }
+    territoryList.clear();  
+
+
+    delete hand;    //Delete pointer to hand stucture
+    hand = nullptr;     //Resolve dangling pointer
+    
+    delete orderList;    //Delete pointer to orderList structure 
+    orderList = nullptr;    //Resolve dangling pointer
+}
 
 //Parameterized constructor
 Player::Player(string playerName)
@@ -46,7 +55,7 @@ Player::Player(string playerName)
     this->territoryList = list<shared_ptr<Territory>>();
     this->hand = new Hand();
     this->orderList = new OrderList();
-};
+}
 
 //Copy constructor enables deep copy of pointer attributes
 Player::Player(const Player& aPlayer)
@@ -86,6 +95,7 @@ string Player::to_string()
     str += "\nList of Orders:\n";
     OrderList* o = getOrderList();
     str += o->to_string();
+    str += "\n";
     return str;
 }
 
