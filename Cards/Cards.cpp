@@ -5,8 +5,7 @@ using namespace std;
 
 Card::Card()
 {
-	//cout << " Card is starting...initial types..." << endl;
-	initializeVecCardType();
+	this->cardType = BOMB;
 }
 
 Card::~Card()
@@ -14,46 +13,34 @@ Card::~Card()
 
 }
 
-void Card::initializeVecCardType()
+void Card::setCardType(order o)
 {
-	//assign types to array
-
-	vecCardType.push_back("bomb");
-	vecCardType.push_back("reinforcement");
-	vecCardType.push_back("blockade");
-	vecCardType.push_back("airlift");
-	vecCardType.push_back("diplomacy");
-
-}
-
-void Card::printVecCardType()
-{
-	cout << "the arr_types_card contains:  " << endl;
-	for (int i = 0; i < vecCardType.size(); i++) {
-		cout << vecCardType.at(i) << endl;
-	}
-}
-
-void Card::setCardTypeId(int num)
-{
-	cardType = vecCardType.at(num);
+	this->cardType = o;
 }
 
 string Card::getCardType()
 {
-	return cardType;
+	switch (cardType)
+	{
+	case BOMB: return "Bomb";
+	case AIRLIFT: return "Airlift";
+	case DIPLOMACY: return "Diplomacy";
+	case REINFORCEMENT: return "Reinforcement";
+	case BLOCKADE: return "Blockade";
+	default: return "Bomb";
+	}
 }
 
 
 Deck::Deck()
 {
-
+	this->vecDeck = vector<Card*>();
 }
 
 Deck::~Deck()
 {
-	delete(ptrCard);
-	delete(tempCard);
+	vecDeck.clear();
+
 }
 
 void Deck::initializeVecDeck(int numPlayers)
@@ -63,30 +50,30 @@ void Deck::initializeVecDeck(int numPlayers)
 	int handSize = deckSize / numPlayers;
 
 	for (int i = 0; i <= deckSize; i++) {
-		ptrCard = new Card;
+		Card* ptrCard = new Card();
 		if (i % handSize == 0 || i % handSize == 5) {
-			ptrCard->setCardTypeId(0);
+			ptrCard->setCardType(BOMB);
 			vecDeck.push_back(ptrCard);
 		}
 		else if (i % handSize == 1 || i % handSize == 6) {
-			ptrCard->setCardTypeId(1);
+			ptrCard->setCardType(AIRLIFT);
 			vecDeck.push_back(ptrCard);
 		}
 		else if (i % handSize == 2 || i % handSize == 7) {
-			ptrCard->setCardTypeId(2);
+			ptrCard->setCardType(BLOCKADE);
 			vecDeck.push_back(ptrCard);
 		}
 		else if (i % handSize == 3 || i % handSize == 8) {
-			ptrCard->setCardTypeId(3);
+			ptrCard->setCardType(REINFORCEMENT);
 			vecDeck.push_back(ptrCard);
 		}
 		else if (i % handSize == 4 || i % handSize == 9) {
-			ptrCard->setCardTypeId(4);
+			ptrCard->setCardType(DIPLOMACY);
 			vecDeck.push_back(ptrCard);
 		}
 
 	}
-	
+
 	random_shuffle(vecDeck.begin(), vecDeck.end());
 }
 
@@ -98,14 +85,14 @@ void Deck::printVecDeckSize()
 
 Card* Deck::draw()
 {
-	if (vecDeck.empty()) 
+	if (vecDeck.empty())
 	{
 		cout << "there are no more cards in the deck " << endl;
 		return 0;
 	}
 	printVecDeckSize();
-	
-	tempCard = *vecDeck.begin();
+
+	Card* tempCard = *vecDeck.begin();
 	//remove this card from the deck vector
 	vecDeck.erase(vecDeck.begin());
 	return tempCard;
@@ -121,20 +108,23 @@ void Deck::addCard(Card* oneCard)
 
 Hand::Hand()
 {
+	this->vecHand = vector<Card*>();
+	this->vecPlayCards = vector<Card*>();
 }
 
 Hand::~Hand()
 {
-	if (vecHand.empty()) {
-		for (auto p : vecHand)
-			delete p;
+	for (auto i : vecHand) 
+	{
+		delete i;
+		i = nullptr;
 	}
-	if (vecPlayCards.empty()) {
-		for (auto i : vecPlayCards)
-			delete i;
+
+	for (auto p : vecPlayCards)
+	{	
+		delete p;
+		p = nullptr;
 	}
-	
-	
 }
 
 void Hand::addCard(Card* aCard)
@@ -157,11 +147,11 @@ void Hand::play(Card* aCard, Deck* aDeck)
 		//for next assignment implement an order before immediately clearing
 		vecPlayCards.clear();
 	}
-	else 
+	else
 	{
 		cout << "You have no cards please draw" << endl;
 	}
-	
+
 
 }
 
@@ -196,8 +186,9 @@ vector<Card*>* Hand::getVecHand()
 	if (vecHand.empty()) {
 		cout << "this hand is empty" << endl;
 		return 0;
-	}else
-	return &vecHand;
+	}
+	else
+		return &vecHand;
 }
 
 vector<Card*>* Hand::getVecPlayCards()
@@ -227,12 +218,12 @@ int Hand::getVecHandSize()
 
 
 //Copy Constructors
-Card::Card(const Card& copy) 
+Card::Card(const Card& copy)
 {
 	this->cardType = copy.cardType;
 }
 
-Deck::Deck(const Deck& orig):vecDeck(orig.vecDeck.size())
+Deck::Deck(const Deck& orig) :vecDeck(orig.vecDeck.size())
 {
 	for (size_t i = 0; i < orig.vecDeck.size(); ++i)
 	{
@@ -240,7 +231,7 @@ Deck::Deck(const Deck& orig):vecDeck(orig.vecDeck.size())
 	}
 }
 
-Hand::Hand(const Hand& orig):vecHand(orig.vecHand.size())
+Hand::Hand(const Hand& orig) :vecHand(orig.vecHand.size())
 {
 	for (size_t i = 0; i < orig.vecHand.size(); ++i)
 	{
@@ -250,7 +241,7 @@ Hand::Hand(const Hand& orig):vecHand(orig.vecHand.size())
 
 
 //Assignment Operators
-Card& Card::operator=(const Card& rightSide) 
+Card& Card::operator=(const Card& rightSide)
 {
 	this->cardType = rightSide.cardType;
 	return *this;
@@ -276,7 +267,7 @@ Hand& Hand::operator=(const Hand& rightSide)
 
 
 //to_string functions
-string Card::to_string() 
+string Card::to_string()
 {
 	string str = "Card: " + cardType;
 	return str;
@@ -311,7 +302,7 @@ string Hand::to_string()
 
 
 //stream insertion operator
-ostream& operator<<(ostream& strm, Card &card)
+ostream& operator<<(ostream& strm, Card& card)
 {
 	return strm << card.to_string();
 }

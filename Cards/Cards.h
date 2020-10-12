@@ -8,6 +8,11 @@
 #include <iterator> 
 using namespace std;
 
+enum order
+{
+	BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY
+};
+
 class Card
 {
 public:
@@ -15,16 +20,10 @@ public:
 
 	~Card();
 
-	//initialize the card type vector
-	void initializeVecCardType();
+	//set card type of enum
+	void setCardType(order o);
 
-	//for test to print all card types
-	void printVecCardType();
-
-	//set card type id, from 0-4 ***remove Id from naming***
-	void setCardTypeId(int num);
-
-	//get card type 
+	//get card type returns a string based off enum
 	string getCardType();
 
 	string to_string();
@@ -32,16 +31,13 @@ public:
 	Card(const Card&);
 
 	Card& operator=(const Card&);
-	
+
 	friend ostream& operator<<(ostream&, Card&);
 
 
 private:
-	//the vector stores the 5 types of card as a string, 0->bomb, 1->reinforcement, 2->blockade, 3->airlift, 4->displomacy
-	vector<string> vecCardType;		//MAKE AN ENUM
+	order cardType;
 
-	string cardType;
-	
 
 };
 
@@ -65,7 +61,7 @@ public:
 
 	//add card into Deck
 	void addCard(Card* oneCard);
-	
+
 	string to_string();
 
 	Deck(const Deck&);
@@ -76,9 +72,6 @@ public:
 
 private:
 	vector<Card*> vecDeck;
-	Card* ptrCard;				//used to create cards
-
-	Card* tempCard;				//used when drawing and removing from deck 
 	
 };
 
@@ -92,7 +85,7 @@ public:
 
 	//add card to player's hand
 	void addCard(Card* a_card);
-	
+
 	//when playing a card, at the moment, simply returns the card to the deck,and deletes from hand
 	void play(Card* aCard, Deck* aDeck);
 
@@ -116,9 +109,9 @@ public:
 	string to_string();
 
 	Hand(const Hand&);
-	
+
 	Hand& operator=(const Hand&);
-	
+
 	friend ostream& operator<<(ostream&, Hand&);
 
 private:
