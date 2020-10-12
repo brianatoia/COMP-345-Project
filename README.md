@@ -4,7 +4,7 @@ Fall 2020
 Prof. Joey Paquette 
 
 # Authors:
-Marco Bucciacchio
+Marco Bucciacchio - 40032872
 
 Gabriel Desroches - 40099529
 
