@@ -1,7 +1,7 @@
 # COMP-345-Project
 Fall 2020
 
-Prof. Joey Paquette 
+Prof. Joey Paquet
 
 # Authors:
 Marco Bucciacchio - 40032872
