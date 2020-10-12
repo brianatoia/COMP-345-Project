@@ -24,17 +24,17 @@ Player::Player()
     string tempName = "Player" + ::to_string(playerCount);
     this->name = tempName;
     this->playerID = playerCount;
-    this->territoryList = list<shared_ptr<Territory>>();
-    this->hand = new Hand();
-    this->orderList = new OrderList();
+    this->territoryList = list<shared_ptr<Territory>>();    //Create a list of pointers pointing to territory objects
+    this->hand = new Hand();    //Creates a pointer to a Hand object which contains cards
+    this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
 }
 
 //Destructor which clears all parameters of pointer type
 Player::~Player()
 {
-    territoryList.clear();  //go through list and reset before clearing
-    hand->~Hand();
-    orderList->~OrderList();
+    territoryList.clear();  //Go through list and reset before clearing
+    hand->~Hand();  //Call destructor of the Hand class
+    orderList->~OrderList();    //Call destructor of the Orderlist class
 };
 
 //Parameterized constructor
@@ -58,12 +58,12 @@ Player::Player(const Player& aPlayer)
     this->orderList = aPlayer.orderList;
 }
 
-//Assignment opertor
+//Assignment operator
 Player& Player::operator=(const Player& aPlayer)
 {
     this->territoryList.clear();
-    this->hand->~Hand();
-    this->orderList->~OrderList();
+    //this->hand->getVecPlayCards()->clear();
+    //this->orderList->getOrders().clear();
 
     this->name = aPlayer.name;
     this->playerID = playerCount;
@@ -100,22 +100,106 @@ ostream& operator<<(ostream& strm, Player& player)
 void Player::setName(string playerName)
 {
     this->name = playerName;
-};
+}
 
 string Player::getName()
 {
     return name;
-};
+}
 
 int Player::getPlayerCount()
 {
     return playerCount;
-};
+}
 
 unsigned int Player::getPlayerID()
 {
     return playerID;
-};
+}
+
+
+
+//********* Territory methods **********//
+
+//Returning TerritoryList
+list<shared_ptr<Territory>> Player::getTerritoryList()
+{
+    return territoryList;
+}
+
+//Adding a territory to the TerritoryList and assigning the ownerId to the playerID
+void Player::addTerritory(shared_ptr<Territory> newTerritoryPtr)
+{
+    territoryList.push_back(newTerritoryPtr);
+    newTerritoryPtr->ownerID = playerID;
+}
+
+//Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
+list<shared_ptr<Territory>> Player::toAttack(Map aMap)
+{
+    list<shared_ptr<Territory>> copyList;
+    list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+
+
+    for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+    {
+        vector <unsigned int> territoryIDs = (*i)->borders;
+        for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+        {
+            shared_ptr<Territory> t = aMap.getTerritory(*iD);
+
+            if (t->ownerID != playerID)
+            {
+                copyList.push_back(t);
+            }
+        }
+    }
+    return copyList;
+}
+
+//Method toDefend - returns list of pointers to territory objects having adjacent territory owned by the player
+list<shared_ptr<Territory>> Player::toDefend(Map aMap)
+{
+    list<shared_ptr<Territory>> copyList;
+    list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+
+
+    for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+    {
+        vector <unsigned int> territoryIDs = (*i)->borders;
+        for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+        {
+            shared_ptr<Territory> t = aMap.getTerritory(*iD);
+            if (t->ownerID == playerID)
+            {
+                copyList.push_back(t);
+            }
+        }
+    }
+    return copyList;
+}
+
+//method that takes any list or pointers as input and returns it as string
+string Player::printList(list<shared_ptr<Territory>> aList)
+{
+    string tList = "";
+    list<shared_ptr<Territory>>::iterator it = aList.begin();
+    for (it = aList.begin(); it != aList.end(); advance(it, 1))
+    {
+        shared_ptr<Territory> t = *it;
+        tList += t->to_string() + "\n";
+    }
+    return tList;
+}
+
+
+//********* Card methods **********//
+
+Hand* Player::getHand()
+{
+    return hand;
+}
+
 
 //********** Order methods *************//
 
@@ -161,92 +245,6 @@ void Player::issueOrder(string orderType)
     {
         cerr << "Invalid Order Type" << endl;
     }
-}
-
-//********* Card methods **********//
-
-Hand* Player::getHand()
-{
-    return hand;
-}
-
-//********* Territory methods **********//
-
-//Returning TerritoryList
-list<shared_ptr<Territory>> Player::getTerritoryList()
-{
-    return territoryList;
-}
-
-//Adding a territory to the TerritoryList and assigning the ownerId to the playerID
-void Player::addTerritory(shared_ptr<Territory> newTerritoryPtr)
-{
-    territoryList.push_back(newTerritoryPtr);
-            cout << "In function owner id before: " << newTerritoryPtr->ownerID << "\n";
-    newTerritoryPtr->ownerID = playerID;
-            cout << "In function owner id after: " << newTerritoryPtr->ownerID << "\n";
-}
-
-//Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
-list<shared_ptr<Territory>> Player::toAttack(Map aMap)
-{
-    list<shared_ptr<Territory>> copyList;
-    list<shared_ptr<Territory>>::iterator i = territoryList.begin();
-
-
-    for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
-    {
-        vector <unsigned int> territoryIDs = (*i)->borders;
-        for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
-        {
-            shared_ptr<Territory> t = aMap.getTerritory(*iD);
-            cout << "\nPrinting territory iD: " << *iD << endl;
-            cout << "\nPrinting territory owner id iD: " << t->ownerID << endl;
-            if (t->ownerID != playerID)
-            {
-
-                copyList.push_back(aMap.getTerritory(*iD));
-            }
-        }
-    }
-    return copyList;
-}
-
-//Method toDefend - returns list of pointers to territory objects having adjacent territory owned by the player
-list<shared_ptr<Territory>> Player::toDefend(Map aMap)
-{
-    list<shared_ptr<Territory>> copyList;
-    list<shared_ptr<Territory>>::iterator i = territoryList.begin();
-
-
-    for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
-    {
-        vector <unsigned int> territoryIDs = (*i)->borders;
-        for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
-        {
-            //                cout << "Owner ID: " << aMap.getTerritory(*iD)->ownerID << "\n";
-            //                cout << "TerritoryID: " << *(iD) << "\n";
-            //                cout << "Player Id: " << playerID << "\n";
-            if (aMap.getTerritory(*iD)->ownerID == playerID)
-            {
-                copyList.push_back(aMap.getTerritory(*iD));
-            }
-        }
-    }
-    return copyList;
-}
-
-//method that takes any list or pointers as input and returns it as string
-string Player::printList(list<shared_ptr<Territory>> aList)
-{
-    string tList = "";
-    list<shared_ptr<Territory>>::iterator it = aList.begin();
-    for (it = aList.begin(); it != aList.end(); advance(it, 1))
-    {
-        shared_ptr<Territory> t = *it;
-        tList += t->to_string() + "\n";
-    }
-    return tList;
 }
 
 
