@@ -31,8 +31,6 @@ int main()
 			if (loadedMap != nullptr)
 			{
 				listOfMaps.push_back(loadedMap);
-				//debug
-				//cout << "pushing back map " << userInput << "\n"<< endl;
 			}
 		}
 	}
@@ -47,7 +45,7 @@ int main()
 	}
 
 	mapLoader.reset();
-	mapLoader = nullptr; //necessary?
+	mapLoader = nullptr;
 
 	return 0;
 }
