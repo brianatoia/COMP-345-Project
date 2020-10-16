@@ -19,7 +19,7 @@ int main() {
 
     //Creating two players
     Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
-    Player* player2;             //Created player2 with the default constructor
+    Player* player2 (new Player);             //Created player2 with the default constructor
 
 
     //Testing copy constructor
