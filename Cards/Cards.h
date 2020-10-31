@@ -51,10 +51,10 @@ public:
 	~Deck();
 
 	//initialize the Deck depending on the number of players *for now the formula is numplayers * 10 **
-	void initializeVecDeck(int numPlayers);
+	void initializeDeck(int numPlayers);
 
 	//print the size of Deck
-	void printVecDeckSize();
+	void printDeckSize();
 
 	//returns the top card of the Deck to the player's hand
 	Card* draw();
@@ -71,7 +71,7 @@ public:
 	friend ostream& operator<<(ostream&, Deck&);
 
 private:
-	vector<Card*> vecDeck;
+	vector<Card*> deck;
 	
 };
 
@@ -90,13 +90,13 @@ public:
 	void play(Card* aCard, Deck* aDeck);
 
 	//returns the list of cards in player's hand
-	vector<Card*>* getVecHand();
+	vector<Card*>* getHand();
 
 	//shows all cards to played this turn
-	void printVecPlayCards();
+	void printPlayCards();
 
 	//this vector holds all cards to be played this turn
-	vector<Card*>* getVecPlayCards();
+	vector<Card*>* getPlayCards();
 
 	//return a card to the deck cards
 	void returnPlayedCardToDeck(Deck* aDeck);
@@ -104,7 +104,7 @@ public:
 	//remove a card from the player's hand
 	void removePlayedCardOfHand(Card* r_card);
 
-	int getVecHandSize();
+	int getHandSize();
 
 	string to_string();
 
@@ -115,8 +115,8 @@ public:
 	friend ostream& operator<<(ostream&, Hand&);
 
 private:
-	vector<Card*> vecHand;//for storing cards in player hand
+	vector<Card*> hand;//for storing cards in player hand
 
-	vector<Card*> vecPlayCards;//for storing cards to be played this turn
+	vector<Card*> playCards;//for storing cards to be played this turn
 
 };
