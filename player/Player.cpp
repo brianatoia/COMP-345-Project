@@ -20,7 +20,7 @@ using namespace std;
 //Default constructor
 Player::Player()
 {
-    playerCount++;
+    Player::playerCount++;
     string tempName = "Player" + ::to_string(playerCount);
     this->name = tempName;
     this->playerID = playerCount;
@@ -32,24 +32,29 @@ Player::Player()
 //Destructor which clears all parameters of pointer type
 Player::~Player()
 {
-    for(shared_ptr<Territory> t: this->territoryList)
-    {
-        t.reset();      //Go through list and reset before clearing
-    }
-    territoryList.clear();  
 
+    //for (shared_ptr<Territory> t : this->territoryList)
+    //{
+    //    t.reset();      //Go through list and reset before clearing
+    //}
+    for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
+    {
+        i->reset();
+    }
+    territoryList.clear();
 
     delete hand;    //Delete pointer to hand stucture
     hand = nullptr;     //Resolve dangling pointer
     
     delete orderList;    //Delete pointer to orderList structure 
     orderList = nullptr;    //Resolve dangling pointer
+    cout << "Player " << this->getName() << " with id " << this->getPlayerID() << " was deleted.\n";
 }
 
 //Parameterized constructor
 Player::Player(string playerName)
 {
-    playerCount++;
+    Player::playerCount++;
     this->name = playerName;
     this->playerID = playerCount;
     this->territoryList = list<shared_ptr<Territory>>();
@@ -60,24 +65,37 @@ Player::Player(string playerName)
 //Copy constructor enables deep copy of pointer attributes
 Player::Player(const Player& aPlayer)
 {
+    Player::playerCount++;
     this->name = aPlayer.name;
     this->playerID = playerCount;
-    this->territoryList = aPlayer.territoryList;
-    this->hand = aPlayer.hand;
-    this->orderList = aPlayer.orderList;
+  
+    for (auto i = aPlayer.territoryList.begin(); i != aPlayer.territoryList.end(); advance(i, 1))
+    {
+        this->territoryList.push_back(*i);
+    }
+
+    this->hand = new Hand(*(aPlayer.hand));
+    this->orderList = new OrderList(*(aPlayer.orderList));
 }
 
 //Assignment operator
 Player& Player::operator=(const Player& aPlayer)
 {
-    this->territoryList.clear();
-
     this->name = aPlayer.name;
-    this->playerID = playerCount;
-    this->territoryList = aPlayer.territoryList;
-    this->hand = aPlayer.hand;
-    this->orderList = aPlayer.orderList;
 
+    for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
+    {
+        i->reset();
+    }
+    territoryList.clear();
+
+    for (auto i = aPlayer.territoryList.begin(); i != aPlayer.territoryList.end(); advance(i, 1))
+    {
+        this->territoryList.push_back(*i);
+    }
+
+    this->hand = new Hand(*(aPlayer.hand));
+    this->orderList = new OrderList(*(aPlayer.orderList));
     return *this;
 }
 
@@ -151,12 +169,12 @@ list<shared_ptr<Territory>> Player::toAttack(Map aMap)
 
     for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
     {
-        vector <unsigned int> territoryIDs = (*i)->borders;
+        vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
         for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
         {
             shared_ptr<Territory> t = aMap.getTerritory(*iD);
 
-            if (t->ownerID != playerID)
+            if (t->ownerID != playerID) //if adjacent territory is not owned by player, add
             {
                 copyList.push_back(t);
             }
@@ -178,7 +196,8 @@ list<shared_ptr<Territory>> Player::toDefend(Map aMap)
         for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
         {
             shared_ptr<Territory> t = aMap.getTerritory(*iD);
-            if (t->ownerID == playerID)
+
+            if (t->ownerID == playerID) //if adjacent territory is owned by the player, add
             {
                 copyList.push_back(t);
             }

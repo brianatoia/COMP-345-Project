@@ -19,19 +19,18 @@ int main() {
 
     //Creating two players
     Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
-    Player* player2;             //Created player2 with the default constructor
-
+    Player* player2 (new Player);             //Created player2 with the default constructor
 
     //Testing copy constructor
     Player* player3 (new Player("Trudy"));
-    Player* player4 = player3;
-    cout << "Testing copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
+    Player* player4 (new Player (*player3));
+    cout << "\nTesting copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
 
 
-    //Testing assignment operator --> This is currently not working. To get my code to work I currently have to comment out the Card destructor within the player destructor
-    Player * player5 = new Player("Dennis");
-    Player * player6 = new Player("Frida");
-    player5 = player6; /*-->Cannot test right now since I need Hand's destructor*/
+    //Testing assignment operator 
+    Player* player5 = new Player("Dennis");
+    Player* player6 = new Player("Frida");
+    *player5 = *player6; 
     cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
 
 
@@ -110,19 +109,26 @@ int main() {
 
     //Creating, initializing a deck of cards
     Deck testDeck;
-    testDeck.initializeVecDeck(3);
-    //initialize_vec_deck();
-
+    testDeck.initializeDeck(3);
 
     //Test drawing two cards from the deck and adding them to the player hand and printing the hand
-    cout << "\ndrawing cards from the deck:\n";
+    cout << "\nDrawing cards from the deck:\n";
     player1->getHand()->addCard(testDeck.draw());
     player1->getHand()->addCard(testDeck.draw());
     cout << *(player1->getHand());
 
 
     //Testing players to_string method
-    cout << "\ntesting players tostring() method:" << player1->to_string() << endl;
+    cout << "\nTesting players tostring() method:" << player1->to_string() << endl;
+
+
+    //Deleting all created players
+    delete player1;
+    delete player2;
+    delete player3;
+    delete player4;
+    delete player5;
+    delete player6;
 
 
     return 0;
