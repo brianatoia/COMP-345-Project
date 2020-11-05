@@ -20,17 +20,19 @@ int main() {
     //Creating two players
     Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
     Player* player2 (new Player);             //Created player2 with the default constructor
-
+  
     //Testing copy constructor
     Player* player3 (new Player("Trudy"));
     Player* player4 (new Player (*player3));
     cout << "\nTesting copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
 
 
+
     //Testing assignment operator 
     Player* player5 = new Player("Dennis");
     Player* player6 = new Player("Frida");
     *player5 = *player6; 
+
     cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
 
 

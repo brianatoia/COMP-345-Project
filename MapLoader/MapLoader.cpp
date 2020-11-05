@@ -86,8 +86,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 			//creating continent and adding to map
 			//stoi transforms string to int
 			map->add(Continent(continentID, continentName, stoi(bonus)));
-			
-			temp << endl;
+
 			continentID++;
 		}
 
