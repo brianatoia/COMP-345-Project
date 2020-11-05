@@ -8,21 +8,22 @@
 #include <iterator> 
 using namespace std;
 
+enum order
+{
+	BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY
+};
+
 class Card
 {
 public:
 	Card();
 
-	//initialize the card type vector
-	void initializeVecCardType();
+	~Card();
 
-	//for test to print all card types
-	void printVecCardType();
+	//set card type of enum
+	void setCardType(order o);
 
-	//set card type id, from 0-4 ***remove Id from naming***
-	void setCardTypeId(int num);
-
-	//get card type 
+	//get card type returns a string based off enum
 	string getCardType();
 
 	string to_string();
@@ -35,10 +36,7 @@ public:
 
 
 private:
-	//the vector stores the 5 types of card as a string, 0->bomb, 1->reinforcement, 2->blockade, 3->airlift, 4->displomacy
-	vector<string> vecCardType;		//MAKE AN ENUM
-
-	string cardType;
+	order cardType;
 
 
 };
@@ -53,10 +51,10 @@ public:
 	~Deck();
 
 	//initialize the Deck depending on the number of players *for now the formula is numplayers * 10 **
-	void initializeVecDeck(int numPlayers);
+	void initializeDeck(int numPlayers);
 
 	//print the size of Deck
-	void printVecDeckSize();
+	void printDeckSize();
 
 	//returns the top card of the Deck to the player's hand
 	Card* draw();
@@ -73,11 +71,8 @@ public:
 	friend ostream& operator<<(ostream&, Deck&);
 
 private:
-	vector<Card*> vecDeck;
-	Card* ptrCard;				//used to create cards
-
-	Card* tempCard;				//used when drawing and removing from deck 
-
+	vector<Card*> deck;
+	
 };
 
 
@@ -95,13 +90,13 @@ public:
 	void play(Card* aCard, Deck* aDeck);
 
 	//returns the list of cards in player's hand
-	vector<Card*>* getVecHand();
+	vector<Card*>* getHand();
 
 	//shows all cards to played this turn
-	void printVecPlayCards();
+	void printPlayCards();
 
 	//this vector holds all cards to be played this turn
-	vector<Card*>* getVecPlayCards();
+	vector<Card*>* getPlayCards();
 
 	//return a card to the deck cards
 	void returnPlayedCardToDeck(Deck* aDeck);
@@ -109,7 +104,7 @@ public:
 	//remove a card from the player's hand
 	void removePlayedCardOfHand(Card* r_card);
 
-	int getVecHandSize();
+	int getHandSize();
 
 	string to_string();
 
@@ -120,8 +115,8 @@ public:
 	friend ostream& operator<<(ostream&, Hand&);
 
 private:
-	vector<Card*> vecHand;//for storing cards in player hand
+	vector<Card*> hand;//for storing cards in player hand
 
-	vector<Card*> vecPlayCards;//for storing cards to be played this turn
+	vector<Card*> playCards;//for storing cards to be played this turn
 
 };
