@@ -24,6 +24,7 @@ Player::Player()
     string tempName = "Player" + ::to_string(playerCount);
     this->name = tempName;
     this->playerID = playerCount;
+    this->armies = 0;
     this->territoryList = list<shared_ptr<Territory>>();    //Create a list of pointers pointing to territory objects
     this->hand = new Hand();    //Creates a pointer to a Hand object which contains cards
     this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
@@ -32,11 +33,6 @@ Player::Player()
 //Destructor which clears all parameters of pointer type
 Player::~Player()
 {
-
-    //for (shared_ptr<Territory> t : this->territoryList)
-    //{
-    //    t.reset();      //Go through list and reset before clearing
-    //}
     for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
     {
         i->reset();
@@ -57,6 +53,7 @@ Player::Player(string playerName)
     Player::playerCount++;
     this->name = playerName;
     this->playerID = playerCount;
+    this->armies = 0;
     this->territoryList = list<shared_ptr<Territory>>();
     this->hand = new Hand();
     this->orderList = new OrderList();
@@ -68,6 +65,7 @@ Player::Player(const Player& aPlayer)
     Player::playerCount++;
     this->name = aPlayer.name;
     this->playerID = playerCount;
+    this->armies = aPlayer.armies;
   
     for (auto i = aPlayer.territoryList.begin(); i != aPlayer.territoryList.end(); advance(i, 1))
     {
@@ -82,6 +80,8 @@ Player::Player(const Player& aPlayer)
 Player& Player::operator=(const Player& aPlayer)
 {
     this->name = aPlayer.name;
+    this->armies = aPlayer.armies;
+
 
     for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
     {
@@ -102,9 +102,11 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-    string str = "\n\nPlayer " + name + " has ID " + ::to_string(playerID) + " and owns:\n";
+    string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and owns:\n";
     str += "\nList of Territories:\n";
     str += printList(getTerritoryList());
+    str += "\nArmies to deploy: ";
+    str += armies;
     str += "\nHand of Warzone cards:\n";
     Hand* h = getHand();
     str += h->to_string();
@@ -131,6 +133,26 @@ void Player::setName(string playerName)
 string Player::getName()
 {
     return name;
+}
+
+void Player::setArmies(unsigned int armies)
+{
+    this->armies = armies;
+}
+
+unsigned int Player::getArmies() const
+{
+    return armies;
+}
+
+void Player::addArmies(unsigned int armies)
+{
+    this->armies = this->armies + armies;
+}
+
+void Player::removeArmies(unsigned int armies)
+{
+    this->armies = this->armies - armies;
 }
 
 int Player::getPlayerCount()
