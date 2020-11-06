@@ -102,12 +102,12 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-    string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and owns:\n";
+    string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:\n";
     str += "\nList of Territories:\n";
     str += printList(getTerritoryList());
     str += "\nArmies to deploy: ";
-    str += armies;
-    str += "\nHand of Warzone cards:\n";
+    str += ::to_string(armies);
+    str += "\n\nHand of Warzone cards:\n";
     Hand* h = getHand();
     str += h->to_string();
     str += "\nList of Orders:\n";

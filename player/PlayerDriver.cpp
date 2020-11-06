@@ -41,6 +41,13 @@ int main() {
     cout << *player1;
 
 
+    //Testing armies attribute of player
+    player1->addArmies(20);
+    cout << "Player " << player1->getName() << " has " <<  player1->getArmies() << " to deploy." << endl;
+    player1->removeArmies(15);
+    cout << "Player " << player1->getName() << " has " << player1->getArmies() << " to deploy.\n" << endl;
+
+
     //Creating a map
     Map testMap = Map();
 
@@ -122,7 +129,6 @@ int main() {
 
     //Testing players to_string method
     cout << "\nTesting players tostring() method:" << player1->to_string() << endl;
-
 
     //Deleting all created players
     delete player1;
