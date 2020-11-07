@@ -29,7 +29,11 @@ string GameEngine::getPlayerNames()
 {
 	string str = "";
 	for (auto player : players)
+	{
 		str += player->getName();
+		str += " ";
+	}	
+	return str;
 }
 
 void GameEngine::startupPhase()//Part 2

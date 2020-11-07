@@ -22,7 +22,7 @@ class Player
 {
 
 private:
-    static int playerCount; //Statin counter, counting players of the game
+    static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
     string name;
     unsigned int armies;

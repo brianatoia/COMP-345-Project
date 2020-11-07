@@ -12,7 +12,7 @@
 
 using namespace std;
 
-int Player::playerCount = 0;
+//int Player::playerCount = 0;
 
 
 int main() {

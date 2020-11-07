@@ -17,6 +17,9 @@
 
 using namespace std;
 
+
+int Player::playerCount = 0;
+
 //Default constructor
 Player::Player()
 {
