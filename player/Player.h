@@ -22,8 +22,9 @@ class Player
 {
 
 private:
-    static int playerCount; //Statin counter, counting players of the game
+    static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
+    int reinforcementPool; //Number of armies player has to place
     string name;
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories

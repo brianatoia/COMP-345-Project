@@ -1,6 +1,25 @@
 
 #include "GameEngine.h"
 
+
+
+void GameEngine::reinforcementsPhase()
+{
+
+}
+
+void GameEngine::executeOrdersPhase()
+{
+
+}
+
+void GameEngine::issueOrdersPhase()
+{
+
+}
+
+
+
 int main(){
 
 	//Declaring gameEngine
