@@ -37,12 +37,12 @@ public:
 
 	//shared_ptr<GameEngine> createEngine();
 
-	//bool mainGameLoop();
-
 private:
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+	void mainGameLoop();
 	void reinforcementsPhase();
+	int findContinentBonusTotal(shared_ptr<Player> player);
 	void issueOrdersPhase();
 	void executeOrdersPhase();
 

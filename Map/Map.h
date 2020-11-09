@@ -64,6 +64,8 @@ private:
 public:
     int getTerritoriesSize();
 
+    const vector<shared_ptr<Continent>> getContinents();
+
     shared_ptr<Territory> add(Territory territory);
     shared_ptr<Continent> add(Continent continent);
 

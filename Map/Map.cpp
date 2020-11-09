@@ -416,6 +416,12 @@ shared_ptr<Continent> Map::getContinent(unsigned int id)
     return shared_ptr<Continent>(this->continents[id]);
 }
 
+const vector<shared_ptr<Continent>> Map::getContinents()
+{
+    return continents;
+}
+
+
 // Assignment operator for map, copies over territories and continents
 Map& Map::operator=(const Map& map)
 {

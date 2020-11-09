@@ -2,24 +2,6 @@
 #include <iostream>
 #include "GameEngine.h"
 
-void GameEngine::reinforcementsPhase()
-{
-
-}
-
-void GameEngine::executeOrdersPhase()
-{
-
-}
-
-void GameEngine::issueOrdersPhase()
-{
-
-}
-
-
-
-int main(){
 //*************		PART 1		**************//
 
 GameEngine::GameEngine()
@@ -76,6 +58,10 @@ void GameEngine::loadMap()
 		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl
 			<< "If you are done selecting maps, enter 1\n" << endl;
 		cin >> userInput;
+		
+		if (userInput == "1") {
+			break;
+		}
 
 		map = mapLoader->createMap(userInput);
 		break;
@@ -132,9 +118,68 @@ void GameEngine::startupPhase()
 		player->setArmies(armies);
 }	
 
+//*************		PART 3		**************//
+
+void GameEngine::reinforcementsPhase()
+{
+	for (auto player : players)
+	{
+		int armiesToGive = player->getTerritoryList().size()/3;
+
+		armiesToGive += findContinentBonusTotal(player);
+
+		if (armiesToGive < 3) armiesToGive = 3;
+		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
+		player->addArmies(armiesToGive);
+	}
+		
+}
+
+int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
+{
+	int bonus = 0;
+
+	vector<int> playerTerritoryIDs;
+	for (auto territory : player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
+	
+	sort(playerTerritoryIDs.begin(), playerTerritoryIDs.end()); // sort for std::includes
+
+	for (auto continent : map->getContinents()) //Loop through all continents, could be simplified to only necessary continents but not necessary and complicates code
+	{
+		sort(continent->territoryIDs.begin(), continent->territoryIDs.end());
+
+		if (includes(playerTerritoryIDs.begin(), playerTerritoryIDs.end(), continent->territoryIDs.begin(), continent->territoryIDs.end())) //Check if continent's territory IDs list is a subset of Player's territory IDs list
+		{
+			bonus += continent->bonus;
+		}
+	}
+
+	return bonus;
+}
+
+void GameEngine::executeOrdersPhase()
+{
+
+}
+
+void GameEngine::issueOrdersPhase()
+{
+
+}
+
+void GameEngine::mainGameLoop()
+{
+	reinforcementsPhase();
+	executeOrdersPhase();
+	issueOrdersPhase();
+
+	//check for dead player
+
+}
+
 
 int main(){
-	////Declaring gameEngine
+	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
 	shared_ptr<Player> p1 = shared_ptr<Player>(new Player("Anna"));
@@ -157,7 +202,14 @@ int main(){
 	gameEngine->startupPhase();
 	cout << "\nPlayers in random order: \n" << gameEngine->getPlayersInfo();
 
-	
+	//Main Game Loop
+	while (true)
+	{
+		void mainGameLoop();
+
+		//check for winner
+
+	}
 
 	
 
