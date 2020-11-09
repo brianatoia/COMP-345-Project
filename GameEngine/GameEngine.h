@@ -42,8 +42,8 @@ public:
 private:
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
-	//bool reinforcementsPhase();
-	//bool issueOrdersPhase();
-	//bool executeOrdersPhase();
+	void reinforcementsPhase();
+	void issueOrdersPhase();
+	void executeOrdersPhase();
 
 };
