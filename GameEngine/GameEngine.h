@@ -9,6 +9,8 @@
 
 
 #include <iostream>
+#include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -22,11 +24,14 @@ public:
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
 
 	void addPlayers(shared_ptr<Player> player);
-	list <shared_ptr<Player>> getPlayers();
-	string getPlayerNames();
+	vector <shared_ptr<Player>> getPlayers();
+	string getPlayersInfo();
+	string getPlayersNames();
 
+	void loadMap();
 
-	void startupPhase();	//Part 2
+	//Part 2
+	void startupPhase();	
 
 	//shared_ptr<GameEngine> createEngine();
 
@@ -34,7 +39,7 @@ public:
 
 private:
 	shared_ptr<Map> map;
-	list<shared_ptr<Player>> players;
+	vector<shared_ptr<Player>> players;
 	//bool reinforcementsPhase();
 	//bool issueOrdersPhase();
 	//bool executeOrdersPhase();

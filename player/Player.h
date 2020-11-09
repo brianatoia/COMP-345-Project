@@ -45,6 +45,7 @@ public:
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
+    void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;

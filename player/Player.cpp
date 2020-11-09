@@ -105,15 +105,15 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-    string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:\n";
-    str += "\nList of Territories:\n";
+    string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
+    str += "\nList of Territories--------";
     str += printList(getTerritoryList());
-    str += "\nArmies to deploy: ";
+    str += "\nArmies to deploy--------\n";
     str += ::to_string(armies);
-    str += "\n\nHand of Warzone cards:\n";
+    str += "\nHand of Warzone cards--------\n";
     Hand* h = getHand();
     str += h->to_string();
-    str += "\nList of Orders:\n";
+    str += "\nList of Orders--------\n";
     OrderList* o = getOrderList();
     str += o->to_string();
     str += "\n";
@@ -161,6 +161,11 @@ void Player::removeArmies(unsigned int armies)
 int Player::getPlayerCount()
 {
     return playerCount;
+}
+
+void Player::setPlayerID(unsigned int ID)
+{
+    this->playerID = ID;
 }
 
 unsigned int Player::getPlayerID()
