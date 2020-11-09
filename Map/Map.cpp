@@ -64,6 +64,11 @@ string Map::to_string()
     return s;
 }
 
+int Map::getTerritoriesSize()
+{
+    return territories.size();
+}
+
 shared_ptr<Territory> Map::add(Territory territory)
 {
     // Error checking

@@ -42,6 +42,11 @@ string GameEngine::getPlayersNames()
 	return str;
 }
 
+void GameEngine::setMap(shared_ptr<Map> newName)
+{
+	*map = *newName;
+}
+
 void GameEngine::loadMap()
 {
 	shared_ptr<MapLoader> mapLoader(new MapLoader());
@@ -53,29 +58,33 @@ void GameEngine::loadMap()
 		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl
 			<< "If you are done selecting maps, enter 1\n" << endl;
 		cin >> userInput;
-		if (userInput == "1") {
-			break;
-		}
-		else
-		{
-			shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
-			if (loadedMap != nullptr)
-			{
-				listOfMaps.push_back(loadedMap);
-			}
-		}
+
+		map = mapLoader->createMap(userInput);
+		break;
+
+		//if (userInput == "1") {
+		//	break;
+		//}
+		//else
+		//{
+		//	shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
+		//	if (loadedMap != nullptr)
+		//	{
+		//		//listOfMaps.push_back(loadedMap);
+		//	}
+		//}
 	}
 
-	if (listOfMaps.size() > 0)
-	{
-		cout << "\nPrinting Maps:\n" << endl;
-		for (int i = 0; i < listOfMaps.size(); i++)
-		{
-			cout << listOfMaps[i]->to_string() << "\n" << endl;
-		}
-	}
-	mapLoader.reset();
-	mapLoader = nullptr;
+	//if (listOfMaps.size() > 0)
+	//{
+	//	cout << "\nPrinting Maps:\n" << endl;
+	//	for (int i = 0; i < listOfMaps.size(); i++)
+	//	{
+	//		cout << listOfMaps[i]->to_string() << "\n" << endl;
+	//	}
+	//}
+	//mapLoader.reset();
+	//mapLoader = nullptr;
 }
 
 
@@ -92,17 +101,18 @@ void GameEngine::startupPhase()
 	}
 	
 	//2. All territories in the map are randomly assigned to players one by one in round-robin fashion
-	//loop through map and players, assign territories in round robin to player : players > player->addTerritory(t)
-	
-
+	//loop through map(territory ids) and players, assign territories in round robin to player : players > player->addTerritory(t)
+	for (int i = 1; i != map->getTerritoriesSize() ; i++)
+	{
+		//Circularly loop through players and assign territories in ascending order to each player
+		players.at((i-1)% players.size())->addTerritory(map->getTerritory(i));
+	}
 	
 	//3. Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
 	int armies = 50 - (5 * Player::getPlayerCount());
 	for (auto player : players)
 		player->setArmies(armies);
 }	
-
-
 
 
 int main(){
@@ -122,18 +132,16 @@ int main(){
 	gameEngine->addPlayers(p5);
 
 	cout << "Players before shuffle: \n" << gameEngine->getPlayersNames();
+
+	gameEngine->loadMap();
+
+
 	gameEngine->startupPhase();
 	cout << "\nPlayers in random order: \n" << gameEngine->getPlayersInfo();
 
-	gameEngine->loadMap();
 	
 
-	//
-	////main game loop
-	////while (gameEngine->mainGameLoop())
-	////{
-
-	////}
+	
 
 
 

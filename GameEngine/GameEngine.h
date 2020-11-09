@@ -28,7 +28,9 @@ public:
 	string getPlayersInfo();
 	string getPlayersNames();
 
+	void setMap(shared_ptr<Map> newName);
 	void loadMap();
+	
 
 	//Part 2
 	void startupPhase();	

@@ -106,7 +106,7 @@ Player& Player::operator=(const Player& aPlayer)
 string Player::to_string()
 {
     string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
-    str += "\nList of Territories--------";
+    str += "\nList of Territories--------\n";
     str += printList(getTerritoryList());
     str += "\nArmies to deploy--------\n";
     str += ::to_string(armies);
