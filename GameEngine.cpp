@@ -39,14 +39,7 @@ void GameEngine::gameStart()
         }
     }
 
-    if (listOfMaps.size() > 0)
-    {
-        cout << "\nPrinting Maps:\n" << endl;
-        for (int i = 0; i < listOfMaps.size(); i++)
-        {
-            cout << listOfMaps[i]->to_string() << "\n" << endl;
-        }
-    }
+   
 
     mapLoader.reset();
     mapLoader = nullptr;
@@ -135,7 +128,7 @@ void GameEngine::setObserverStatus(bool status) {
 }
 
 
-Map GameEngine::getMap() {
+string GameEngine::getMap() {
     std::vector<std::string> maps;
     std::cout << "Let's Pick a map!\n\n";
     try {

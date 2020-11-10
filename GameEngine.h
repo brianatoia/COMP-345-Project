@@ -23,7 +23,7 @@ struct GameEngine
 	vector<Player> getPlayersList();
 	bool getObserverStatus();
 	void setObserverStatus(bool status);
-	Map getMap();
+	string getMap();
 
 private:
 	bool startupPhase();	//Part 2
