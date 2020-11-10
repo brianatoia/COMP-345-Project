@@ -5,14 +5,12 @@
 #include <filesystem>
 
 using namespace std;
-namespace fs = std::filesystem;
+
 
 void GameEngine::gameStart()
 {
    
-    std::string path = "/path/to/directory";
-    for (const auto& entry : filesystem::directory_iterator(path))
-        std::cout << entry.path() << std::endl;
+  
 
     //maploader
 
@@ -136,8 +134,30 @@ void GameEngine::setObserverStatus(bool status) {
     activateObservers = status;
 }
 
+
 Map GameEngine::getMap() {
-    return gameMap;
+    std::vector<std::string> maps;
+    std::cout << "Let's Pick a map!\n\n";
+    try {
+        for (auto& p : std::filesystem::directory_iterator("mapdir"))
+            maps.push_back(p.path().string());
+    }
+    catch (int e) { std::cout << "I/O error"; }
+
+    //need to remove the first 8 characters to show only map and not path when asking for choice
+    for (int i = 0; i < maps.size(); i++)
+    {
+        std::cout << "Map #" << i << " -> " << maps[i].substr(8) << "\n";
+    }
+    std::cout << "Please Enter the number of the map which you would like to select: ";
+    int map_number;
+    std::cin >> map_number;
+    std::string selected_map = maps[map_number];
+
+    //empty vectors to avoid memory leak
+    maps.clear();
+
+    return selected_map;
 }
 
 
