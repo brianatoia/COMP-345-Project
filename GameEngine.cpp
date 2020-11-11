@@ -6,9 +6,37 @@
 #include <algorithm>
 using namespace std;
 
+int main()
+{
+    GameEngine firstGame;
+    firstGame.gameStart();
+
+}
+
+GameEngine::GameEngine() {
+    numOfPlayers = 0;
+    Deck deckCards;
+    activateObservers = true;
+}
+
+bool GameEngine::equals(const string& a, const string& b) {
+    unsigned int sz = a.size();
+    if (b.size() != sz)
+        return false;
+    for (unsigned int i = 0; i < sz; ++i)
+        if (tolower(a[i]) != tolower(b[i]))
+            return false;
+    return true;
+}
+
 void GameEngine::gameStart()
 {
-    //maploader
+    string map;
+    string mapName = selectMap();
+    while (mapName.compare("") == 0) {
+        cout << "The map that you've selected does not exist in this current directory. You will be asked to select another one." << endl;
+        mapName = selectMap();
+    }
 
     //declaring map loader 
     shared_ptr<MapLoader> mapLoader(new MapLoader());
@@ -16,10 +44,7 @@ void GameEngine::gameStart()
     //implement vector of maps, player can choose one
     vector <shared_ptr<Map>> listOfMaps;
 
-        string userInput;
-        cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl;    
-        cin >> userInput;
-            shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
+            shared_ptr<Map> loadedMap = mapLoader->createMap(mapName);
             if (loadedMap != nullptr)
             {
                 listOfMaps.push_back(loadedMap);
@@ -59,6 +84,24 @@ void GameEngine::gameStart()
     deck.initializeDeck(getNumOfPlayers());
     cout << deck << endl;
 
+}
+
+string GameEngine::selectMap() {
+    string map;
+    cout << "What map would you like to play with ?: ";
+    cin >> map;
+    if (isMapInDirectory(map + ".map"))
+        return map + ".map";
+    else
+        return "";
+}
+
+bool GameEngine::isMapInDirectory(string fileName) {
+    ifstream file("MapDirectory/" + fileName);
+    if (!file)
+        return false;
+    else
+        return true;
 }
 
 void GameEngine::setNumOfPlayers()
@@ -107,9 +150,3 @@ void GameEngine::setObserverStatus(bool status) {
 }
 
 
-int main()
-{
-    GameEngine firstGame;
-    firstGame.gameStart();
-
-}
