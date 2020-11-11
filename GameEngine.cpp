@@ -6,13 +6,6 @@
 #include <algorithm>
 using namespace std;
 
-int main()
-{
-    GameEngine firstGame;
-    firstGame.gameStart();
-
-}
-
 GameEngine::GameEngine() {
     numOfPlayers = 0;
     Deck deckCards;
@@ -149,4 +142,6 @@ void GameEngine::setObserverStatus(bool status) {
     activateObservers = status;
 }
 
-
+Deck GameEngine::getDeckCards() {
+    return deckCards;
+}

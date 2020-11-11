@@ -29,7 +29,6 @@ private:
 
 	
 	int numOfPlayers;
-	vector<Card*> deck;
 	vector<Player> players;
 	bool activateObservers;
 	Map gameMap;
@@ -38,4 +37,5 @@ private:
 	void setNumOfPlayers();
 	bool Observers();
 	string selectMap();
+	Deck deckCards;
 };
