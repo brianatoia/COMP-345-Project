@@ -17,32 +17,58 @@ using namespace std;
 class GameEngine
 {
 public:
+
+	//******     Constructor & Destructor    *****//
 	GameEngine();
 	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
 	//~GameEngine();
 	//GameEngine& operator= (const GameEngine&);
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
-	void GameStart();
+	~GameEngine();
 
+	//******     PART I    *****//
+	void gameStart();
+
+
+	//******     Map Method    *****//
+	void loadMap();
+
+
+	//******     Oberserver Methods    *****//
+	bool getObserverStatus();
+	void setObserverStatus(bool status);
+
+
+	//******     Deck Method    *****//
+	Deck* getDeck();
+
+
+	//******     Player Methods    *****//
 	void addPlayers(shared_ptr<Player> player);
-	vector <shared_ptr<Player>> getPlayers();
+	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
-
-	void setMap(shared_ptr<Map> newName);
-	void loadMap();
 	
 
-	//Part 2
+	//******     PART II    *****//
 	void startupPhase();	
 
-	//shared_ptr<GameEngine> createEngine();
 
 	//bool mainGameLoop();
 
+//******     Private Members    *****//
 private:
+	int numOfPlayers;
+	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+	bool activateObservers;
+	bool isMapInDirectory(string fileName);
+	bool equals(const string& a, const string& b);
+	void setNumOfPlayers();
+	bool Observers();
+	string selectMap();
+
 	//bool reinforcementsPhase();
 	//bool issueOrdersPhase();
 	//bool executeOrdersPhase();

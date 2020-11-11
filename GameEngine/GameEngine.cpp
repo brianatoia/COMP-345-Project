@@ -1,38 +1,203 @@
 
 #include <iostream>
 #include "GameEngine.h"
+#include <fstream>
+#include <iterator>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
 #include <filesystem>
 
-
-//*************		PART 1		**************//
-
+//Default constructor
 GameEngine::GameEngine()
 {
+	numOfPlayers = 0;
+	this->deck = new Deck();
+	activateObservers = true;
 	this->players = vector<shared_ptr<Player>>();
-	this->map = shared_ptr<Map>();
+	this->map = shared_ptr <Map>();
 }
 
-void GameEngine::GameStart() 
+//Destructor
+GameEngine::~GameEngine()
 {
-	
-
-
+	delete deck;
+	deck = nullptr;
+	cout << "GameEngine was deleted" << endl;
 }
 
 
 
+//*************		PART I		**************//
+
+void GameEngine::gameStart()
+{
+	//Part I: 1
+	//Loading the map
+	loadMap();
+
+	//Part I: 2
+	//Ask for player amount
+	cout << "Select the number of players that will be participating (Must be between 2 and 5): ";
+	cin >> numOfPlayers;
+	while (!(numOfPlayers >= 2 && numOfPlayers <= 5)) 
+	{
+		cout << "The numbers of players that you've selected has been deemed invalid. Please pick again: ";
+		cin >> numOfPlayers;
+		cin.clear();
+	}
+	
+	//Ask for player names, create players and push into players vector list
+	for (int i = 0; i < numOfPlayers; i++) 
+	{
+		string name;
+		cout << "Enter the name for player #" << (i + 1) << ": ";
+		cin >> name;
+		shared_ptr<Player> player = shared_ptr<Player>(new Player(name));
+		addPlayers(player);
+	}
+
+	//initialize a card deck with amount of players
+	deck->initializeDeck(numOfPlayers);
+
+	//Part I: 3
+	//Turning on/off observers
+	activateObservers = Observers();
+}
+
+//Method to load map and store in map attribute of class GameEngine
+void GameEngine::loadMap()
+{
+	//declaring map loader 
+	shared_ptr<MapLoader> mapLoader(new MapLoader());
+
+	//implement vector of maps, player can choose one
+	vector <shared_ptr<Map>> listOfMaps;
+
+	//List of Map names
+	vector <string> mapNames;
+
+	//Ask user for map names as input to store in map list to later select from
+	while (true)
+	{
+		string userInput;
+		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl
+			<< "If you are done selecting maps, enter 1\n" << endl;
+		cin >> userInput;
+		if (userInput == "1")
+		{
+			break;
+		}
+		else
+		{
+			shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
+			if (loadedMap != nullptr)
+			{
+				listOfMaps.push_back(loadedMap);
+				mapNames.push_back(userInput);
+			}
+		}
+	}
+
+	//Iterating through list of vaild maps entered by the user
+	if (listOfMaps.size() > 0)
+	{
+		//Printing maps in list as well as their names
+		cout << "\nPrinting Maps:\n" << endl;
+		for (int i = 0; i < listOfMaps.size(); i++)
+		{
+			cout << "Map " << i+1 << " " << mapNames[i] << ": \n" << listOfMaps[i]->to_string() << "\n" << endl;
+		}
+		
+		//Loop to get user to pick a map from the previous printed maps. 
+		//Reject input if its not numerical, smaller or greater than the list of maps size 
+		while (true)
+		{
+			cout << "Please select the Map you would like to proceed with by entering its number : ";
+			
+			int mapNum;
+			while (!(cin >> mapNum))
+			{
+				cout << "Invalid input, only numbers allowed. Please select the Map you would like to proceed with by entering its number: ";
+				cin.clear();
+				cin.ignore(123, '\n');
+			}
+			if (mapNum <= 0 || mapNum > listOfMaps.size())	
+			{
+				cout << "You entered Map number that does not exist. Please try again." << endl;
+			}
+
+			//If input is valid, create map and break out of loop
+			else
+			{
+				map = listOfMaps[mapNum - 1];
+				break;
+			}
+			//if value entered was not valid, clear user input and loop again
+			cin.clear();
+		}
+	}
+
+	//Resetting MapLoader
+	mapLoader.reset();
+	mapLoader = nullptr;
+}
+
+string GameEngine::selectMap() 
+{
+	string map;
+	cout << "What map would you like to play with ?: ";
+	cin >> map;
+	if (isMapInDirectory(map + ".map"))
+		return map + ".map";
+	else if(isMapInDirectory(map + ".txt"))
+		return map + ".txt";
+	else
+		return "NO MAP FOUND";
+}
+
+bool GameEngine::isMapInDirectory(string fileName) 
+{
+	ifstream file("MapDirectory/" + fileName);
+	if (!file)
+		return false;
+	else
+		return true;
+}
+
+
+
+
+bool GameEngine::getObserverStatus() 
+{
+	return activateObservers;
+}
+
+void GameEngine::setObserverStatus(bool status) 
+{
+	activateObservers = status;
+}
+
+//Return Deck of cards
+Deck* GameEngine::getDeck()
+{
+	return deck;
+}
+
+//Adding players to vector list containing all players
 void GameEngine::addPlayers(shared_ptr<Player> player)
 {
 	players.push_back(player);
 }
 
-
+//Return player vector list
 vector<shared_ptr<Player>> GameEngine::getPlayers()
 {
 	return players;
 }
 
+//Return players stored in players vector list as string
 string GameEngine::getPlayersInfo()
 {
 	string str = "";
@@ -43,68 +208,27 @@ string GameEngine::getPlayersInfo()
 	return str;
 }
 
+//Returns string with player names stored in players vector list
 string GameEngine::getPlayersNames()
 {
 	string str = "";
 	for (auto player : players)
 	{
+		str += "Player " ;
+		str += to_string(player->getPlayerID());
+		str += " ";
 		str += player->getName();
 		str += "\n";
 	}
 	return str;
 }
 
-void GameEngine::setMap(shared_ptr<Map> newName)
-{
-	*map = *newName;
-}
-
-void GameEngine::loadMap()
-{
-	shared_ptr<MapLoader> mapLoader(new MapLoader());
-	vector <shared_ptr<Map>> listOfMaps;
-
-	while (true)
-	{
-		string userInput;
-		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl
-			<< "If you are done selecting maps, enter 1\n" << endl;
-		cin >> userInput;
-
-		map = mapLoader->createMap(userInput);
-		break;
-
-		//if (userInput == "1") {
-		//	break;
-		//}
-		//else
-		//{
-		//	shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
-		//	if (loadedMap != nullptr)
-		//	{
-		//		//listOfMaps.push_back(loadedMap);
-		//	}
-		//}
-	}
-
-	//if (listOfMaps.size() > 0)
-	//{
-	//	cout << "\nPrinting Maps:\n" << endl;
-	//	for (int i = 0; i < listOfMaps.size(); i++)
-	//	{
-	//		cout << listOfMaps[i]->to_string() << "\n" << endl;
-	//	}
-	//}
-	//mapLoader.reset();
-	//mapLoader = nullptr;
-}
-
-
-//*************		PART 2		**************//
+//*************		PART II		**************//
 
 void GameEngine::startupPhase()
 {
-	//1. The order of the players is determined randomly
+	//Part II: 1
+	//The order of the players is determined randomly
 	random_shuffle(players.begin(), players.end());
 
 	//Reassign players id to match the new order
@@ -113,46 +237,73 @@ void GameEngine::startupPhase()
 		players.at(i)->setPlayerID(i+1);
 	}
 	
-	//2. All territories in the map are randomly assigned to players one by one in round-robin fashion
-	//loop through map(territory ids) and players, assign territories in round robin to player : players > player->addTerritory(t)
-	for (int i = 1; i != map->getTerritoriesSize() ; i++)
+	//Part II: 2
+	//All territories in the map are randomly assigned to players one by one in round-robin fashion
+	for (int i = 1; i != map->getTerritoriesCount() ; i++)
 	{
 		//Circularly loop through players and assign territories in ascending order to each player
 		players.at((i-1)% players.size())->addTerritory(map->getTerritory(i));
 	}
 	
-	//3. Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
+	//Part II: 3
+	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
 	int armies = 50 - (5 * players.size());
 	for (auto player : players)
 		player->setArmies(armies);
 }	
 
 
+bool GameEngine::equals(const string& a, const string& b) {
+	unsigned int size = a.size();
+	if (b.size() != size)
+		return false;
+	for (unsigned int i = 0; i < size; ++i)
+		if (tolower(a[i]) != tolower(b[i]))
+			return false;
+	return true;
+}
+
+bool GameEngine::Observers()
+{
+	string answer;
+	bool loopAgain;
+	cout << "activate the observers for this game? (Yes or No): ";
+	cin >> answer;
+	while (!equals(answer, "yes") && !equals(answer, "no")) {
+		cout << "Your answer has been deemd invalid. Please enter again: ";
+		cin >> answer;
+	}
+	if (equals(answer, "yes"))
+		return true;
+	else if (equals(answer, "no"))
+		return false;
+	return false;
+}
+
+//*************		MAIN METHOD		**************//
+
 int main(){
-	////Declaring gameEngine
+	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
-	shared_ptr<Player> p1 = shared_ptr<Player>(new Player("Anna"));
-	shared_ptr<Player> p2 = shared_ptr<Player>(new Player("Ben"));
-	shared_ptr<Player> p3 = shared_ptr<Player>(new Player("Chris"));
-	shared_ptr<Player> p4 = shared_ptr<Player>(new Player("Debby"));
-	shared_ptr<Player> p5 = shared_ptr<Player>(new Player("Fynn"));
+	//Testing Part I
+	cout << "Calling gameStart(): Code from Part I" << endl;
+	gameEngine->gameStart();
 
-	gameEngine->addPlayers(p1);
-	gameEngine->addPlayers(p2);
-	gameEngine->addPlayers(p3);
-	gameEngine->addPlayers(p4);
-	gameEngine->addPlayers(p5);
-
-	cout << "Players before shuffle: \n" << gameEngine->getPlayersNames();
-
-	//Load Map
-	gameEngine->loadMap();
-
-	//2. 
+	//A deck was created
+	cout << *gameEngine->getDeck() << endl;
+	
+	//Players were created
+	cout << gameEngine->getPlayersNames() << endl;
+		
+	//Testing Part II
+	cout << "Calling startupPhase(): Code from Part II" << endl;
 	gameEngine->startupPhase();
-	cout << "\nPlayers in random order: \n" << gameEngine->getPlayersInfo();
+	
+	//Player order was randomly changed, territories distributed and armies were assigned to each player
+	cout << gameEngine->getPlayersInfo() << endl;
 
+	/*gameEngine->~GameEngine();*/
 
 	return 0;
 }
