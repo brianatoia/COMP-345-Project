@@ -15,7 +15,6 @@ void GameEngine::addPlayers(shared_ptr<Player> player)
 	players.push_back(player);
 }
 
-
 vector<shared_ptr<Player>> GameEngine::getPlayers()
 {
 	return players;
@@ -167,6 +166,33 @@ void GameEngine::issueOrdersPhase()
 
 }
 
+void GameEngine::checkForEliminatedPlayers()
+{
+	for (int i = 0; i < players.size(); i++)
+	{
+		if (players[i]->getTerritoryList().size() == 0)
+		{
+			players.erase(players.begin() + i); //Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
+			checkForEliminatedPlayers();
+			break;
+		}
+	}
+}
+
+shared_ptr<Player> GameEngine::checkForWinner()
+{
+	int numberOfTerritories = map->getTerritoriesSize();
+
+	for (auto player : players)
+	{
+		if (player->getTerritoryList().size() == numberOfTerritories)
+			return player;
+	}
+	
+	return nullptr;
+
+}
+
 void GameEngine::mainGameLoop()
 {
 	reinforcementsPhase();
@@ -205,13 +231,17 @@ int main(){
 	//Main Game Loop
 	while (true)
 	{
-		void mainGameLoop();
-
-		//check for winner
+		gameEngine->mainGameLoop();
+		
+		shared_ptr<Player> winner = gameEngine->checkForWinner();
+		if (winner != nullptr)
+		{
+			cout << winner->getName() << " is the Winner!" << endl;
+			break;
+		}
 
 	}
 
-	
 
 
 
