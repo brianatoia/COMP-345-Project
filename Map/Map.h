@@ -62,7 +62,7 @@ private:
     vector<shared_ptr<Continent>> continents; // ID's =:= index
 
 public:
-    int getTerritoriesSize();
+    int getTerritoriesCount();
 
     shared_ptr<Territory> add(Territory territory);
     shared_ptr<Continent> add(Continent continent);

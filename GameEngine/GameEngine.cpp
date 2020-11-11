@@ -2,6 +2,9 @@
 #include <iostream>
 #include "GameEngine.h"
 
+#include <filesystem>
+
+
 //*************		PART 1		**************//
 
 GameEngine::GameEngine()
@@ -9,6 +12,15 @@ GameEngine::GameEngine()
 	this->players = vector<shared_ptr<Player>>();
 	this->map = shared_ptr<Map>();
 }
+
+void GameEngine::GameStart() 
+{
+	
+
+
+}
+
+
 
 void GameEngine::addPlayers(shared_ptr<Player> player)
 {
@@ -95,6 +107,7 @@ void GameEngine::startupPhase()
 	//1. The order of the players is determined randomly
 	random_shuffle(players.begin(), players.end());
 
+	//Reassign players id to match the new order
 	for (int i = 0; i<players.size(); i++)
 	{
 		players.at(i)->setPlayerID(i+1);
@@ -109,7 +122,7 @@ void GameEngine::startupPhase()
 	}
 	
 	//3. Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
-	int armies = 50 - (5 * Player::getPlayerCount());
+	int armies = 50 - (5 * players.size());
 	for (auto player : players)
 		player->setArmies(armies);
 }	
@@ -133,17 +146,12 @@ int main(){
 
 	cout << "Players before shuffle: \n" << gameEngine->getPlayersNames();
 
+	//Load Map
 	gameEngine->loadMap();
 
-
+	//2. 
 	gameEngine->startupPhase();
 	cout << "\nPlayers in random order: \n" << gameEngine->getPlayersInfo();
-
-	
-
-	
-
-
 
 
 	return 0;

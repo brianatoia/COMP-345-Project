@@ -17,11 +17,12 @@ using namespace std;
 class GameEngine
 {
 public:
-	GameEngine();//Error since parameters have to be provided
+	GameEngine();
 	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
 	//~GameEngine();
 	//GameEngine& operator= (const GameEngine&);
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	void GameStart();
 
 	void addPlayers(shared_ptr<Player> player);
 	vector <shared_ptr<Player>> getPlayers();
