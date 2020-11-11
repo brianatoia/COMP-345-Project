@@ -11,7 +11,9 @@ GameEngine::GameEngine() {
     Deck deckCards;
     activateObservers = true;
 }
+GameEngine::~GameEngine() {
 
+}
 bool GameEngine::equals(const string& a, const string& b) {
     unsigned int sz = a.size();
     if (b.size() != sz)

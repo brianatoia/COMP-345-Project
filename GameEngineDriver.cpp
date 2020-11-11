@@ -4,10 +4,7 @@ using namespace std;
 
 int engine_main() {
     GameEngine ge;
-    //When selecting the map here are the different cases
-    // The map is in the directory but invalid (solar)
-    // The map is in the directory and valid (europe)
-    // The map is not in the directory (any other name)
+    
     ge.gameStart();
     cout << "Number of players that were created: " << ge.getPlayersList().size() << endl;
     cout << "Size of deck: ";

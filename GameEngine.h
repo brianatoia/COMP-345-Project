@@ -9,23 +9,24 @@ using namespace std;
 struct GameEngine
 {
 	GameEngine();
+	~GameEngine();
 	void gameStart();
 	int getNumOfPlayers();
 	Deck getDeckCards();
 	vector<Player> getPlayersList();
 	bool getObserverStatus();
 	void setObserverStatus(bool status);
-	bool mainGameLoop();
+	//bool mainGameLoop();
 
 	GameEngine& operator= (const GameEngine&);
 	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
-	shared_ptr<GameEngine> createEngine();
+	//shared_ptr<GameEngine> createEngine();
 
 private:
-	bool startupPhase();	//Part 2
-	bool reinforcementsPhase();
-	bool issueOrdersPhase();
-	bool executeOrdersPhase();
+//	bool startupPhase();	//Part 2
+//	bool reinforcementsPhase();
+//	bool issueOrdersPhase();
+//	bool executeOrdersPhase();
 
 	
 	int numOfPlayers;
