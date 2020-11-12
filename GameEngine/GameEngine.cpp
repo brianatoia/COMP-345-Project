@@ -38,14 +38,20 @@ void GameEngine::gameStart()
 	loadMap();
 
 	//Part I: 2
-	//Ask for player amount
-	cout << "Select the number of players that will be participating (Must be between 2 and 5): ";
-	cin >> numOfPlayers;
-	while (!(numOfPlayers >= 2 && numOfPlayers <= 5)) 
+	//Asking for player amount, rejecting non numerical inputs and numbers out of range 2-5
+	while (true)
 	{
-		cout << "The numbers of players that you've selected has been deemed invalid. Please pick again: ";
-		cin >> numOfPlayers;
-		cin.clear();
+		cout << "Select the number of players that will be participating (Must be between 2 and 5): ";
+		while (!(cin >> numOfPlayers))
+		{
+			cout << "Only numerical values are accepted. Please select a number between 2 and 5: ";
+			cin.clear();
+			cin.ignore(123, '\n');
+		}
+		if (numOfPlayers >= 2 && numOfPlayers <= 5)
+			break;
+		else
+			cout << "The numbers of players that you've selected has been deemed invalid. ";
 	}
 	
 	//Ask for player names, create players and push into players vector list
@@ -89,7 +95,10 @@ void GameEngine::loadMap()
 		cin >> userInput;
 		if (userInput == "1")
 		{
-			break;
+			if (listOfMaps.size() != 0)
+				break;
+			else
+				cout << "Cannot resume before at least 1 map was entered." << endl;
 		}
 		else
 		{
@@ -177,7 +186,7 @@ bool GameEngine::Observers()
 	cout << "activate the observers for this game? (Yes or No): ";
 	cin >> answer;
 	while (!equals(answer, "yes") && !equals(answer, "no")) {
-		cout << "Your answer has been deemd invalid. Please enter again: ";
+		cout << "Your answer has been deemed invalid. Please enter again: ";
 		cin >> answer;
 	}
 	if (equals(answer, "yes"))
@@ -285,8 +294,6 @@ void GameEngine::startupPhase()
 }	
 
 
-
-
 //*************		MAIN METHOD		**************//
 
 int main(){
@@ -309,8 +316,6 @@ int main(){
 	
 	//Player order was randomly changed, territories distributed and armies were assigned to each player
 	cout << gameEngine->getPlayersInfo() << endl;
-
-	/*gameEngine->~GameEngine();*/
 
 	return 0;
 }
