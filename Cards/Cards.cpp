@@ -5,7 +5,7 @@ using namespace std;
 
 Card::Card()
 {
-	this->cardType = BOMB;
+	
 }
 
 Card::~Card()

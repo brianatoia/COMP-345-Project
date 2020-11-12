@@ -41,26 +41,9 @@ int main() {
 		aHandCard.play(aHandCard.getHand()->front(), &Deck1);
 	}
 
-	//print the vec_play_cards
-	//aHandCard.printVecPlayCards();
 
 	cout << aHandCard;
-	//test return played cards to deck
-	//aHandCard.returnPlayedCardToDeck(&Deck1);
 
-	//test remove all played cards of hand cards
-	//aHandCard.removeAllPlayedCardsOfHand();
-
-	//then clear the play cards of vec_play_cards. Notice: clean play_cards at end.
-	//aHandCard.clearPlayCards();
-
-	//print the vec_play_cards
-	//aHandCard.printVecPlayCards();
-
-	//print the current hand cards
-	//aHandCard.printVecHand();
-
-	//test the size of current deck
 	Deck1.printDeckSize();
 
 }
