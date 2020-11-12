@@ -66,6 +66,8 @@ void GameEngine::gameStart()
 	activateObservers = Observers();
 }
 
+//******     Map Methods    *****//
+
 //Method to load map and store in map attribute of class GameEngine
 void GameEngine::loadMap()
 {
@@ -166,8 +168,24 @@ bool GameEngine::isMapInDirectory(string fileName)
 		return true;
 }
 
+//******     Oberserver Methods    *****//
 
-
+bool GameEngine::Observers()
+{
+	string answer;
+	bool loopAgain;
+	cout << "activate the observers for this game? (Yes or No): ";
+	cin >> answer;
+	while (!equals(answer, "yes") && !equals(answer, "no")) {
+		cout << "Your answer has been deemd invalid. Please enter again: ";
+		cin >> answer;
+	}
+	if (equals(answer, "yes"))
+		return true;
+	else if (equals(answer, "no"))
+		return false;
+	return false;
+}
 
 bool GameEngine::getObserverStatus() 
 {
@@ -179,11 +197,25 @@ void GameEngine::setObserverStatus(bool status)
 	activateObservers = status;
 }
 
+bool GameEngine::equals(const string& a, const string& b) {
+	unsigned int size = a.size();
+	if (b.size() != size)
+		return false;
+	for (unsigned int i = 0; i < size; ++i)
+		if (tolower(a[i]) != tolower(b[i]))
+			return false;
+	return true;
+}
+
+//******     Deck Method    *****//
+
 //Return Deck of cards
 Deck* GameEngine::getDeck()
 {
 	return deck;
 }
+
+//******     Player Methods    *****//
 
 //Adding players to vector list containing all players
 void GameEngine::addPlayers(shared_ptr<Player> player)
@@ -253,32 +285,7 @@ void GameEngine::startupPhase()
 }	
 
 
-bool GameEngine::equals(const string& a, const string& b) {
-	unsigned int size = a.size();
-	if (b.size() != size)
-		return false;
-	for (unsigned int i = 0; i < size; ++i)
-		if (tolower(a[i]) != tolower(b[i]))
-			return false;
-	return true;
-}
 
-bool GameEngine::Observers()
-{
-	string answer;
-	bool loopAgain;
-	cout << "activate the observers for this game? (Yes or No): ";
-	cin >> answer;
-	while (!equals(answer, "yes") && !equals(answer, "no")) {
-		cout << "Your answer has been deemd invalid. Please enter again: ";
-		cin >> answer;
-	}
-	if (equals(answer, "yes"))
-		return true;
-	else if (equals(answer, "no"))
-		return false;
-	return false;
-}
 
 //*************		MAIN METHOD		**************//
 

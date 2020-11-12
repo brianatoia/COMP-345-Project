@@ -30,13 +30,16 @@ public:
 	void gameStart();
 
 
-	//******     Map Method    *****//
+	//******     Map Methods    *****//
 	void loadMap();
-
+	string selectMap();
+	bool isMapInDirectory(string fileName);
 
 	//******     Oberserver Methods    *****//
+	bool Observers();
 	bool getObserverStatus();
 	void setObserverStatus(bool status);
+	bool equals(const string& a, const string& b);
 
 
 	//******     Deck Method    *****//
@@ -54,8 +57,6 @@ public:
 	void startupPhase();	
 
 
-	//bool mainGameLoop();
-
 //******     Private Members    *****//
 private:
 	int numOfPlayers;
@@ -63,11 +64,7 @@ private:
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
 	bool activateObservers;
-	bool isMapInDirectory(string fileName);
-	bool equals(const string& a, const string& b);
-	void setNumOfPlayers();
-	bool Observers();
-	string selectMap();
+	
 
 	//bool reinforcementsPhase();
 	//bool issueOrdersPhase();
