@@ -5,7 +5,7 @@ using namespace std;
 
 Card::Card()
 {
-	this->cardType = BOMB;
+	this->cardType = UNDEFINED;
 }
 
 Card::~Card()
