@@ -30,6 +30,7 @@ private:
     unsigned int playerID;
     string name;
     bool* capturedTerritory;
+    unsigned int armies;
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -49,10 +50,15 @@ public:
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
+    void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
     void clearPlayersNegotiated();
     bool getCapturedTerritory();
     void resetCapturedTerritory();
+    void setArmies(unsigned int armies);
+    unsigned int getArmies() const;
+    void Player::addArmies(unsigned int armies);
+    void Player::removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();
@@ -80,6 +86,3 @@ public:
 // Players contains an issueOrder() method that creates an order object and adds it to the list of orders
 
 // Driver creates players and demonstrates that the above features are available
-
-
-
