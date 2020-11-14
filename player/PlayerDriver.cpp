@@ -15,7 +15,7 @@ using namespace std;
 int Player::playerCount = 0;
 
 
-int main() {
+int main4() {
 
     //Creating two players
     Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
@@ -25,18 +25,18 @@ int main() {
     //Testing copy constructor
     Player* player3 (new Player("Trudy"));
     Player* player4 = player3;
-    cout << "Testing copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
+   // cout << "Testing copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
 
 
     //Testing assignment operator
     Player * player5 = new Player("Dennis");
     Player * player6 = new Player("Frida");
     player5 = player6;
-    cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
+   // cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
 
 
     //Testing stream insertion opertor
-    cout << "\nTesting stream insertion operator printing no values since player1 does not have any cards, territories or oders yet:";
+   // cout << "\nTesting stream insertion operator printing no values since player1 does not have any cards, territories or oders yet:";
     cout << *player1;
 
 
@@ -70,12 +70,12 @@ int main() {
 
 
     //Validating the map
-    cout << "Validating created map:\n";
+    //cout << "Validating created map:\n";
     testMap.validate();
 
 
     //Printing the map
-    cout << "\nTesting created map: \n" << testMap.to_string() << "\n";
+    //cout << "\nTesting created map: \n" << testMap.to_string() << "\n";
 
 
     //Adding two territories to player1
@@ -90,7 +90,7 @@ int main() {
     //Test issueOrder() creates an order objects and adds it to the OrderList
     cout << "\nTest issueing orders:\n";
     player1->issueOrder("Deploy");
-    player1->issueOrder("Advance");
+    /*player1->issueOrder("Advance");
     player1->issueOrder("Bomb");
     player1->issueOrder("Blockade");
     player1->issueOrder("Airlift");
@@ -122,7 +122,7 @@ int main() {
 
 
     //Testing players to_string method
-    cout << "\ntesting players tostring() method:" << player1->to_string() << endl;
+    cout << "\ntesting players tostring() method:" << player1->to_string() << endl;*/
 
 
     return 0;

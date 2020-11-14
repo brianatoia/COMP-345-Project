@@ -3,7 +3,7 @@
 
 
 
-int main() {
+int main1() {
 
 	srand(time(0));
 	//Fill deck with cards example
@@ -63,4 +63,5 @@ int main() {
 	//test the size of current deck
 	Deck1.printDeckSize();
 
+	return 0;
 }

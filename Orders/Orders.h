@@ -1,6 +1,8 @@
 #pragma once
 #include <iostream>
 #include <list>
+#include "../Map/Map.h"
+
 using namespace std;
 
 class Order
@@ -67,60 +69,90 @@ private:
 class Deploy : public Order
 {
 public:
-	Deploy();
+	Deploy(int, shared_ptr<Territory>, list<shared_ptr<Territory>>);
 	bool validate();
 	void execute();
 	Deploy(const Deploy&);
 	Deploy& operator=(const Deploy&);
+
+private:
+	int numOfArmies;
+	shared_ptr<Territory> territory;
+	list<shared_ptr<Territory>> playerTerritories;
 };
 
 class Advance : public Order
 {
 public:
-	Advance();
+	Advance(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>, bool*, list<tuple<int, int>>);
 	bool validate();
 	void execute();
 	Advance(const Advance&);
 	Advance& operator=(const Advance&);
+
+private:
+	int numOfArmies;
+	shared_ptr<Territory> sourceTerritory;
+	shared_ptr<Territory> targetTerritory;
+	list<shared_ptr<Territory>> playerTerritories;
+	bool* capturedTerritory;
+	list<tuple<int, int>> playersNegotiated;
 };
 
 class Bomb : public Order
 {
 public:
-	Bomb();
+	Bomb(shared_ptr<Territory>, list<shared_ptr<Territory>>);
 	bool validate();
 	void execute();
 	Bomb(const Bomb&);
 	Bomb& operator=(const Bomb&);
+private:
+	shared_ptr<Territory> targetTerritory;
+	list<shared_ptr<Territory>> playerTerritories;
 };
 
 class Blockade : public Order
 {
 public:
-	Blockade();
+	Blockade(shared_ptr<Territory>, list<shared_ptr<Territory>>&);
 	bool validate();
 	void execute();
 	Blockade(const Blockade&);
 	Blockade& operator=(const Blockade&);
+private:
+	shared_ptr<Territory> targetTerritory;
+	list<shared_ptr<Territory>>* playerTerritories;
 };
 
 class Airlift : public Order
 {
 public:
-	Airlift();
+	Airlift(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>, bool*, list<tuple<int, int>>);
 	bool validate();
 	void execute();
 	Airlift(const Airlift&);
 	Airlift& operator=(const Airlift&);
+private:
+	int numOfArmies;
+	shared_ptr<Territory> sourceTerritory;
+	shared_ptr<Territory> targetTerritory;
+	list<shared_ptr<Territory>> playerTerritories;
+	bool* capturedTerritory;
+	list<tuple<int, int>> playersNegotiated;
 };
 
 class Negotiate : public Order
 {
 public:
-	Negotiate();
+	Negotiate(int, int, list<tuple<int, int>>*);
 	bool validate();
 	void execute();
 	Negotiate(const Negotiate&);
 	Negotiate& operator=(const Negotiate&);
+private:
+	int sourcePlayerID;
+	int targetPlayerID;
+	list<tuple<int, int>>* playersNegotiated;
 };
 

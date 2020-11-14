@@ -1,8 +1,10 @@
 #include "Orders.h"
+#include <random>
+#include <tuple>
 
 
 //Order Constructors
-Order::Order() 
+Order::Order()
 {
 	orderType = Undefined;
 	orderDescription = "Undefined";
@@ -30,7 +32,7 @@ Order::Order(OrderType orderType)
 	}
 	else if (orderType == Blockade)
 	{
-		this->orderDescription = "Triple the number of armies on one of the current player's territories and make it a neutral territory.";
+		this->orderDescription = "Double the number of armies on one of the current player's territories and make it a neutral territory.";
 	}
 	else if (orderType == Airlift)
 	{
@@ -206,67 +208,218 @@ void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 	}
 }
 
-Deploy::Deploy() : Order(Order::Deploy)
+Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr<Territory>> playerTerritories) : Order(Order::Deploy)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented 
+	this->numOfArmies = numOfArmies;
+	this->territory = territory;
+	this->playerTerritories = playerTerritories;
 }
 
 bool Deploy::validate()
 {
-	//VALIDATE ACTION 
-	cout << "Validating Deploy Order..." << endl;
-	//to be implemented
-	return true;
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		if (t == territory) 
+		{
+			return true;
+		}
+	}
+
+	cerr << "Invalid Order. Cannot deploy to a territory you do not control." << endl;
+	
+	return false;
 }
 
 void Deploy::execute()
 {
+
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Deploying..." << endl;
-		setOrderEffect("Effect of Deploying");
+		//add armies to territory 
+		territory->units += numOfArmies;
+
+		string s = "Deployed " + std::to_string(numOfArmies) + " armies to " + territory->name;
+		setOrderEffect(s);
 	}
 }
 
-Advance::Advance() : Order(Order::Advance)
+Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories, bool* capturedTerritory, 
+								list<tuple<int, int>> playersNegotiated) : Order(Order::Advance)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented 
+	this->numOfArmies = numOfArmies;
+	this->sourceTerritory = sourceTerritory;
+	this->targetTerritory = targetTerritory;
+	this->playerTerritories = playerTerritories;
+	this->capturedTerritory = capturedTerritory;
+	this->playersNegotiated = playersNegotiated;
 }
 
 bool Advance::validate()
 {
-	//VALIDATE ACTION 
-	cout << "Validating Advance Order..." << endl;
-	//to be implemented
+	bool playerOwnsSource = false;
+	bool sourceBordersTarget = false;
+
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		if (t == sourceTerritory)
+		{
+			playerOwnsSource = true;
+			break;
+		}
+	}
+	if (!playerOwnsSource)
+	{
+		cerr << "Invalid Order. Source territory does not belong to player that issued order." << endl;
+		return false;
+	}
+
+	for (int t : sourceTerritory->borders)
+	{
+		if (t == targetTerritory->getID())
+		{
+			sourceBordersTarget = true;
+			break;
+		}
+	}
+	if (!sourceBordersTarget)
+	{
+		cerr << "Invalid Order. Source territory does not border target territory." << endl;
+		return false;
+	}
+
 	return true;
+}
+
+string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, bool* capturedTerritory)
+{
+	int n;
+	string s = "";
+	random_device rd;
+	mt19937 mt(rd());
+	uniform_int_distribution<int> dist(0, 1);
+
+	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
+	for (int i = 0; i < numOfArmies; i++)
+	{
+		float chance = dist(mt);
+		if (chance <= 0.6)
+		{
+			sourceArmiesAttacking += 1;
+		}
+	}
+
+	for (int i = 0; i < targetTerritory->units; i++)
+	{
+		float chance = dist(mt);
+		if (chance <= 0.7)
+		{
+			targetArmiesDefending += 1;
+		}
+	}
+
+	n = targetTerritory->units - sourceArmiesAttacking;
+	targetTerritory->units = n < 0 ? 0 : n;
+	
+	n = sourceTerritory->units - targetArmiesDefending;
+	sourceTerritory->units = n < 0 ? 0 : n;
+
+	n = numOfArmies - targetArmiesDefending;
+	numOfArmies = n;
+
+	//Defending army defeated all of Attacking territoy armies
+	if (sourceTerritory->units <= 0)
+	{
+		sourceTerritory->units = 0; //make sure it's 0 and not negative
+		sourceTerritory->ownerID = NULL;
+
+		s += sourceTerritory->name + " has no armies remaining. Player " + std::to_string(sourceTerritory->ownerID) + "no longer owns this territory.\n";
+	}
+	if (targetTerritory->units <= 0)
+	{
+		targetTerritory->units = 0; //make sure it's 0 and not negative
+		targetTerritory->ownerID = NULL;
+
+		s += targetTerritory->name + " has been defeated.\n";
+
+		if (sourceTerritory->units != 0)
+		{
+			targetTerritory->units = numOfArmies;
+			sourceTerritory->units -= numOfArmies;
+			targetTerritory->ownerID = sourceTerritory->ownerID;
+			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name;
+			*capturedTerritory = true;
+		}
+
+	}
+	return(s);
 }
 
 void Advance::execute()
 {
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Advancing..." << endl;
-		setOrderEffect("Effect of Advancing");
+		string s;
+		//if target territory does not have an owner, can take it 
+		if (targetTerritory->ownerID == NULL)
+		{
+			targetTerritory->ownerID = sourceTerritory->ownerID;
+			targetTerritory->units += numOfArmies;
+			sourceTerritory->units -= numOfArmies;
+			*capturedTerritory = true;
+
+			s = "Target territory does not belong to a player. Deploying " + std::to_string(numOfArmies) + " armies from " + sourceTerritory->name + " to " + targetTerritory->name;
+		}
+		//if target territory is owned by the attacking territory owner
+		else if (sourceTerritory->ownerID == targetTerritory->ownerID)
+		{
+			sourceTerritory->units -= numOfArmies;
+			targetTerritory->units += numOfArmies;
+
+			s = "Target territory belongs to player. Deploying " + std::to_string(numOfArmies) + " armies from " + sourceTerritory->name + " to " + targetTerritory->name;
+		}
+		//target territory is not owned by the attacking territory owner
+		else
+		{
+			bool negotiatedWith = false;
+			for (tuple<int, int> t : playersNegotiated)
+			{
+				if (t == make_tuple(sourceTerritory->ownerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, sourceTerritory->ownerID))
+				{
+					negotiatedWith = true;
+					break;
+				}
+			}
+
+			if (negotiatedWith)
+			{
+				s = "Source and Target territory owners have negotiated together. Cannot attack each other this turn.";
+			}
+			else
+			{
+				s = attack(numOfArmies, sourceTerritory, targetTerritory, capturedTerritory);
+			}
+		}
+		setOrderEffect(s);
 	}
 }
 
-Bomb::Bomb() : Order(Order::Bomb)
+Bomb::Bomb(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories) : Order(Order::Bomb)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented 
+	this->targetTerritory = targetTerritory;
+	this->playerTerritories = playerTerritories;
 }
 
 bool Bomb::validate()
 {
-	//VALIDATE ACTION
-	cout << "Validating Bomb Order..." << endl;
-	//to be implemented
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		if (t == targetTerritory)
+		{
+			cerr << "Cannot bomb own territory." << endl;
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -274,49 +427,113 @@ void Bomb::execute()
 {
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Bombing..." << endl;
-		setOrderEffect("Effect of Bombing");
+		int armiesToBomb = targetTerritory->units / 2;
+		targetTerritory->units -= armiesToBomb;
+
+		string s = "Player" + std::to_string(targetTerritory->ownerID + 1) + " bombed " + std::to_string(armiesToBomb) + " armies in " + targetTerritory->name;
+		setOrderEffect(s);
 	}
 }
 
-Blockade::Blockade() : Order(Order::Blockade)
+Blockade::Blockade(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>& playerTerritories) : Order(Order::Blockade)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented
+	this->targetTerritory = targetTerritory;
+	this->playerTerritories = &playerTerritories;
 }
 
 bool Blockade::validate()
 {
-	//VALIDATE ACTION 
-	cout << "Validating Blockade Order..." << endl;
-	//to be implemented
-	return true;
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		if (t == targetTerritory)
+		{
+			return true;
+		}
+	}
+
+	cerr << "Cannot blockade a territory player does not own." << endl;
+	return false;
 }
 
 void Blockade::execute()
 {
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Blockading..." << endl;
-		setOrderEffect("Effect of Blockading");
+		targetTerritory->units *= 2;
+		targetTerritory->ownerID = NULL;
+		playerTerritories->remove(targetTerritory);
+
+		//Separating string avoided an error
+		string s = targetTerritory->name + " now has " + std::to_string(targetTerritory->units) + " armies. Ownership now transferred to Neutral player.";
+		setOrderEffect(s);
 	}
 }
 
-Airlift::Airlift() : Order(Order::Airlift)
+Airlift::Airlift(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories, bool* capturedTerritory,
+						list<tuple<int, int>> playersNegotiated) : Order(Order::Airlift)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented
+	this->numOfArmies = numOfArmies;
+	this->sourceTerritory = sourceTerritory;
+	this->targetTerritory = targetTerritory;
+	this->playerTerritories = playerTerritories;
+	this->capturedTerritory = capturedTerritory;
+	this->playersNegotiated = playersNegotiated;
 }
 
 bool Airlift::validate()
 {
-	//VALIDATE ACTION 
-	cout << "Validating Airlift Order..." << endl;
-	//to be implemented
+	bool playerOwnsSource = false;
+	bool playerOwnsTarget = false;
+
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		if (t == sourceTerritory)
+		{
+			playerOwnsSource = true;
+			break;
+		}
+		if (t == targetTerritory)
+		{
+			playerOwnsTarget = true;
+			break;
+		}
+	}
+	if (!playerOwnsSource)
+	{
+		cerr << "Invalid Order. Player does not own source territory." << endl;
+		return false;
+	}
+	if (!playerOwnsTarget)
+	{
+		cerr << "Invalid Order. Player does not own target territory." << endl;
+		if (playerOwnsSource)
+		{
+			cerr << "Issuing Attack..." << endl;
+			string s;
+			bool negotiatedWith = false;
+			for (tuple<int, int> t : playersNegotiated)
+			{
+				if (t == make_tuple(sourceTerritory->ownerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, sourceTerritory->ownerID))
+				{
+					negotiatedWith = true;
+					break;
+				}
+			}
+
+			if (negotiatedWith)
+			{
+				s = "Source and Target territory owners have negotiated together. Cannot attack each other this turn.";
+			}
+			else
+			{
+				s = attack(numOfArmies, sourceTerritory, targetTerritory, capturedTerritory);
+			}
+
+			setOrderEffect(s);
+		}
+		return false;
+	}
+
 	return true;
 }
 
@@ -324,25 +541,30 @@ void Airlift::execute()
 {
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Airlifting..." << endl;
-		setOrderEffect("Effect of Airlifting");
+		sourceTerritory->units -= numOfArmies;
+		targetTerritory->units += numOfArmies;
+
+		string s = "Airlifting " + std::to_string(numOfArmies) + " from " + sourceTerritory->name + " to " + targetTerritory->name;
+		setOrderEffect(s);
 	}
 
 }
 
-Negotiate::Negotiate() : Order(Order::Negotiate)
+Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int>>* playersNegotiated) : Order(Order::Negotiate)
 {
-	//initialize attributes needed to perform this action
-	//to be implemented
+	this->sourcePlayerID = sourcePlayerID;
+	this->targetPlayerID = targetPlayerID;
+	this->playersNegotiated = playersNegotiated;
 }
 
 bool Negotiate::validate()
 {
-	//VALIDATE ACTION 
-	cout << "Validating Negotiate Order..." << endl;
-	//to be implemented
+	if (sourcePlayerID == targetPlayerID)
+	{
+		cerr << "Cannot negotiate with yourself." << endl;
+		return false;
+	}
+	
 	return true;
 }
 
@@ -350,10 +572,10 @@ void Negotiate::execute()
 {
 	if (validate())
 	{
-		//EXECUTE ACTION
-		//to be implemented
-		cout << "Negotiating..." << endl;
-		setOrderEffect("Effect of Negotiating");
+		playersNegotiated->push_back(std::make_tuple(sourcePlayerID, targetPlayerID));
+
+		string s = "Player" + std::to_string(sourcePlayerID) + " has negotiated with Player" + std::to_string(targetPlayerID);
+		setOrderEffect(s);
 	}
 }
 
@@ -374,32 +596,48 @@ OrderList::OrderList(const OrderList& orderList)
 
 Deploy::Deploy(const Deploy& order) : Order(order)
 {
-	//future attributes
+	this->numOfArmies = order.numOfArmies;
+	this->territory = order.territory;
+	this->playerTerritories = order.playerTerritories;
 }
 
 Advance::Advance(const Advance& order) : Order(order)
 {
-	//future attributes
+	this->numOfArmies = order.numOfArmies;
+	this->sourceTerritory = order.sourceTerritory;
+	this->targetTerritory = order.targetTerritory;
+	this->playerTerritories = order.playerTerritories;
+	this->capturedTerritory = order.capturedTerritory;
+	this->playersNegotiated = order.playersNegotiated;
 }
 
 Bomb::Bomb(const Bomb& order) : Order(order)
 {
-	//future attributes
+	this->targetTerritory = order.targetTerritory;
+	this->playerTerritories = order.playerTerritories;
 }
 
 Blockade::Blockade(const Blockade& order) : Order(order)
 {
-	//future attributes
+	this->targetTerritory = order.targetTerritory;
+	this->playerTerritories = order.playerTerritories;
 }
 
 Airlift::Airlift(const Airlift& order) : Order(order)
 {
-	//future attributes
+	this->numOfArmies = order.numOfArmies;
+	this->sourceTerritory = order.sourceTerritory;
+	this->targetTerritory = order.targetTerritory;
+	this->playerTerritories = order.playerTerritories;
+	this->capturedTerritory = order.capturedTerritory;
+	this->playersNegotiated = order.playersNegotiated;
 }
 
 Negotiate::Negotiate(const Negotiate& order) : Order(order)
 {
-	//future attributes
+	this->sourcePlayerID = order.sourcePlayerID;
+	this->targetPlayerID = order.targetPlayerID;
+	this->playersNegotiated = order.playersNegotiated;
 }
 
 //Assignment operator
@@ -421,42 +659,58 @@ OrderList& OrderList::operator=(const OrderList& rightSide)
 Deploy& Deploy::operator=(const Deploy& rightSide) 
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->numOfArmies = rightSide.numOfArmies;
+	this->territory = rightSide.territory;
+	this->playerTerritories = rightSide.playerTerritories;
 	return *this;
 }
 
 Advance& Advance::operator=(const Advance& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->numOfArmies = rightSide.numOfArmies;
+	this->sourceTerritory = rightSide.sourceTerritory;
+	this->targetTerritory = rightSide.targetTerritory;
+	this->playerTerritories = rightSide.playerTerritories;
+	this->capturedTerritory = rightSide.capturedTerritory;
+	this->playersNegotiated = rightSide.playersNegotiated;
 	return *this;
 }
 
 Bomb& Bomb::operator=(const Bomb& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->targetTerritory = rightSide.targetTerritory;
+	this->playerTerritories = rightSide.playerTerritories;
 	return *this;
 }
 
 Blockade& Blockade::operator=(const Blockade& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->targetTerritory = rightSide.targetTerritory;
+	this->playerTerritories = rightSide.playerTerritories;
 	return *this;
 }
 
 Airlift& Airlift::operator=(const Airlift& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->numOfArmies = rightSide.numOfArmies;
+	this->sourceTerritory = rightSide.sourceTerritory;
+	this->targetTerritory = rightSide.targetTerritory;
+	this->playerTerritories = rightSide.playerTerritories;
+	this->capturedTerritory = rightSide.capturedTerritory;
+	this->playersNegotiated = rightSide.playersNegotiated;
 	return *this;
 }
 
 Negotiate& Negotiate::operator=(const Negotiate& rightSide)
 {
 	Order::operator=(rightSide);
-	//future attributes
+	this->sourcePlayerID = rightSide.sourcePlayerID;
+	this->targetPlayerID = rightSide.targetPlayerID;
+	this->playersNegotiated = rightSide.playersNegotiated;
 	return *this;
 }
 

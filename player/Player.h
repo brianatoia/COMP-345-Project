@@ -14,17 +14,22 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <tuple>
+
 
 
 using namespace std;
+
+static list<tuple<int, int>> playersNegotiated;
 
 class Player
 {
 
 private:
-    static int playerCount; //Statin counter, counting players of the game
+    static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
     string name;
+    bool* capturedTerritory;
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -45,20 +50,23 @@ public:
     string getName();
     static int getPlayerCount();
     unsigned int getPlayerID();
+    void clearPlayersNegotiated();
+    bool getCapturedTerritory();
+    void resetCapturedTerritory();
 
     //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(Map aMap);
-    list<shared_ptr<Territory>> toAttack(Map aMap);
+    list<shared_ptr<Territory>> toAttack(Map* aMap);
 
     //********* Card methods **********//
     Hand* getHand();
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType);
+    void issueOrder(string orderType, Map* map = NULL);
 };
 
 //*************      INSTRUCTIONS    ****************
