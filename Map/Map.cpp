@@ -42,6 +42,7 @@ Map::~Map()
 
     this->territories.clear();
     this->continents.clear();
+    cout << "Mapp was deleted" << endl;
 }
 
 string Map::to_string()
@@ -64,7 +65,7 @@ string Map::to_string()
     return s;
 }
 
-int Map::getTerritoriesSize()
+int Map::getTerritoriesCount()
 {
     return territories.size();
 }

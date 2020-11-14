@@ -17,22 +17,43 @@ using namespace std;
 class GameEngine
 {
 public:
-	GameEngine();//Error since parameters have to be provided
+
+	//******     Constructor & Destructor    *****//
+	GameEngine();
 	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
 	//~GameEngine();
 	//GameEngine& operator= (const GameEngine&);
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	~GameEngine();
 
+	//******     PART I    *****//
+	void gameStart();
+
+
+	//******     Map Methods    *****//
+	void loadMap();
+	string selectMap();
+	bool isMapInDirectory(string fileName);
+
+	//******     Oberserver Methods    *****//
+	bool Observers();
+	bool getObserverStatus();
+	void setObserverStatus(bool status);
+	bool equals(const string& a, const string& b);
+
+
+	//******     Deck Method    *****//
+	Deck* getDeck();
+
+
+	//******     Player Methods    *****//
 	void addPlayers(shared_ptr<Player> player);
-	vector <shared_ptr<Player>> getPlayers();
+	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
-
-	void setMap(shared_ptr<Map> newName);
-	void loadMap();
 	
 
-	//Part 2
+	//******     PART II    *****//
 	void startupPhase();	
 
 	//shared_ptr<GameEngine> createEngine();
@@ -45,9 +66,19 @@ public:
 	void checkForEliminatedPlayers();
 	shared_ptr<Player> checkForWinner();
 
+
+//******     Private Members    *****//
 private:
+	int numOfPlayers;
+	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+
+	bool activateObservers;
 	
+
+	//bool reinforcementsPhase();
+	//bool issueOrdersPhase();
+	//bool executeOrdersPhase();
 
 };
