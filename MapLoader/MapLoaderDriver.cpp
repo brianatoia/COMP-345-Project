@@ -8,7 +8,7 @@ europeError.map features a territory with no borders either way
 */
 
 
-int main()
+int main3()
 {
 	//declaring map loader 
 	shared_ptr<MapLoader> mapLoader( new MapLoader());

@@ -14,9 +14,13 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <tuple>
+
 
 
 using namespace std;
+
+static list<tuple<int, int>> playersNegotiated;
 
 class Player
 {
@@ -26,6 +30,7 @@ private:
     unsigned int playerID;
     int reinforcementPool; //Number of armies player has to place
     string name;
+    bool* capturedTerritory;
     unsigned int armies;
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
@@ -48,6 +53,9 @@ public:
     static int getPlayerCount();
     void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
+    void clearPlayersNegotiated();
+    bool getCapturedTerritory();
+    void resetCapturedTerritory();
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
     void Player::addArmies(unsigned int armies);
@@ -58,14 +66,14 @@ public:
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(Map aMap);
-    list<shared_ptr<Territory>> toAttack(Map aMap);
+    list<shared_ptr<Territory>> toAttack(Map* aMap);
 
     //********* Card methods **********//
     Hand* getHand();
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType);
+    void issueOrder(string orderType, Map* map = NULL);
 };
 
 //*************      INSTRUCTIONS    ****************
@@ -79,6 +87,3 @@ public:
 // Players contains an issueOrder() method that creates an order object and adds it to the list of orders
 
 // Driver creates players and demonstrates that the above features are available
-
-
-

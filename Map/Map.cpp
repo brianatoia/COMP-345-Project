@@ -370,7 +370,12 @@ shared_ptr<Territory> Map::findTerritory(string name)
     for (shared_ptr<Territory> t : this->territories)
     {
         if (t == nullptr) continue;
-        if (t->name.compare(name) == 0)
+
+        string territoryName = t->name;
+        transform(territoryName.begin(), territoryName.end(), territoryName.begin(), ::tolower);
+        transform(name.begin(), name.end(), name.begin(), ::tolower);
+
+        if (territoryName.compare(name) == 0)
         {
             return shared_ptr<Territory>(t);
         }

@@ -1,104 +1,73 @@
 #include "Orders.h"
+#include "../Player/Player.h"
 
 int main()
 {
-	shared_ptr<Order> order1 (new Deploy);
-	shared_ptr<Order> order2 (new Advance);
-	shared_ptr<Order> order3 (new Bomb);
-	shared_ptr<Order> order4 (new Negotiate);
-	shared_ptr<Order> order5 (new Order); //invalid order
+    //Creating two players
+    Player* player1(new Player("Berta"));    //Created player1 using the paramterized constructor
+    Player* player2(new Player("Rob"));
 
-	OrderList* orderList = new OrderList();
+    //Creating a map
+    Map* testMap = new Map();
 
-	//Adding to the order list
-	orderList->addOrder(order1);
-	orderList->addOrder(order2);
-	orderList->addOrder(order3);
-	orderList->addOrder(order4);
-	orderList->addOrder(order5); //invalid order will not appear in list
+    //Creating two continents
+    shared_ptr<Continent> c1 = testMap->add(Continent(1, "America", 1));
+    shared_ptr<Continent> c2 = testMap->add(Continent(2, "Europe", 5));
 
-	//Stream insertion example
-	cout << "\nOrder List" << endl;
-	cout << "------------------" << endl;
-	cout << *orderList << endl;
-	cout << "\nOrder Object" << endl;
-	cout << "------------------" << endl;
-	cout << *order5 << endl;
-	cout << "\nOrder Subclass Object (Deploy)" << endl;
-	cout << "------------------" << endl;
-	cout << *order1 << endl;
-	
-	//Demonstrating remove
-	cout << "\nDemonstrating remove()" << endl;
-	cout << "------------------" << endl;
-	orderList->remove(order2);
-	orderList->remove(order5); //no change since not in list
-	cout << *orderList << endl;
+    //Creating new territories of type ptr and adding them to the testMap
+    shared_ptr<Territory> t1 = testMap->add(Territory(1, "Canada", 1));
+    shared_ptr<Territory> t2 = testMap->add(Territory(2, "Iceland", 2));
+    shared_ptr<Territory> t3 = testMap->add(Territory(3, "United Kingdom", 2));
+    shared_ptr<Territory> t4 = testMap->add(Territory(4, "France", 2));
+    shared_ptr<Territory> t5 = testMap->add(Territory(5, "Spain", 2));
+    shared_ptr<Territory> t6 = testMap->add(Territory(6, "Italy", 2));
 
-	//Demonstrating move
-	cout << "Demonstrating move(): Move 'Negotiate' to the top" << endl;
-	cout << "------------------" << endl;
-	orderList->move(order4, OrderList::moveToBeginning);
-	cout << *orderList << endl;
+    //Connecting territories via directed graphs
+    testMap->link(t1, t2);
+    testMap->link(t2, t3);
+    testMap->link(t3, t4);
+    testMap->link(t4, t5);
+    testMap->link(t4, t1);
+    testMap->link(t5, t6);
+    testMap->link(t6, t3);
+    testMap->link(t6, t4);
 
-	cout << "Demonstrating move(): Move 'Negotiate' back to the bottom" << endl;
-	cout << "------------------" << endl;
-	orderList->move(order4, OrderList::moveToEnd);
-	cout << *orderList << endl;
+    //Adding two territories to player1
+    player1->addTerritory(t3);
+    player1->addTerritory(t4);
+    player2->addTerritory(t5);
 
-	cout << "Demonstrating move(): Move 'Bomb' up" << endl;
-	cout << "------------------" << endl;
-	orderList->move(order3, OrderList::moveUp);
-	cout << *orderList << endl;
-	
-	cout << "Demonstrating move(): Move 'Bomb' down" << endl;
-	cout << "------------------" << endl;
-	orderList->move(order3, OrderList::moveDown);
-	cout << *orderList << endl;
+    //Test issueOrder() creates an order objects and adds it to the OrderList
+    cout << "\nTest issueing orders:\n";
+    cout << t4->units << endl;
+    player1->issueOrder("Deploy");
+    cout << t4->units << endl;
+    
+    
+    /*t5->units = 20;
+    cout << t5->units;
+    player1->issueOrder("Bomb", testMap);
+    cout << t5->units << endl;*/
 
-	cout << "\nDemonstrating execute()" << endl;
-	cout << "------------------" << endl;
-	//Demonstrating execute() functions
-	order1->execute();
-	order3->execute();
-	order4->execute();
-	order5->execute(); //doesn't print since not valid 
+    /*player1->issueOrder("Blockade");
+    cout << t4->units << endl;
+    for (shared_ptr<Territory> t : player1->getTerritoryList())
+    {
+        cout << t->name << endl;
+    }*/
 
-	//Demonstrating assignment operator
-	order5 = order1;
-	order1 = order3;
+    /*cout << t5->units << endl;
+    player1->issueOrder("Advance", testMap);
+    cout << t5->units << endl;
+    cout << t4->units << endl;*/
 
-	OrderList* orderList1 = new OrderList();
-	cout << "\nNew Order List" << endl;
-	cout << "------------------" << endl;
-	cout << *orderList1 << endl;
-	orderList1 = orderList;
-	cout << "\nNew Order List after Assignment" << endl;
-	cout << "------------------" << endl;
-	cout << *orderList1 << endl;
-	cout << "\nNew Order5" << endl;
-	cout << "------------------" << endl;
-	cout << *order5 << endl;
-	cout << "\nNew Order1" << endl;
-	cout << "------------------" << endl;
-	cout << *order1 << endl;
+    
+    //player1->issueOrder("Airlift", testMap);
+    
 
-	//Demonstrating copy constructor
-	shared_ptr<Order> order6(new Order);
-	shared_ptr<Order> order7 = order6;
-	cout << "\nOrder Copy Constructor" << endl;
-	cout << "------------------" << endl;
-	cout << *order7 << endl;
-
-	shared_ptr<Order> order8 = order5;
-	cout << "\nOrder Subclass Copy Constructor" << endl;
-	cout << "------------------" << endl;
-	cout << *order8 << endl;
-
-	OrderList* orderList2 = orderList;
-	cout << "\nOrder List Copy Constructor" << endl;
-	cout << "------------------" << endl;
-	cout << *orderList2 << endl; 
-
+    player1->issueOrder("Negotiate");
+    player1->issueOrder("Advance", testMap);
+    cout << t5->units << endl;
+    cout << t4->units << endl;
 	return 0;
 }

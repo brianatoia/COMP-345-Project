@@ -15,12 +15,12 @@ using namespace std;
 //int Player::playerCount = 0;
 
 
-int main() {
+int main4() {
 
     //Creating two players
     Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
     Player* player2 (new Player);             //Created player2 with the default constructor
-  
+
     //Testing copy constructor
     Player* player3 (new Player("Trudy"));
     Player* player4 (new Player (*player3));
@@ -28,16 +28,16 @@ int main() {
 
 
 
-    //Testing assignment operator 
+    //Testing assignment operator
     Player* player5 = new Player("Dennis");
     Player* player6 = new Player("Frida");
-    *player5 = *player6; 
+    *player5 = *player6;
 
     cout << "\nTesting assignment operator, printing name of player 5 as example:\n" << player5->getName() << endl;
 
 
     //Testing stream insertion opertor
-    cout << "\nTesting stream insertion operator printing no values since player1 does not have any cards, territories or oders yet:";
+   // cout << "\nTesting stream insertion operator printing no values since player1 does not have any cards, territories or oders yet:";
     cout << *player1;
 
 
@@ -78,18 +78,18 @@ int main() {
 
 
     //Validating the map
-    cout << "Validating created map:\n";
+    //cout << "Validating created map:\n";
     testMap.validate();
 
 
     //Printing the map
-    cout << "\nTesting created map: \n" << testMap.to_string() << "\n";
+    //cout << "\nTesting created map: \n" << testMap.to_string() << "\n";
 
 
     //Adding two territories to player1
     player1->addTerritory(t3);
     player1->addTerritory(t4);
-   
+
 
     //Displaying territoryList containing territories currently owned by player2
     cout << "\nTesting players list of territories:\n" + player1->printList(player1->getTerritoryList());
@@ -98,7 +98,7 @@ int main() {
     //Test issueOrder() creates an order objects and adds it to the OrderList
     cout << "\nTest issueing orders:\n";
     player1->issueOrder("Deploy");
-    player1->issueOrder("Advance");
+    /*player1->issueOrder("Advance");
     player1->issueOrder("Bomb");
     player1->issueOrder("Blockade");
     player1->issueOrder("Airlift");
@@ -141,4 +141,3 @@ int main() {
 
     return 0;
 };
-
