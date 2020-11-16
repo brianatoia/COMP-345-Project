@@ -28,10 +28,9 @@ class Player
 private:
     static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
-    int reinforcementPool; //Number of armies player has to place
     string name;
     bool* capturedTerritory;
-    unsigned int armies;
+    unsigned int armies;    //number of armies player has to place
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards

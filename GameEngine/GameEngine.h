@@ -61,6 +61,7 @@ public:
 	void mainGameLoop();
 	void reinforcementsPhase();
 	int findContinentBonusTotal(shared_ptr<Player> player);
+	void deployLoop(shared_ptr<Player>);
 	void issueOrdersPhase();
 	void executeOrdersPhase();
 	void checkForEliminatedPlayers();
@@ -75,10 +76,4 @@ private:
 	vector<shared_ptr<Player>> players;
 
 	bool activateObservers;
-	
-
-	//bool reinforcementsPhase();
-	//bool issueOrdersPhase();
-	//bool executeOrdersPhase();
-
 };

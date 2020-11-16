@@ -104,6 +104,10 @@ public:
 	//remove a card from the player's hand
 	void removePlayedCardOfHand(Card* r_card);
 
+	bool findCardType(string type);
+
+	int findNumberOfType(string type);
+
 	int getHandSize();
 
 	string to_string();

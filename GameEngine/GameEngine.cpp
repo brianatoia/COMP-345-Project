@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <Windows.h>
 
 #include <filesystem>
 
@@ -301,13 +302,15 @@ void GameEngine::reinforcementsPhase()
 {
 	for (auto player : players)
 	{
+		cout << "\nGiving armies to player " << player->getName() << endl;
 		int armiesToGive = player->getTerritoryList().size()/3;
 
 		armiesToGive += findContinentBonusTotal(player);
 
+
 		if (armiesToGive < 3) armiesToGive = 3;
 		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
-		player->addArmies(armiesToGive);
+		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
 	}
 		
 }
@@ -315,14 +318,16 @@ void GameEngine::reinforcementsPhase()
 int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
 {
 	int bonus = 0;
+	vector<unsigned int> playerTerritoryIDs;
 
-	vector<int> playerTerritoryIDs;
 	for (auto territory : player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
 	
 	sort(playerTerritoryIDs.begin(), playerTerritoryIDs.end()); // sort for std::includes
-
-	for (auto continent : map->getContinents()) //Loop through all continents, could be simplified to only necessary continents but not necessary and complicates code
+	
+	for (shared_ptr<Continent> continent : map->getContinents()) //Loop through all continents, could be simplified to only necessary continents but not necessary and complicates code
 	{
+		if (continent == nullptr) continue;
+
 		sort(continent->territoryIDs.begin(), continent->territoryIDs.end());
 
 		if (includes(playerTerritoryIDs.begin(), playerTerritoryIDs.end(), continent->territoryIDs.begin(), continent->territoryIDs.end())) //Check if continent's territory IDs list is a subset of Player's territory IDs list
@@ -334,12 +339,93 @@ int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
 	return bonus;
 }
 
-void GameEngine::executeOrdersPhase()
+void GameEngine::deployLoop(shared_ptr<Player> player)
 {
 
+		do
+		{
+			player->issueOrder("Deploy");
+		} while (player->getArmies() > 0);
+	
 }
 
 void GameEngine::issueOrdersPhase()
+{
+	cout << "\nStart of issueOrderPhase()\n" << endl;
+	Sleep(1000);
+
+	cout << "Deploying Phase: \n" << endl;
+	Sleep(1000);
+
+	//Execute the deploys
+	for (auto player : players)
+	{
+		deployLoop(player);
+	}
+
+	//execute deploys?
+
+	//Issuing all the rest of the orders
+	for (auto player : players)
+	{
+		cout << "\n" << player->getName()<<" place your order!" << endl;
+		cout << "==================================================" << endl;
+		//(priorities: 1:deploy 2: airlift 3:blockade 4:all the others
+		//TO-DO make smart list that verifies what actions you can currently do
+		Sleep(1000);
+		cout << "Advance" <<endl;
+		cout << "Airlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;
+		cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;
+		cout << "Bomb (" << player->getHand()->findNumberOfType("Bomb") << ")" << endl;
+		cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;
+		cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;
+		cout << "End" << endl;
+		cout << "==================================================" << endl; 
+
+		string decision = "";
+		while (true)
+		{
+			cin >> decision;
+
+			if (stricmp(decision.c_str(), "Advance") == 0)
+			{
+				player->issueOrder("Advance");
+			} 
+			else if (stricmp(decision.c_str(), "Airlift") == 0)
+			{
+				player->issueOrder("Airlift");
+			}
+			else if (stricmp(decision.c_str(), "Blockade") == 0)
+			{
+				player->issueOrder("Blockade");
+			}
+			else if (stricmp(decision.c_str(), "Bomb") == 0)
+			{
+				player->issueOrder("Bomb");
+			}
+			else if (stricmp(decision.c_str(), "Negotiate") == 0)
+			{
+				player->issueOrder("Negotiate");
+			}
+			else if (stricmp(decision.c_str(), "Reinforcement") == 0)
+			{
+				//if condition and stuff
+				deployLoop(player);
+			}
+			else if (stricmp(decision.c_str(), "End") == 0)
+			{
+				break;
+			}
+			else
+			{
+				cout << "Invalid input" << endl;
+			}
+
+		}
+	}
+}
+
+void GameEngine::executeOrdersPhase()
 {
 
 }
@@ -350,7 +436,8 @@ void GameEngine::checkForEliminatedPlayers()
 	{
 		if (players[i]->getTerritoryList().size() == 0)
 		{
-			players.erase(players.begin() + i); //Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
+			players.erase(players.begin() + i); //Because smart pointer, also calls destructor
+			//Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
 			checkForEliminatedPlayers();
 			break;
 		}
@@ -374,8 +461,8 @@ shared_ptr<Player> GameEngine::checkForWinner()
 void GameEngine::mainGameLoop()
 {
 	reinforcementsPhase();
-	executeOrdersPhase();
 	issueOrdersPhase();
+	executeOrdersPhase();
 
 	checkForEliminatedPlayers();
 
@@ -405,12 +492,14 @@ int main(){
 	//Player order was randomly changed, territories distributed and armies were assigned to each player
 	cout << gameEngine->getPlayersInfo() << endl;
 
-
 	//Main Game Loop
 	while (true)
 	{
+		cout << "Start of main loop" << endl;
 		gameEngine->mainGameLoop();
-
+		cout << "end of main loop" << endl;
+		
+		//Check for winner, end game loop if true
 		shared_ptr<Player> winner = gameEngine->checkForWinner();
 		if (winner != nullptr)
 		{

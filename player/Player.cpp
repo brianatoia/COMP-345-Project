@@ -220,7 +220,7 @@ list<shared_ptr<Territory>> Player::toAttack(Map* aMap)
         vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
         for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
         {
-            shared_ptr<Territory> t = aMap.getTerritory(*iD);
+            shared_ptr<Territory> t = aMap->getTerritory(*iD);
 
             if (t->ownerID != playerID) //if adjacent territory is not owned by player, add
             {
@@ -288,10 +288,12 @@ void Player::issueOrder(string orderType, Map* map)
 {
 	if (orderType == "Deploy")
 	{
-		int numOfArmies = 10; //change to get from reinforcement pool
 		shared_ptr<Territory> territory;
 		string territoryName;
 
+		cout << "You have " << armies << " deployable armies" << endl;
+
+		//add check for correct territoy name
 		cout << "\nWhich territory would you like to deploy to?" << endl;
 		cout << "--------------------------------------------" << endl;
 		for (shared_ptr<Territory> t : territoryList)
@@ -313,7 +315,24 @@ void Player::issueOrder(string orderType, Map* map)
 			}
 		}
 
-		shared_ptr<Order> order(new Deploy(numOfArmies, territory, territoryList));
+		cout << "\nHow many armies would you like to deploy? (Max " << armies << ")" << endl;
+		cout << "--------------------------------------------" << endl;
+		int numberOfArmiesToDeploy;
+		while (true)
+		{
+			cin >> numberOfArmiesToDeploy;
+			if (numberOfArmiesToDeploy < 0 || numberOfArmiesToDeploy > armies || cin.fail())
+			{
+				cout << "\nInvalid input, please try again" << endl;
+				cin.clear();
+				cin.ignore(10000, '\n');
+			}				
+			else break;
+		} 
+
+		armies -= numberOfArmiesToDeploy;
+
+		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, territoryList));
 		this->orderList->addOrder(order);
 
 	}

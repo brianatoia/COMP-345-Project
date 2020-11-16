@@ -210,10 +210,28 @@ void Hand::removePlayedCardOfHand(Card* rCard)
 	}
 }
 
+bool Hand::findCardType(string type)
+{
+	for (auto card : hand)
+	{
+		if (type.compare(card->getCardType()) == 0) return true;
+	}
+	return false;
+}
+
+int Hand::findNumberOfType(string type)
+{
+	int amount = 0;
+	for (auto card : hand)
+	{
+		if (type.compare(card->getCardType()) == 0) amount ++;
+	}
+	return amount;
+}
+
 int Hand::getHandSize()
 {
 	return hand.size();
-
 }
 
 
