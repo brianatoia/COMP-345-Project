@@ -57,8 +57,8 @@ public:
     void resetCapturedTerritory();
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
-    void Player::addArmies(unsigned int armies);
-    void Player::removeArmies(unsigned int armies);
+    void addArmies(unsigned int armies);
+    void removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();

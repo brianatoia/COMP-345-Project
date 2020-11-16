@@ -292,14 +292,12 @@ bool Advance::validate()
 
 string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, bool* capturedTerritory)
 {
-	int n;
 	string s = "";
 	random_device rd;
 	mt19937 mt(rd());
 	uniform_int_distribution<int> dist(0, 1);
 
 	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
-	//Each attacking army unit involved has 60% chances of killing one defending army. 
 	for (int i = 0; i < numOfArmies; i++)
 	{
 		float chance = dist(mt);
@@ -308,7 +306,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 			sourceArmiesAttacking += 1;
 		}
 	}
-	//Each defending army unit has 70% chances of killing one attacking army unit.
+
 	for (int i = 0; i < targetTerritory->units; i++)
 	{
 		float chance = dist(mt);
@@ -318,35 +316,35 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 		}
 	}
 
-	n = targetTerritory->units - sourceArmiesAttacking;
-	targetTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
-	
-	n = sourceTerritory->units - targetArmiesDefending;
-	sourceTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
-
+	targetTerritory->units -= sourceArmiesAttacking;
+	sourceTerritory->units -= targetArmiesDefending;
 	numOfArmies -= targetArmiesDefending;
+	cout << targetTerritory->units << endl;
 
 	//Defending army defeated all of Attacking territoy armies
-	if (sourceTerritory->units == 0)
+	if (sourceTerritory->units <= 0)
 	{
+		sourceTerritory->units = 0; //make sure it's 0 and not negative
 		sourceTerritory->ownerID = NULL;
 
-		s += sourceTerritory->name + " has no armies remaining. Player " + std::to_string(sourceTerritory->ownerID) + " no longer owns this territory.\n";
+		s += sourceTerritory->name + " has no armies remaining. Player " + std::to_string(sourceTerritory->ownerID) + "no longer owns this territory.\n";
 	}
-	//Attacking army defeated all Defending territory armies
-	if (targetTerritory->units == 0)
+	if (targetTerritory->units <= 0)
 	{
+		cout << "HI" << endl;
+		targetTerritory->units = 0; //make sure it's 0 and not negative
 		targetTerritory->ownerID = NULL;
 
 		s += targetTerritory->name + " has been defeated.\n";
 
-		//If Attacking army still has units, can capture the defeated target territory 
-		if (numOfArmies != 0)
+		if (sourceTerritory->units != 0)
 		{
+			cout << numOfArmies << endl;
 			targetTerritory->units = numOfArmies;
-			sourceTerritory->units -= numOfArmies;
 			targetTerritory->ownerID = sourceTerritory->ownerID;
-			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name;
+			cout << targetTerritory->units << endl;
+			cout << std::to_string(*capturedTerritory == true) << endl;
+			s += "Player " + std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name;
 			*capturedTerritory = true;
 		}
 
@@ -513,8 +511,11 @@ bool Airlift::validate()
 			bool negotiatedWith = false;
 			for (tuple<int, int> t : playersNegotiated)
 			{
+				cout << get<0>(t) << endl;
+				cout << get<1>(t) << endl;
 				if (t == make_tuple(sourceTerritory->ownerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, sourceTerritory->ownerID))
 				{
+					cout << "HI" << endl;
 					negotiatedWith = true;
 					break;
 				}
@@ -550,11 +551,11 @@ void Airlift::execute()
 
 }
 
-Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int>>* playersNegotiated) : Order(Order::Negotiate)
+Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int>> playersNegotiated) : Order(Order::Negotiate)
 {
 	this->sourcePlayerID = sourcePlayerID;
 	this->targetPlayerID = targetPlayerID;
-	this->playersNegotiated = playersNegotiated;
+	this->playerseNegotiated = playerseNegotiated;
 }
 
 bool Negotiate::validate()
@@ -572,8 +573,8 @@ void Negotiate::execute()
 {
 	if (validate())
 	{
-		playersNegotiated->push_back(std::make_tuple(sourcePlayerID, targetPlayerID));
-
+		playerseNegotiated.push_back(std::make_tuple(sourcePlayerID, targetPlayerID));
+				
 		string s = "Player" + std::to_string(sourcePlayerID) + " has negotiated with Player" + std::to_string(targetPlayerID);
 		setOrderEffect(s);
 	}
@@ -637,7 +638,7 @@ Negotiate::Negotiate(const Negotiate& order) : Order(order)
 {
 	this->sourcePlayerID = order.sourcePlayerID;
 	this->targetPlayerID = order.targetPlayerID;
-	this->playersNegotiated = order.playersNegotiated;
+	this->playerseNegotiated = order.playerseNegotiated;
 }
 
 //Assignment operator
@@ -710,7 +711,7 @@ Negotiate& Negotiate::operator=(const Negotiate& rightSide)
 	Order::operator=(rightSide);
 	this->sourcePlayerID = rightSide.sourcePlayerID;
 	this->targetPlayerID = rightSide.targetPlayerID;
-	this->playersNegotiated = rightSide.playersNegotiated;
+	this->playerseNegotiated = rightSide.playerseNegotiated;
 	return *this;
 }
 
