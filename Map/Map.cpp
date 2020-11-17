@@ -42,7 +42,7 @@ Map::~Map()
 
     this->territories.clear();
     this->continents.clear();
-    cout << "Mapp was deleted" << endl;
+    cout << "Map was deleted" << endl;
 }
 
 string Map::to_string()

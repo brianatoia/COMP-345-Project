@@ -1,15 +1,6 @@
-
-#include <iostream>
 #include "GameEngine.h"
-#include <fstream>
-#include <iterator>
-#include <iostream>
-#include <vector>
-#include <algorithm>
-
-#include <filesystem>
-
 //Default constructor
+
 GameEngine::GameEngine()
 {
 	numOfPlayers = 0;
@@ -81,7 +72,8 @@ void GameEngine::loadMap()
 	shared_ptr<MapLoader> mapLoader(new MapLoader());
 
 	//implement vector of maps, player can choose one
-	vector <shared_ptr<Map>> listOfMaps;
+	vector <shared_ptr<Map>> loadedMaps;
+	vector <string> loadedMapNames;
 
 	//List of Map names
 	vector <string> mapNames;
@@ -89,36 +81,44 @@ void GameEngine::loadMap()
 	//Ask user for map names as input to store in map list to later select from
 	while (true)
 	{
+		// List available maps
+		mapNames = findMapNames();
+
+		cout << "Here are the available maps:" << endl;
+		for (string s : mapNames) {
+			cout << s << endl;
+		}
+
 		string userInput;
-		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter." << endl
+		cout << "Please enter name of the map (with .map or .txt) you would like to load and hit enter to validate it." << endl
 			<< "If you are done selecting maps, enter 1\n" << endl;
 		cin >> userInput;
 		if (userInput == "1")
 		{
-			if (listOfMaps.size() != 0)
+			if (loadedMaps.size() != 0)
 				break;
 			else
 				cout << "Cannot resume before at least 1 map was entered." << endl;
 		}
 		else
 		{
-			shared_ptr<Map> loadedMap = mapLoader->createMap(userInput);
+			shared_ptr<Map> loadedMap = mapLoader->createMap(userInput, "MapDirectory/");
 			if (loadedMap != nullptr)
 			{
-				listOfMaps.push_back(loadedMap);
-				mapNames.push_back(userInput);
+				loadedMaps.push_back(loadedMap);
+				loadedMapNames.push_back(userInput);
 			}
 		}
 	}
 
 	//Iterating through list of vaild maps entered by the user
-	if (listOfMaps.size() > 0)
+	if (loadedMaps.size() > 0)
 	{
 		//Printing maps in list as well as their names
 		cout << "\nPrinting Maps:\n" << endl;
-		for (int i = 0; i < listOfMaps.size(); i++)
+		for (int i = 0; i < loadedMaps.size(); i++)
 		{
-			cout << "Map " << i+1 << " " << mapNames[i] << ": \n" << listOfMaps[i]->to_string() << "\n" << endl;
+			cout << "Map " << i+1 << " " << loadedMapNames[i] << ": \n" << loadedMaps[i]->to_string() << "\n" << endl;
 		}
 		
 		//Loop to get user to pick a map from the previous printed maps. 
@@ -134,7 +134,7 @@ void GameEngine::loadMap()
 				cin.clear();
 				cin.ignore(123, '\n');
 			}
-			if (mapNum <= 0 || mapNum > listOfMaps.size())	
+			if (mapNum <= 0 || mapNum > loadedMaps.size())	
 			{
 				cout << "You entered Map number that does not exist. Please try again." << endl;
 			}
@@ -142,7 +142,7 @@ void GameEngine::loadMap()
 			//If input is valid, create map and break out of loop
 			else
 			{
-				map = listOfMaps[mapNum - 1];
+				map = loadedMaps[mapNum - 1];
 				break;
 			}
 			//if value entered was not valid, clear user input and loop again
@@ -293,10 +293,41 @@ void GameEngine::startupPhase()
 		player->setArmies(armies);
 }	
 
+vector<string> GameEngine::findMapNames() {
+	vector<string> mapNames = vector<string>();
+
+	WIN32_FIND_DATA fdFile;
+	HANDLE hFind = NULL;
+
+	char sPath[] = "MapDirectory\\*.map";
+
+	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE)
+	{
+		printf("Error loading map files. Make sure there is a MapDirectory folder.");
+		exit(1);
+	}
+
+	do
+	{
+		//Find first file will always return "."
+		//    and ".." as the first two directories.
+		if (strcmp(fdFile.cFileName, ".") != 0
+			&& strcmp(fdFile.cFileName, "..") != 0)
+		{
+			mapNames.push_back(fdFile.cFileName);
+
+		}
+	} while (FindNextFile(hFind, &fdFile)); //Find the next file.
+
+	FindClose(hFind); //Always, Always, clean things up!
+
+	return mapNames;
+}
 
 //*************		MAIN METHOD		**************//
 
 int main(){
+	
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
