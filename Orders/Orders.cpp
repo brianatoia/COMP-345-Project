@@ -414,10 +414,12 @@ void Advance::execute()
 
 Order::OrderType bombO = Order::BOMB;
 Order::OrderType* bombO_ptr = &bombO;
-Bomb::Bomb(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories) : Order(bombO_ptr)
+Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories, list<tuple<int, int>>* playersNegotiated) : Order(bombO_ptr)
 {
+	this->attackerID = attackerID;
 	this->targetTerritory = targetTerritory;
 	this->playerTerritories = playerTerritories;
+	this->playersNegotiated = playersNegotiated;
 }
 
 bool Bomb::validate()
@@ -427,6 +429,15 @@ bool Bomb::validate()
 		if (t == targetTerritory)
 		{
 			cerr << "Cannot bomb own territory." << endl;
+			return false;
+		}
+	}
+	bool negotiatedWith = false;
+	for (tuple<int, int> t : *playersNegotiated)
+	{
+		if (t == make_tuple(attackerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, attackerID))
+		{
+			cerr << "Source and Target territory owners have negotiated together. Cannot attack each other this turn." << endl;
 			return false;
 		}
 	}
@@ -632,8 +643,10 @@ Advance::Advance(const Advance& order) : Order(order)
 
 Bomb::Bomb(const Bomb& order) : Order(order)
 {
+	this->attackerID = order.attackerID;
 	this->targetTerritory = order.targetTerritory;
 	this->playerTerritories = order.playerTerritories;
+	this->playersNegotiated = order.playersNegotiated;
 }
 
 Blockade::Blockade(const Blockade& order) : Order(order)
@@ -701,8 +714,10 @@ Advance& Advance::operator=(const Advance& rightSide)
 Bomb& Bomb::operator=(const Bomb& rightSide)
 {
 	Order::operator=(rightSide);
+	this->attackerID = rightSide.attackerID;
 	this->targetTerritory = rightSide.targetTerritory;
 	this->playerTerritories = rightSide.playerTerritories;
+	this->playersNegotiated = rightSide.playersNegotiated;
 	return *this;
 }
 
