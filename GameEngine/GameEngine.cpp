@@ -178,6 +178,11 @@ bool GameEngine::isMapInDirectory(string fileName)
 		return true;
 }
 
+shared_ptr<Map> GameEngine::getMap()
+{
+	return map;
+}
+
 //******     Oberserver Methods    *****//
 
 bool GameEngine::Observers()
@@ -473,9 +478,15 @@ void GameEngine::mainGameLoop()
 
 //*************		MAIN METHOD		**************//
 
-int main() {
+int main6() {
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
+
+	if (gameEngine->getMap()->getTerritoriesCount() < Player::getPlayerCount())
+	{
+		cerr << "Not enough territories for all players. Quitting game...";
+		exit(0);
+	}
 
 	//Testing Part I
 	cout << "Calling gameStart(): Code from Part I" << endl;
