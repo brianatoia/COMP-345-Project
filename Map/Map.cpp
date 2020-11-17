@@ -70,6 +70,11 @@ int Map::getTerritoriesCount()
     return territories.size();
 }
 
+int Map::getContinentsCount()
+{
+    return continents.size();
+}
+
 shared_ptr<Territory> Map::add(Territory territory)
 {
     // Error checking

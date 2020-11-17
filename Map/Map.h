@@ -63,6 +63,7 @@ private:
 
 public:
     int getTerritoriesCount();
+    int getContinentsCount();
 
     shared_ptr<Territory> add(Territory territory);
     shared_ptr<Continent> add(Continent continent);

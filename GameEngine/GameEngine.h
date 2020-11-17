@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../GameObservers/GameObservers.h"
 #include "../player/Player.h"
 #include "../cards/Cards.h"
 //#include "Cards.h"//have to correct this with the correct folder structure after
@@ -18,7 +19,7 @@
 
 using namespace std;
 
-class GameEngine
+class GameEngine : public Subject
 {
 public:
 
@@ -56,6 +57,9 @@ public:
 	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
+
+	//******     Map Method    *****//
+	shared_ptr<Map> getMap();
 	
 
 	//******     PART II    *****//

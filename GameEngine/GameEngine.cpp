@@ -1,7 +1,7 @@
 #include "GameEngine.h"
 //Default constructor
 
-GameEngine::GameEngine()
+GameEngine::GameEngine() : Subject()
 {
 	numOfPlayers = 0;
 	this->deck = new Deck();
@@ -264,6 +264,11 @@ string GameEngine::getPlayersNames()
 	return str;
 }
 
+shared_ptr<Map> GameEngine::getMap()
+{
+	return shared_ptr<Map>(map);
+}
+
 //*************		PART II		**************//
 
 void GameEngine::startupPhase()
@@ -329,7 +334,7 @@ vector<string> GameEngine::findMapNames() {
 int main(){
 	
 	//Declaring gameEngine
-	shared_ptr<GameEngine> gameEngine(new GameEngine());
+	GameEngine* gameEngine = new GameEngine();
 
 	//Testing Part I
 	cout << "Calling gameStart(): Code from Part I" << endl;
@@ -347,6 +352,10 @@ int main(){
 	
 	//Player order was randomly changed, territories distributed and armies were assigned to each player
 	cout << gameEngine->getPlayersInfo() << endl;
+
+	StatisticsObserver statsObserver = StatisticsObserver(gameEngine, gameEngine->getMap(), gameEngine->getPlayers());
+
+	gameEngine->notify();
 
 	return 0;
 }
