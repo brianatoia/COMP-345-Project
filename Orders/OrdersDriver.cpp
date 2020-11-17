@@ -47,14 +47,12 @@ int main()
     cout << t4->units << endl;
     player1->issueOrder("Deploy");
     cout << t4->units << endl;
-        
-    t5->units = 20;
-
-    player1->issueOrder("Negotiate");
-
-    cout << "Spain: " << t5->units;
+    
+    
+    /*t5->units = 20;
+    cout << t5->units;
     player1->issueOrder("Bomb", testMap);
-    cout << "Spain2: " << t5->units << endl;
+    cout << t5->units << endl;*/
 
     /*player1->issueOrder("Blockade");
     cout << t4->units << endl;
@@ -74,14 +72,14 @@ int main()
 
     //player1->issueOrder("Negotiate");
    
-    /*player1->issueOrder("Advance", testMap);
+    player1->issueOrder("Advance", testMap);
     cout << t5->units << endl;
     cout << t4->units << endl;
 
     cout << "PLAYER1: " << endl;
     cout << *player1 << endl;
     cout << "\nPLAYER2: " << endl;
-    cout << *player2 << endl;*/
+    cout << *player2 << endl;
 
 	return 0;
 }
