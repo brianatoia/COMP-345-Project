@@ -31,7 +31,8 @@ Player::Player()
     this->territoryList = list<shared_ptr<Territory>>();    //Create a list of pointers pointing to territory objects
     this->hand = new Hand();    //Creates a pointer to a Hand object which contains cards
     this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
-		this->capturedTerritory = new bool(false);
+	this->capturedTerritory = new bool(false);
+	playerTerritories.push_back(&territoryList);
 }
 
 //Destructor which clears all parameters of pointer type
@@ -48,6 +49,10 @@ Player::~Player()
 
     delete orderList;    //Delete pointer to orderList structure
     orderList = nullptr;    //Resolve dangling pointer
+
+	delete capturedTerritory;    //Delete pointer to orderList structure
+	capturedTerritory = nullptr;	//Resolve dangling pointer
+
     cout << "Player " << this->getName() << " with id " << this->getPlayerID() << " was deleted.\n";
 }
 
@@ -61,7 +66,8 @@ Player::Player(string playerName)
     this->territoryList = list<shared_ptr<Territory>>();
     this->hand = new Hand();
     this->orderList = new OrderList();
-		this->capturedTerritory = new bool(false);
+	this->capturedTerritory = new bool(false);
+	playerTerritories.push_back(&territoryList);
 }
 
 //Copy constructor enables deep copy of pointer attributes
@@ -79,7 +85,8 @@ Player::Player(const Player& aPlayer)
 
     this->hand = new Hand(*(aPlayer.hand));
     this->orderList = new OrderList(*(aPlayer.orderList));
-		this->capturedTerritory = aPlayer.capturedTerritory;
+	this->capturedTerritory = aPlayer.capturedTerritory;
+	playerTerritories.push_back(&territoryList);
 }
 
 //Assignment operator
@@ -102,7 +109,8 @@ Player& Player::operator=(const Player& aPlayer)
 
     this->hand = new Hand(*(aPlayer.hand));
     this->orderList = new OrderList(*(aPlayer.orderList));
-		this->capturedTerritory = aPlayer.capturedTerritory;
+	this->capturedTerritory = new bool(aPlayer.capturedTerritory);
+
     return *this;
 }
 
@@ -120,6 +128,8 @@ string Player::to_string()
     str += "\nList of Orders--------\n";
     OrderList* o = getOrderList();
     str += o->to_string();
+	str += "\nHas Captured at least one territory this turn--------\n";
+	str += ::to_string(*capturedTerritory);
     str += "\n";
     return str;
 }
@@ -219,7 +229,7 @@ void Player::updateAvailableUnits()
 
 
 //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
-list<shared_ptr<Territory>> Player::toAttack(Map* aMap)
+list<shared_ptr<Territory>> Player::toAttack(shared_ptr<Map> aMap)
 {
     list<shared_ptr<Territory>> copyList;
     list<shared_ptr<Territory>>::iterator i = territoryList.begin();
@@ -242,7 +252,7 @@ list<shared_ptr<Territory>> Player::toAttack(Map* aMap)
 }
 
 //Method toDefend - returns list of pointers to territory objects having adjacent territory owned by the player
-list<shared_ptr<Territory>> Player::toDefend(Map aMap)
+list<shared_ptr<Territory>> Player::toDefend(shared_ptr<Map> aMap)
 {
     list<shared_ptr<Territory>> copyList;
     list<shared_ptr<Territory>>::iterator i = territoryList.begin();
@@ -253,7 +263,7 @@ list<shared_ptr<Territory>> Player::toDefend(Map aMap)
         vector <unsigned int> territoryIDs = (*i)->borders;
         for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
         {
-            shared_ptr<Territory> t = aMap.getTerritory(*iD);
+            shared_ptr<Territory> t = aMap->getTerritory(*iD);
 
             if (t->ownerID == playerID) //if adjacent territory is owned by the player, add
             {
@@ -294,7 +304,7 @@ OrderList* Player::getOrderList()
 }
 
 //Method issueOrder - creates a new order objects according to orderType and adds it to the players OrderList
-void Player::issueOrder(string orderType, Map* map)
+void Player::issueOrder(string orderType, shared_ptr<Map> map)
 {
 	if (orderType == "Deploy")
 	{
@@ -336,9 +346,9 @@ void Player::issueOrder(string orderType, Map* map)
 				cout << "\nInvalid input, please try again" << endl;
 				cin.clear();
 				cin.ignore(10000, '\n');
-			}				
+			}
 			else break;
-		} 
+		}
 
 		territory->availableUnits += numberOfArmiesToDeploy;
 		armies -= numberOfArmiesToDeploy;
@@ -346,6 +356,8 @@ void Player::issueOrder(string orderType, Map* map)
 		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, territoryList));
 		this->orderList->addOrder(order);
 
+		order->execute();
+		cout << *order << endl;
 	}
 	else if (orderType == "Advance")
 	{
@@ -430,9 +442,12 @@ void Player::issueOrder(string orderType, Map* map)
 
 		sourceTerritory->availableUnits -= numOfArmies;
 
-		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, territoryList, capturedTerritory, playersNegotiated));
+		list<shared_ptr<Territory>>* temp = &territoryList;
+		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1],capturedTerritory, playersNegotiated));
 		this->orderList->addOrder(order);
 
+		order->execute();
+		cout << *order << endl;
 	}
 	else if (orderType == "Bomb")
 	{
@@ -570,11 +585,14 @@ void Player::issueOrder(string orderType, Map* map)
 			cout << "Enter number of armies to airlift. Should be <= " + std::to_string(sourceTerritory->units) + " and >= 0: ";
 			cin >> numOfArmies;
 		} while (numOfArmies >= sourceTerritory->units && numOfArmies < 0);
-
+    
 		targetTerritory->availableUnits += numOfArmies;
 
-		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, territoryList, capturedTerritory, playersNegotiated));
+		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, playersNegotiated));
 		this->orderList->addOrder(order);
+
+		order->execute();
+		cout << *order << endl;
 	}
 	else if (orderType == "Negotiate")
 	{

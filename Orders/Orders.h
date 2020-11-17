@@ -10,20 +10,20 @@ class Order
 public:
 	enum OrderType
 	{
-		Undefined,
-		Deploy,
-		Advance,
-		Bomb,
-		Blockade,
-		Airlift, 
-		Negotiate
+		UNDEFINED,
+		DEPLOY,
+		ADVANCE,
+		BOMB,
+		BLOCKADE,
+		AIRLIFT, 
+		NEGOTIATE
 	};
 	Order();
 	enum OrderType getOrderType();
 	string getOrderTypeString();
 	string getOrderDescription();
 	string getOrderEffect();
-	void setOrderType(OrderType);
+	void setOrderType(OrderType*);
 	void setOrderDescription(string);
 	virtual bool validate();
 	virtual void execute();
@@ -32,12 +32,12 @@ public:
 	Order& operator=(const Order&);
 	friend ostream& operator<<(ostream&, Order&);
 private:
-	OrderType orderType;
+	OrderType* orderType;
 	string orderDescription;
 	string orderEffect;
 protected:
 	void setOrderEffect(string);
-	Order(OrderType);
+	Order(OrderType*);
 };
 
 class OrderList
@@ -45,10 +45,10 @@ class OrderList
 public:
 	enum MoveOption
 	{
-		moveToBeginning,
-		moveToEnd,
-		moveUp,
-		moveDown
+		BEGINNING,
+		END,
+		UP,
+		DOWN
 	};
 	OrderList();
 	~OrderList();
@@ -84,7 +84,7 @@ private:
 class Advance : public Order
 {
 public:
-	Advance(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>, bool*, list<tuple<int, int>>);
+	Advance(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>);
 	bool validate();
 	void execute();
 	Advance(const Advance&);
@@ -94,7 +94,8 @@ private:
 	int numOfArmies;
 	shared_ptr<Territory> sourceTerritory;
 	shared_ptr<Territory> targetTerritory;
-	list<shared_ptr<Territory>> playerTerritories;
+	list<shared_ptr<Territory>>* playerTerritories;
+	list<shared_ptr<Territory>>* targetPlayerTerritories;
 	bool* capturedTerritory;
 	list<tuple<int, int>> playersNegotiated;
 };
@@ -128,7 +129,7 @@ private:
 class Airlift : public Order
 {
 public:
-	Airlift(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>, bool*, list<tuple<int, int>>);
+	Airlift(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>);
 	bool validate();
 	void execute();
 	Airlift(const Airlift&);
@@ -137,7 +138,8 @@ private:
 	int numOfArmies;
 	shared_ptr<Territory> sourceTerritory;
 	shared_ptr<Territory> targetTerritory;
-	list<shared_ptr<Territory>> playerTerritories;
+	list<shared_ptr<Territory>>* playerTerritories;
+	list<shared_ptr<Territory>>* targetPlayerTerritories;
 	bool* capturedTerritory;
 	list<tuple<int, int>> playersNegotiated;
 };

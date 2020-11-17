@@ -8,7 +8,7 @@ int main()
     Player* player2(new Player("Rob"));
 
     //Creating a map
-    Map* testMap = new Map();
+    shared_ptr<Map> testMap(new Map());
 
     //Creating two continents
     shared_ptr<Continent> c1 = testMap->add(Continent(1, "America", 1));
@@ -36,6 +36,11 @@ int main()
     player1->addTerritory(t3);
     player1->addTerritory(t4);
     player2->addTerritory(t5);
+
+    cout << "PLAYER1: " << endl;
+    cout << *player1 << endl;
+    cout << "\nPLAYER2: " << endl;
+    cout << *player2 << endl;
 
     //Test issueOrder() creates an order objects and adds it to the OrderList
     cout << "\nTest issueing orders:\n";
@@ -65,9 +70,16 @@ int main()
     //player1->issueOrder("Airlift", testMap);
     
 
-    player1->issueOrder("Negotiate");
+    //player1->issueOrder("Negotiate");
+   
     player1->issueOrder("Advance", testMap);
     cout << t5->units << endl;
     cout << t4->units << endl;
+
+    cout << "PLAYER1: " << endl;
+    cout << *player1 << endl;
+    cout << "\nPLAYER2: " << endl;
+    cout << *player2 << endl;
+
 	return 0;
 }

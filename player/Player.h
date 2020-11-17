@@ -21,6 +21,7 @@
 using namespace std;
 
 static list<tuple<int, int>> playersNegotiated;
+static vector<list<shared_ptr<Territory>>*> playerTerritories;
 
 class Player
 {
@@ -57,23 +58,22 @@ public:
     void resetCapturedTerritory();
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
-    void Player::addArmies(unsigned int armies);
-    void Player::removeArmies(unsigned int armies);
+    void addArmies(unsigned int armies);
+    void removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
-    list<shared_ptr<Territory>> toDefend(Map aMap);
-    list<shared_ptr<Territory>> toAttack(Map* aMap);
-    void updateAvailableUnits();
+    list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap);
+    list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap);
 
     //********* Card methods **********//
     Hand* getHand();
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType, Map* map = NULL);
+    void issueOrder(string orderType, shared_ptr<Map> map = NULL);
 };
 
 //*************      INSTRUCTIONS    ****************
