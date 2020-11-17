@@ -297,6 +297,7 @@ void GameEngine::startupPhase()
 
 //*************		PART 3		**************//
 
+//Give armies to each player and a card if they captured a territory in the last turn
 void GameEngine::reinforcementsPhase()
 {
 	for (auto player : players)
@@ -309,8 +310,16 @@ void GameEngine::reinforcementsPhase()
 
 		if (armiesToGive < 3) armiesToGive = 3;
 		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
-		Sleep(2000);
+		
 		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
+
+		if (player->getCapturedTerritory())
+		{
+			player->resetCapturedTerritory();
+			player->getHand()->draw();
+			cout << player->getName() << " also draws a card because they captured atleast one territory last turn" << endl;
+		}
+		Sleep(2000);
 	}
 
 }
@@ -368,23 +377,23 @@ void GameEngine::issueOrdersPhase()
 		cout << "==================================================" << endl;
 		Sleep(2000);
 
-		cout << "Airlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;				Sleep(200);
-		cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;				Sleep(200);
-		cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;	Sleep(200);
-		cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;			Sleep(200);
-		cout << "Bomb (" << player->getHand()->findNumberOfType("Bomb") << ")" << endl;						Sleep(200);
-		cout << "Advance" << endl;																			Sleep(200);
-		cout << "Finish" << endl;																			Sleep(200);
-		cout << "\nOrders are listed top - down in order of execution priority, but all orders of one type must execute before the next can occur!" << endl;	Sleep(200);
-		cout << "Only one order is played at a time for a player, unless they are the last one with that order type in queue." << endl;							Sleep(200);
-		cout << "Orders of a type you create first happen first, so start with what you want to have happen right away!" << endl;
-		cout << "Use Advance to move armies to another adjacent friendly territory or to attack enemy territories" << endl;
-		cout << "==================================================" << endl;
-
 		//Player issues orders here
 		string decision = "";
 		while (true)
 		{
+			cout << "Airlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;				Sleep(200);
+			cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;				Sleep(200);
+			cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;	Sleep(200);
+			cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;			Sleep(200);
+			cout << "Bomb (" << player->getHand()->findNumberOfType("Bomb") << ")" << endl;						Sleep(200);
+			cout << "Advance" << endl;																			Sleep(200);
+			cout << "Finish" << endl;																			Sleep(200);
+			cout << "\nOrders are listed top - down in order of execution priority, but all orders of one type must execute before the next can occur!" << endl;	Sleep(200);
+			cout << "Only one order is played at a time for a player, unless they are the last one with that order type in queue." << endl;							Sleep(200);
+			cout << "Orders of a type you create first happen first, so start with what you want to have happen right away!" << endl;
+			cout << "Use Advance to move armies to another adjacent friendly territory or to attack enemy territories" << endl;
+			cout << "==================================================" << endl;
+
 			cin >> decision;
 
 			if (_stricmp(decision.c_str(), "Advance") == 0)
