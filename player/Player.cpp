@@ -301,27 +301,30 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		int numOfArmies = 10; //change to get from reinforcement pool
 		shared_ptr<Territory> territory;
 		string territoryName;
+		bool territoryAllowed = false;
 
-		cout << "\nWhich territory would you like to deploy to?" << endl;
-		cout << "--------------------------------------------" << endl;
-		for (shared_ptr<Territory> t : territoryList)
-		{
-			cout << t->name << endl;
-		}
-		cout << "--------------------------------------------" << endl;
-		cin >> territoryName;
-
-		for (shared_ptr<Territory> t : territoryList)
-		{
-			string name = t->name;
-			transform(territoryName.begin(), territoryName.end(), territoryName.begin(), ::tolower);
-			transform(name.begin(), name.end(), name.begin(), ::tolower);
-			if (territoryName == name)
+		do {
+			cout << "\nCurrent territories you can deploy to: " << endl;
+			cout << "--------------------------------------------" << endl;
+			for (shared_ptr<Territory> t : territoryList)
 			{
-				territory = t;
-				break;
+				cout << t->name + " " +std::to_string(t->units) + " units." << endl;
 			}
-		}
+
+			cout << "--------------------------------------------" << endl;
+			cout << "\nWhich territory would you like to deploy to?" << endl;
+			cin >> territoryName;
+			territory = map->findTerritory(territoryName);
+
+			for (shared_ptr<Territory> t : territoryList)
+			{
+				if (t == territory)
+				{
+					territoryAllowed = true;
+				}
+			}
+
+		} while (!territoryAllowed);
 
 		shared_ptr<Order> order(new Deploy(numOfArmies, territory, territoryList));
 		this->orderList->addOrder(order);
@@ -421,6 +424,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 	{
 		shared_ptr<Territory> territory = nullptr;
 		string territoryName;
+		bool territoryAllowed = false;
 
 		do {
 			cout << "\nWhich territory would you like to bomb?" << endl;
@@ -432,18 +436,16 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			cout << "--------------------------------------------" << endl;
 			cin >> territoryName;
 
+			territory = map->findTerritory(territoryName);
+
 			for (shared_ptr<Territory> t : toAttack(map))
 			{
-				string name = t->name;
-				transform(territoryName.begin(), territoryName.end(), territoryName.begin(), ::tolower);
-				transform(name.begin(), name.end(), name.begin(), ::tolower);
-				if (territoryName == name)
+				if (t == territory)
 				{
-					territory = t;
-					break;
+					territoryAllowed = true;
 				}
 			}
-		} while (territory == nullptr);
+		} while (!territoryAllowed);
 
 		list<tuple<int, int>>* temp = &playersNegotiated;
 		shared_ptr<Order> order(new Bomb(playerID, territory, territoryList, temp));
@@ -456,30 +458,37 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 	{
 		shared_ptr<Territory> territory;
 		string territoryName;
+		bool territoryAllowed = false;
 
-		cout << "\nWhich territory would you like to blockade?" << endl;
-		cout << "--------------------------------------------" << endl;
-		for (shared_ptr<Territory> t : territoryList)
-		{
-			cout << t->name << endl;
-		}
-		cout << "--------------------------------------------" << endl;
-		cin >> territoryName;
-
-		for (shared_ptr<Territory> t : territoryList)
-		{
-			string name = t->name;
-			transform(territoryName.begin(), territoryName.end(), territoryName.begin(), ::tolower);
-			transform(name.begin(), name.end(), name.begin(), ::tolower);
-			if (territoryName == name)
+		do {
+			cout << "\nCurrent territories you can blockade: " << endl;
+			cout << "--------------------------------------------" << endl;
+			for (shared_ptr<Territory> t : territoryList)
 			{
-				territory = t;
-				break;
+				cout << t->name + " " + std::to_string(t->units) + " units." << endl;
 			}
-		}
+
+			cout << "--------------------------------------------" << endl;
+			cout << "\nWhich territory would you like to blockade?" << endl;
+			cin >> territoryName;
+			territory = map->findTerritory(territoryName);
+
+			for (shared_ptr<Territory> t : territoryList)
+			{
+				if (t == territory)
+				{
+					territoryAllowed = true;
+				}
+			}
+
+		} while (!territoryAllowed);
+
 
 		shared_ptr<Order> order(new Blockade(territory, territoryList));
 		this->orderList->addOrder(order);
+
+		order->execute();
+		cout << *order << endl;
 	}
 	else if (orderType == "Airlift")
 	{
@@ -572,7 +581,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		{
 			cout << "Enter the ID of the player you would like to negotiate with: ";
 			cin >> targetPlayerID;
-		} while (targetPlayerID > playerCount && targetPlayerID < 0);
+		} while (targetPlayerID > playerCount || targetPlayerID < 0);
 
 
 		list<tuple<int, int>>* temp = &playersNegotiated;
