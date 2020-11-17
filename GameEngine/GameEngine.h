@@ -2,7 +2,7 @@
 
 #include "../player/Player.h"
 #include "../cards/Cards.h"
-//#include "Cards.h"//have to correct this with the correct folder structure after
+//#include "Cards.h"			//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Orders/Orders.h"
@@ -63,6 +63,7 @@ public:
 	int findContinentBonusTotal(shared_ptr<Player> player);
 	void deployLoop(shared_ptr<Player>);
 	void issueOrdersPhase();
+	bool atleastOneOfType(string type);
 	void executeOrdersPhase();
 	void checkForEliminatedPlayers();
 	shared_ptr<Player> checkForWinner();

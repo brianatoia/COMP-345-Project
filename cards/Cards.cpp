@@ -228,6 +228,14 @@ int Hand::findNumberOfType(string type)
 	return amount;
 }
 
+Card* Hand::getCard(string type)
+{
+	for (auto card : hand)
+	{
+		if (type.compare(card->getCardType()) == 0) return card;
+	}
+}
+
 int Hand::getHandSize()
 {
 	return hand.size();

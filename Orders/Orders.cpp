@@ -208,6 +208,24 @@ void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 	}
 }
 
+bool OrderList::hasOrderType(string type)
+{
+	for (auto order : orders)
+	{
+		if (type.compare(order->getOrderTypeString()) == 0) return true;
+	}
+	return false;
+}
+
+shared_ptr<Order> OrderList::getOrder(string type)
+{
+	for (auto order : orders)
+	{
+		if (type.compare(order->getOrderTypeString()) == 0) return order;
+	}
+	return nullptr;
+}
+
 Order::OrderType deployO = Order::DEPLOY;
 Order::OrderType* deployO_ptr = &deployO;
 Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr<Territory>> playerTerritories) : Order(deployO_ptr)
