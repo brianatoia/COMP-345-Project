@@ -152,7 +152,6 @@ void Hand::play(Card* aCard, Deck* aDeck)
 		cout << "You have no cards please draw" << endl;
 	}
 
-
 }
 
 

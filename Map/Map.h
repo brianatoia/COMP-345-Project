@@ -39,7 +39,7 @@ struct Territory : Land
 
     string to_string();
     Territory& operator=(const Territory& territory);
-    friend ostream& operator<<(ostream& strm, Territory &territory);
+    friend ostream& operator<<(ostream& strm, Territory& territory);
 };
 
 struct Continent : Land
@@ -53,7 +53,7 @@ struct Continent : Land
 
     string to_string();
     Continent& operator=(const Continent& continent);
-    friend ostream& operator<<(ostream& strm, Continent &continent);
+    friend ostream& operator<<(ostream& strm, Continent& continent);
 };
 
 class Map
@@ -80,9 +80,9 @@ public:
 
     bool validate();
 
-    string to_string ();
+    string to_string();
     Map& operator=(const Map& map);
-    friend ostream& operator<<(ostream& strm, Map &map);
+    friend ostream& operator<<(ostream& strm, Map& map);
 
     Map();
     Map(int numOfTerritories, int numOfContinents);

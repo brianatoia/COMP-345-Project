@@ -51,10 +51,10 @@ public:
 	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
-	
+
 
 	//******     PART II    *****//
-	void startupPhase();	
+	void startupPhase();
 
 	//shared_ptr<GameEngine> createEngine();
 
@@ -68,7 +68,7 @@ public:
 	shared_ptr<Player> checkForWinner();
 
 
-//******     Private Members    *****//
+	//******     Private Members    *****//
 private:
 	int numOfPlayers;
 	Deck* deck;
