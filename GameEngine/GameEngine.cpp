@@ -316,12 +316,11 @@ void GameEngine::reinforcementsPhase()
 		if (player->getCapturedTerritory())
 		{
 			player->resetCapturedTerritory();
-			player->getHand()->draw();
+			player->getHand()->addCard(deck->draw());
 			cout << player->getName() << " also draws a card because they captured atleast one territory last turn" << endl;
 		}
 		Sleep(2000);
 	}
-
 }
 
 int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
@@ -493,9 +492,9 @@ void GameEngine::executeOrdersPhase()
 				
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;	Sleep(500);			//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();									//execute order
+					cout << *order << "\n" <<endl;	Sleep(500);			//print order effects
+					player->getOrderList()->remove(order);				//remove order from orderlist for that player
 				}
 
 				if (!atleastOneOfType("Deploy"))	//look through all players' orderlists for an order of this type, if none time for next order type
@@ -511,9 +510,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;						//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();							
+					cout << *order << "\n" << endl;	Sleep(500);						
+					player->getOrderList()->remove(order);		
 				}
 
 				if (!atleastOneOfType("Airlift"))
@@ -529,9 +528,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;						//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();							
+					cout << *order << "\n" << endl;	Sleep(500);						
+					player->getOrderList()->remove(order);		
 				}
 
 				if (!atleastOneOfType("Blockade"))
@@ -547,9 +546,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;						//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();							
+					cout << *order << "\n" << endl;	Sleep(500);						
+					player->getOrderList()->remove(order);
 				}
 
 				if (!atleastOneOfType("Negotiate"))
@@ -565,9 +564,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;						//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();							
+					cout << *order << "\n" << endl;	Sleep(500);	
+					player->getOrderList()->remove(order);
 				}
 
 				if (!atleastOneOfType("Bomb"))
@@ -583,9 +582,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							//execute order
-					cout << *order << endl;						//print order effects
-					player->getOrderList()->remove(order);		//remove order from orderlist for that player
+					order->execute();		
+					cout << *order << "\n" << endl;	Sleep(500);
+					player->getOrderList()->remove(order);
 				}
 
 				if (!atleastOneOfType("Advance"))
