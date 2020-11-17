@@ -114,14 +114,14 @@ Hand::Hand()
 
 Hand::~Hand()
 {
-	for (auto i : hand) 
+	for (auto i : hand)
 	{
 		delete i;
 		i = nullptr;
 	}
 
 	for (auto p : playCards)
-	{	
+	{
 		delete p;
 		p = nullptr;
 	}
@@ -223,7 +223,7 @@ int Hand::findNumberOfType(string type)
 	int amount = 0;
 	for (auto card : hand)
 	{
-		if (type.compare(card->getCardType()) == 0) amount ++;
+		if (type.compare(card->getCardType()) == 0) amount++;
 	}
 	return amount;
 }

@@ -45,35 +45,35 @@ int main6()
     //Test issueOrder() creates an order objects and adds it to the OrderList
     cout << "\nTest issueing orders:\n";
     cout << t4->units << endl;
-    player1->issueOrder("Deploy");
+    player1->issueOrder("Deploy", testMap);
     cout << t4->units << endl;
-        
+
     t5->units = 20;
 
-    player1->issueOrder("Negotiate");
+    //player1->issueOrder("Negotiate");
 
-    cout << "Spain: " << t5->units;
+    /*cout << "Spain: " << t5->units;
     player1->issueOrder("Bomb", testMap);
-    cout << "Spain2: " << t5->units << endl;
+    cout << "Spain2: " << t5->units << endl;*/
 
-    /*player1->issueOrder("Blockade");
+    player1->issueOrder("Blockade", testMap);
     cout << t4->units << endl;
     for (shared_ptr<Territory> t : player1->getTerritoryList())
     {
         cout << t->name << endl;
-    }*/
+    }
 
     /*cout << t5->units << endl;
     player1->issueOrder("Advance", testMap);
     cout << t5->units << endl;
     cout << t4->units << endl;*/
 
-    
+
     //player1->issueOrder("Airlift", testMap);
-    
+
 
     //player1->issueOrder("Negotiate");
-   
+
     /*player1->issueOrder("Advance", testMap);
     cout << t5->units << endl;
     cout << t4->units << endl;
@@ -83,5 +83,5 @@ int main6()
     cout << "\nPLAYER2: " << endl;
     cout << *player2 << endl;*/
 
-	return 0;
+    return 0;
 }

@@ -383,38 +383,38 @@ void GameEngine::issueOrdersPhase()
 		{
 			cin >> decision;
 
-			if (stricmp(decision.c_str(), "Advance") == 0)
+			if (_stricmp(decision.c_str(), "Advance") == 0)
 			{
 				player->issueOrder("Advance");
 			}
-			else if (stricmp(decision.c_str(), "Airlift") == 0)	//case where player chooses airlift
+			else if (_stricmp(decision.c_str(), "Airlift") == 0)	//case where player chooses airlift
 			{
 				if (player->getHand()->findCardType("Airlift"))	//check if player has atleast 1 airlift card
 					player->issueOrder("Airlift");					//issue the order (puts it in order list)
 			}
-			else if (stricmp(decision.c_str(), "Blockade") == 0)
+			else if (_stricmp(decision.c_str(), "Blockade") == 0)
 			{
 				if (player->getHand()->findCardType("Blockade"))
 					player->issueOrder("Blockade");
 			}
-			else if (stricmp(decision.c_str(), "Bomb") == 0)
+			else if (_stricmp(decision.c_str(), "Bomb") == 0)
 			{
 				if (player->getHand()->findCardType("Bomb"))
 					player->issueOrder("Bomb");
 			}
-			else if (stricmp(decision.c_str(), "Negotiate") == 0)
+			else if (_stricmp(decision.c_str(), "Negotiate") == 0)
 			{
 				if (player->getHand()->findCardType("Diplomacy"))
 					player->issueOrder("Negotiate");
 			}
-			else if (stricmp(decision.c_str(), "Reinforcement") == 0)
+			else if (_stricmp(decision.c_str(), "Reinforcement") == 0)
 			{
 				if (player->getHand()->findCardType("Reinforcement"))
 					//if condition and stuff
 					player->addArmies(20);
 				deployLoop(player);
 			}
-			else if (stricmp(decision.c_str(), "End") == 0)
+			else if (_stricmp(decision.c_str(), "End") == 0)
 			{
 				break;
 			}
