@@ -1,7 +1,7 @@
 #include "Orders.h"
 #include "../Player/Player.h"
 
-int main()
+int main6()
 {
     //Creating two players
     Player* player1(new Player("Berta"));    //Created player1 using the paramterized constructor

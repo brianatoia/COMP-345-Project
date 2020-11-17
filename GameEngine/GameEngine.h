@@ -51,23 +51,29 @@ public:
 	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
-	
+
 
 	//******     PART II    *****//
-	void startupPhase();	
+	void startupPhase();
+
+	//shared_ptr<GameEngine> createEngine();
+
+	void mainGameLoop();
+	void reinforcementsPhase();
+	int findContinentBonusTotal(shared_ptr<Player> player);
+	void deployLoop(shared_ptr<Player>);
+	void issueOrdersPhase();
+	void executeOrdersPhase();
+	void checkForEliminatedPlayers();
+	shared_ptr<Player> checkForWinner();
 
 
-//******     Private Members    *****//
+	//******     Private Members    *****//
 private:
 	int numOfPlayers;
 	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+
 	bool activateObservers;
-	
-
-	//bool reinforcementsPhase();
-	//bool issueOrdersPhase();
-	//bool executeOrdersPhase();
-
 };

@@ -18,12 +18,12 @@ using namespace std;
 int main4() {
 
     //Creating two players
-    Player* player1 (new Player("Berta"));    //Created player1 using the paramterized constructor
-    Player* player2 (new Player);             //Created player2 with the default constructor
+    Player* player1(new Player("Berta"));    //Created player1 using the paramterized constructor
+    Player* player2(new Player);             //Created player2 with the default constructor
 
     //Testing copy constructor
-    Player* player3 (new Player("Trudy"));
-    Player* player4 (new Player (*player3));
+    Player* player3(new Player("Trudy"));
+    Player* player4(new Player(*player3));
     cout << "\nTesting copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
 
 
@@ -43,7 +43,7 @@ int main4() {
 
     //Testing armies attribute of player
     player1->addArmies(20);
-    cout << "Player " << player1->getName() << " has " <<  player1->getArmies() << " to deploy." << endl;
+    cout << "Player " << player1->getName() << " has " << player1->getArmies() << " to deploy." << endl;
     player1->removeArmies(15);
     cout << "Player " << player1->getName() << " has " << player1->getArmies() << " to deploy.\n" << endl;
 
@@ -137,7 +137,7 @@ int main4() {
     delete player4;
     delete player5;
     delete player6;
-    */
 
+    */
     return 0;
 };

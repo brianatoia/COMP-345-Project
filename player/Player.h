@@ -31,7 +31,7 @@ private:
     unsigned int playerID;
     string name;
     bool* capturedTerritory;
-    unsigned int armies;
+    unsigned int armies;    //number of armies player has to place
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -67,6 +67,7 @@ public:
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap);
     list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap);
+    void updateAvailableUnits();
 
     //********* Card methods **********//
     Hand* getHand();
