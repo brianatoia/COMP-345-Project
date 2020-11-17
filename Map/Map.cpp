@@ -443,6 +443,7 @@ Map& Map::operator=(const Map& map)
 Territory::Territory(unsigned int id, string name, unsigned int continentID) : Land(id, name)
 {
     this->units = 0;
+    this->availableUnits = 0;
     this->continentID = continentID;
     this->borders = vector<unsigned int>();
     this->ownerID = 0;
@@ -451,6 +452,7 @@ Territory::Territory(unsigned int id, string name, unsigned int continentID) : L
 Territory::Territory(const Territory &territory) : Land(territory)
 {
     this->units = territory.units;
+    this->availableUnits = territory.availableUnits;
     this->continentID = territory.continentID;
     this->borders = vector<unsigned int>();
     this->ownerID = territory.ownerID;

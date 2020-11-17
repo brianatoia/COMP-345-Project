@@ -31,6 +31,7 @@ struct Territory : Land
     ~Territory();
 
     unsigned int units;
+    unsigned int availableUnits;    //The amount a player has to use (pre deploy execution)
     unsigned int ownerID;
     unsigned int continentID;
 

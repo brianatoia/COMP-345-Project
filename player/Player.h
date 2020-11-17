@@ -66,6 +66,7 @@ public:
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(Map aMap);
     list<shared_ptr<Territory>> toAttack(Map* aMap);
+    void updateAvailableUnits();
 
     //********* Card methods **********//
     Hand* getHand();

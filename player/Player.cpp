@@ -208,6 +208,16 @@ void Player::addTerritory(shared_ptr<Territory> newTerritoryPtr)
 	newTerritoryPtr->ownerID = playerID;
 }
 
+//Resets the available units to units at beginning of turn
+void Player::updateAvailableUnits()
+{
+	for (auto territory : territoryList)
+	{
+		territory->availableUnits = territory->units;
+	}
+}
+
+
 //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
 list<shared_ptr<Territory>> Player::toAttack(Map* aMap)
 {
@@ -298,7 +308,7 @@ void Player::issueOrder(string orderType, Map* map)
 		cout << "--------------------------------------------" << endl;
 		for (shared_ptr<Territory> t : territoryList)
 		{
-			cout << t->name << endl;
+			cout << t->name << " ("<< t->availableUnits << ")"<< endl;
 		}
 		cout << "--------------------------------------------" << endl;
 		cin >> territoryName;
@@ -330,6 +340,7 @@ void Player::issueOrder(string orderType, Map* map)
 			else break;
 		} 
 
+		territory->availableUnits += numberOfArmiesToDeploy;
 		armies -= numberOfArmiesToDeploy;
 
 		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, territoryList));
@@ -351,10 +362,10 @@ void Player::issueOrder(string orderType, Map* map)
 			cout << "--------------------------------------------" << endl;
 			for (shared_ptr<Territory> t : territoryList)
 			{
-				if (t->units > 0)
+				if (t->availableUnits > 0)
 				{
 					playerTerritoryOptions.push_back(t);
-					cout << t->name + " " + std::to_string(t->units) + " units." << endl;
+					cout << t->name << " (" <<t->availableUnits << ")" << endl;
 				}
 			}
 			cout << "--------------------------------------------" << endl;
@@ -381,7 +392,7 @@ void Player::issueOrder(string orderType, Map* map)
 				shared_ptr<Territory> territory = map->getTerritory(border);
 				if (territory->ownerID == sourceTerritory->ownerID)
 				{
-					cout << territory->name + " " + std::to_string(territory->units) + " units." << endl;
+					cout << territory->name << " (" << territory->availableUnits << ")" << endl;
 				}
 			}
 			cout << "--------------------------------------------" << endl;
@@ -393,7 +404,7 @@ void Player::issueOrder(string orderType, Map* map)
 				shared_ptr<Territory> territory = map->getTerritory(border);
 				if (territory->ownerID != sourceTerritory->ownerID)
 				{
-					cout << territory->name + " " + std::to_string(territory->units) + " units." << endl;
+					cout << territory->name << " (" << territory->units << ")" << endl;
 				}
 			}
 			cout << "--------------------------------------------" << endl;
@@ -413,9 +424,11 @@ void Player::issueOrder(string orderType, Map* map)
 
 		do
 		{
-			cout << "Enter number of armies to advance. Should be <= " + std::to_string(sourceTerritory->units) + " and >= 0: ";
+			cout << "Enter number of armies to advance. Should be <= " << sourceTerritory->availableUnits << " and >= 0: ";
 			cin >> numOfArmies;
-		} while (numOfArmies >= sourceTerritory->units && numOfArmies < 0);
+		} while (numOfArmies >= sourceTerritory->availableUnits || numOfArmies < 0);
+
+		sourceTerritory->availableUnits -= numOfArmies;
 
 		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, territoryList, capturedTerritory, playersNegotiated));
 		this->orderList->addOrder(order);
@@ -461,7 +474,7 @@ void Player::issueOrder(string orderType, Map* map)
 		cout << "--------------------------------------------" << endl;
 		for (shared_ptr<Territory> t : territoryList)
 		{
-			cout << t->name << endl;
+			cout << t->name << " (" <<t->availableUnits << ")" << endl;
 		}
 		cout << "--------------------------------------------" << endl;
 		cin >> territoryName;
@@ -497,10 +510,10 @@ void Player::issueOrder(string orderType, Map* map)
 			cout << "--------------------------------------------" << endl;
 			for (shared_ptr<Territory> t : territoryList)
 			{
-				if (t->units > 0)
+				if (t->availableUnits > 0)
 				{
 					playerTerritoryOptions.push_back(t);
-					cout << t->name + " " + std::to_string(t->units) + " units." << endl;
+					cout << t->name << " (" << t->availableUnits << ")" << endl;
 				}
 			}
 			cout << "--------------------------------------------" << endl;
@@ -527,7 +540,7 @@ void Player::issueOrder(string orderType, Map* map)
 				shared_ptr<Territory> territory = map->getTerritory(border);
 				if (territory->ownerID == sourceTerritory->ownerID)
 				{
-					cout << territory->name + " " + std::to_string(territory->units) + " units." << endl;
+					cout << territory->name << " (" << territory->availableUnits << ")" << endl;
 					numOfTargets++;
 				}
 			}
@@ -557,6 +570,8 @@ void Player::issueOrder(string orderType, Map* map)
 			cout << "Enter number of armies to airlift. Should be <= " + std::to_string(sourceTerritory->units) + " and >= 0: ";
 			cin >> numOfArmies;
 		} while (numOfArmies >= sourceTerritory->units && numOfArmies < 0);
+
+		targetTerritory->availableUnits += numOfArmies;
 
 		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, territoryList, capturedTerritory, playersNegotiated));
 		this->orderList->addOrder(order);
