@@ -240,7 +240,7 @@ int main()
     GameEngine* game(new GameEngine());
     game->executeOrdersPhase();
 
-    /*delete player1;
+    delete player1;
     player1 = nullptr;
 
     delete player2;
@@ -250,7 +250,7 @@ int main()
     deck = nullptr;
 
     delete game;
-    game = nullptr;*/
+    game = nullptr;
 
 	return 0;
 }
