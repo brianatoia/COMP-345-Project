@@ -2,7 +2,7 @@
 #include "../Player/Player.h"
 #include "../GameEngine/GameEngine.h"
 
-int main7()
+int main1233()
 {
     //Creating two players
     shared_ptr<Player> player1(new Player("Berta"));
@@ -274,5 +274,6 @@ int main7()
 
     delete game;
     game = nullptr;
-    return 0;
+
+	return 0;
 }
