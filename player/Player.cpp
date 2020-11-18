@@ -237,6 +237,14 @@ void Player::updateAvailableUnits()
 	}
 }
 
+bool Player::canAdvance()
+{
+	for (auto territory : territoryList)
+	{
+		if (territory->availableUnits > 0) return true;
+	}
+	return false;
+}
 
 //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
 list<shared_ptr<Territory>> Player::toAttack(shared_ptr<Map> aMap)

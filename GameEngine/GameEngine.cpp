@@ -394,7 +394,7 @@ void GameEngine::issueOrdersPhase()
 		string decision = "";
 		while (true)
 		{
-			cout << "Airlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;				Sleep(200);
+			cout << "\nAirlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;				Sleep(200);
 			cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;				Sleep(200);
 			cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;	Sleep(200);
 			cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;			Sleep(200);
@@ -411,7 +411,8 @@ void GameEngine::issueOrdersPhase()
 
 			if (_stricmp(decision.c_str(), "Advance") == 0)
 			{
-				player->issueOrder("Advance", map);
+				if (player->canAdvance()) player->issueOrder("Advance", map);
+				else cout << "You no longer have any armies to advance!" << endl;
 			}																				// === format followed for all order types === //
 			else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
 			{

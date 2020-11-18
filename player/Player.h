@@ -69,6 +69,7 @@ public:
     list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap);
     list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap);
     void updateAvailableUnits();
+    bool canAdvance();
 
     //********* Card methods **********//
     Hand* getHand();
