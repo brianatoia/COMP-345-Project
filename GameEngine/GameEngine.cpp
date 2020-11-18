@@ -499,7 +499,7 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();									//execute order
-					cout << *order << "\n" <<endl;	Sleep(500);			//print order effects
+					cout << *order << "\n" << endl;	Sleep(500);			//print order effects
 					player->getOrderList()->remove(order);				//remove order from orderlist for that player
 				}
 
@@ -617,6 +617,7 @@ void GameEngine::checkForEliminatedPlayers()
 		list<shared_ptr<Territory>> playerTerritories = *players[i]->getTerritoryList();
 		if (playerTerritories.size() == 0)
 		{
+			cout << "\nEliminating player " << players[i]->getName() << ". Thank you for playing!" << endl;
 			players.erase(players.begin() + i); //Because smart pointer, also calls destructor
 			//Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
 			checkForEliminatedPlayers();
@@ -650,7 +651,7 @@ void GameEngine::mainGameLoop()
 
 //*************		MAIN METHOD		**************//
 
-int main6() {
+int main() {
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
@@ -717,6 +718,17 @@ int main6() {
 		Execution will still happen corrently
 		*/
 
+		/*
+		Visualization of Demo.map
+		[1][2][3]
+		[4][5][6]
+
+		Because 3 players, each player has a collumn
+		Border are bi directional through direct adjacency, no diagonals
+		Continents are [1,4], [2], and [3,5,6]
+		*/
+
+
 		cout << "\nAutomatic playing for demo purposes. Orders will be hardcoded as opposed to input by the player." << endl;
 		cout << "Use map Demo.map, with 3 players to show functionality all the functionality\n" << endl;
 		Sleep(2000);
@@ -748,9 +760,53 @@ int main6() {
 		cout << "Creating Deploy Orders" << endl;
 		Sleep(2000);
 
-		//shared_ptr<Order> order(new Deploy(, gameEngine->getPlayers()[0]->getTerritoryList().front(), gameEngine->getPlayers()[0]->getTerritoryList()));
+		//getting the territories to make order creation easier
+		shared_ptr<Territory> t1 = gameEngine->getMap()->getTerritory(1);
+		shared_ptr<Territory> t2 = gameEngine->getMap()->getTerritory(2);
+		shared_ptr<Territory> t3 = gameEngine->getMap()->getTerritory(3);
+		shared_ptr<Territory> t4 = gameEngine->getMap()->getTerritory(4);
+		shared_ptr<Territory> t5 = gameEngine->getMap()->getTerritory(5);
+		shared_ptr<Territory> t6 = gameEngine->getMap()->getTerritory(6);
+
+		//getting the players to make order creation easier
+		shared_ptr<Player> player1 = gameEngine->getPlayers()[0];
+		shared_ptr<Player> player2 = gameEngine->getPlayers()[1];
+		shared_ptr<Player> player3 = gameEngine->getPlayers()[2];
 
 
+		//Deploying the armies for the players
+		shared_ptr<Order> order1(new Deploy(player1->getArmies() - 10, t1, *player1->getTerritoryList()));
+		player1->getOrderList()->addOrder(order1);
+		shared_ptr<Order> order2(new Deploy(10, t4, *player1->getTerritoryList()));
+		player1->getOrderList()->addOrder(order2);
+		shared_ptr<Order> order3(new Deploy(player2->getArmies(), t2, *player1->getTerritoryList()));
+		player2->getOrderList()->addOrder(order3);
+		shared_ptr<Order> order4(new Deploy(player3->getArmies() - 1, t3, *player1->getTerritoryList()));
+		player3->getOrderList()->addOrder(order4);
+		shared_ptr<Order> order5(new Deploy(1, t6, *player1->getTerritoryList()));
+		player3->getOrderList()->addOrder(order5);
+
+		//Player 1 has a huge continent bonus, he will eliminate player 2 to show eliminated players are removed and then eliminate player 3 to win.
+		//Our card design can be seen in the manual gameplay, they don't issue the orders themselves but instead give the player permission to use that order
+		//This may be hard to show here, so I will create a reinforcement for Player 1 and use it on territory 1.
+
+		//Player 1 will move into t2 from t1 and t5 from t4, eliminating player 2
+		//player 2 will take no action
+		//player 3 will advance some units to t6 to show that you can advance to friendly territories
+		//shared_ptr<Order> order6(new Advance((player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+
+
+
+
+
+
+
+		//Check for winner, this breaks out of main game loop in manual gameplay
+		shared_ptr<Player> winner = gameEngine->checkForWinner();
+		if (winner != nullptr)
+		{
+			cout << winner->getName() << " is the Winner!" << endl;
+		}
 	}
 
 

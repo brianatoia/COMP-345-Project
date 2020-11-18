@@ -1,7 +1,7 @@
 #include "Orders.h"
 #include "../Player/Player.h"
 
-int main()
+int main4()
 {
     //Creating two players
     Player* player1(new Player("Berta"));
@@ -70,7 +70,7 @@ int main()
 
     shared_ptr<Order> order3(new Deploy(10, t3, *player2->getTerritoryList()));
     order3->execute();
-    cout << "\n" << *order3<< endl;
+    cout << "\n" << *order3 << endl;
 
 
 
@@ -104,7 +104,7 @@ int main()
     cout << "\nPLAYER1: " << endl;
     for (shared_ptr<Territory> t : *player1->getTerritoryList())
     {
-        cout << t->name + " units: "<< t->units << endl;
+        cout << t->name + " units: " << t->units << endl;
     }
 
     cout << "\nPLAYER2: " << endl;
@@ -183,33 +183,33 @@ int main()
     cout << "Spain2: " << t5->units << endl;*/
 
 
-   /* player1->issueOrder("Blockade", testMap);
+    /* player1->issueOrder("Blockade", testMap);
 
-    cout << t4->units << endl;
-    for (shared_ptr<Territory> t : player1->getTerritoryList())
-    {
-        cout << t->name << endl;
-    }
+     cout << t4->units << endl;
+     for (shared_ptr<Territory> t : player1->getTerritoryList())
+     {
+         cout << t->name << endl;
+     }
 
-    /*cout << t5->units << endl;
-    player1->issueOrder("Advance", testMap);
-    cout << t5->units << endl;
-    cout << t4->units << endl;*/
-
-
-    //player1->issueOrder("Airlift", testMap);
+     /*cout << t5->units << endl;
+     player1->issueOrder("Advance", testMap);
+     cout << t5->units << endl;
+     cout << t4->units << endl;*/
 
 
-    //player1->issueOrder("Negotiate");
+     //player1->issueOrder("Airlift", testMap);
 
-    /*player1->issueOrder("Advance", testMap);
-    cout << t5->units << endl;
-    cout << t4->units << endl;
 
-    cout << "PLAYER1: " << endl;
-    cout << *player1 << endl;
-    cout << "\nPLAYER2: " << endl;
-    cout << *player2 << endl;*/
+     //player1->issueOrder("Negotiate");
+
+     /*player1->issueOrder("Advance", testMap);
+     cout << t5->units << endl;
+     cout << t4->units << endl;
+
+     cout << "PLAYER1: " << endl;
+     cout << *player1 << endl;
+     cout << "\nPLAYER2: " << endl;
+     cout << *player2 << endl;*/
 
     return 0;
 }
