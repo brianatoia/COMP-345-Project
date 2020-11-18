@@ -22,9 +22,10 @@ class Player
 {
 
 private:
-    static int playerCount; //Statin counter, counting players of the game
+    static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
     string name;
+    unsigned int armies;
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -44,7 +45,12 @@ public:
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
+    void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
+    void setArmies(unsigned int armies);
+    unsigned int getArmies() const;
+    void Player::addArmies(unsigned int armies);
+    void Player::removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
     list<shared_ptr<Territory>> getTerritoryList();

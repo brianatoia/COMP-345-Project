@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../player/Player.h"
-#include "../cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Cards/Cards.h"
 //#include "Cards.h"//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
@@ -11,58 +11,68 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iterator>
+#include <vector>
+#include <windows.h>
+
 
 using namespace std;
 
 class GameEngine
 {
 public:
-	/******PART1******/
+
+	//******     Constructor & Destructor    *****//
 	GameEngine();
-	void gameStart();
-	void addPlayers(shared_ptr<Player> player);
-	vector <shared_ptr<Player>> getPlayers();
-	string getPlayersInfo();
-	string getPlayersNames();
-	void setMap(shared_ptr<Map> newName);
-	void loadMap();
-	int getNumOfPlayers();
-	Deck getDeckCards();
-	bool getObserverStatus();
-	void setObserverStatus(bool status);
-
-
 	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
 	//~GameEngine();
 	//GameEngine& operator= (const GameEngine&);
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	~GameEngine();
 
-	//Part 2
-	//void startupPhase();	
+	//******     PART I    *****//
+	void gameStart();
 
-	//shared_ptr<GameEngine> createEngine();
 
-	//bool mainGameLoop();
+	//******     Map Methods    *****//
+	void loadMap();
+	string selectMap();
+	bool isMapInDirectory(string fileName);
+	vector<string> findMapNames();
 
-private:
-	/*****PART1*****/
-	int numOfPlayers;
-	bool equals(const string& a, const string& b);
-	void setNumOfPlayers();
+	//******     Oberserver Methods    *****//
 	bool Observers();
-	Deck deckCards;
-	bool activateObservers;
-	Map gameMap;
+	bool getObserverStatus();
+	void setObserverStatus(bool status);
+	bool equals(const string& a, const string& b);
 
 
+	//******     Deck Method    *****//
+	Deck* getDeck();
+
+
+	//******     Player Methods    *****//
+	void addPlayers(shared_ptr<Player> player);
+	vector<shared_ptr <Player>> getPlayers();
+	string getPlayersInfo();
+	string getPlayersNames();
+	
+
+	//******     PART II    *****//
+	void startupPhase();	
+
+
+//******     Private Members    *****//
+private:
+	int numOfPlayers;
+	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+	bool activateObservers;
+	
+
 	//bool reinforcementsPhase();
 	//bool issueOrdersPhase();
 	//bool executeOrdersPhase();
-
-
-
-
 
 };

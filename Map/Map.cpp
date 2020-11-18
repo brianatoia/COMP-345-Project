@@ -42,6 +42,7 @@ Map::~Map()
 
     this->territories.clear();
     this->continents.clear();
+    cout << "Map was deleted" << endl;
 }
 
 string Map::to_string()
@@ -62,6 +63,11 @@ string Map::to_string()
     }
 
     return s;
+}
+
+int Map::getTerritoriesCount()
+{
+    return territories.size();
 }
 
 shared_ptr<Territory> Map::add(Territory territory)

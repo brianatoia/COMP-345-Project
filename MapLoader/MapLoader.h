@@ -15,5 +15,5 @@ struct MapLoader
 	MapLoader& operator=(const MapLoader&);
 	friend ostream& operator<<(std::ostream& strm, MapLoader& mapLoader);
 
-	shared_ptr<Map> createMap(string fileName);
+	shared_ptr<Map> createMap(string fileName, string pathToDirectory = "");
 };
