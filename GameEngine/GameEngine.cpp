@@ -687,7 +687,7 @@ int main() {
 
 	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
 	int decision = 0;
-	while (decision != 1 | decision != 2)	cin >> decision;
+	cin >> decision;
 
 	if (decision == 1)
 	{
@@ -918,7 +918,7 @@ int main() {
 
 		cout << "\nEnd of Game!\n" << endl;
 	}
-
+	else cout << "\nInvalid choice, ending program" << endl;
 	return 0;
 }
 
