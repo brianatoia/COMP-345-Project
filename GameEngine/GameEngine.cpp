@@ -10,15 +10,6 @@ GameEngine::GameEngine()
 	this->map = shared_ptr <Map>();
 }
 
-//Destructor
-GameEngine::~GameEngine()
-{
-	delete deck;
-	deck = nullptr;
-	cout << "GameEngine was deleted" << endl;
-}
-
-
 
 //*************		PART I		**************//
 
@@ -44,9 +35,9 @@ void GameEngine::gameStart()
 		else
 			cout << "The numbers of players that you've selected has been deemed invalid. ";
 	}
-	
+
 	//Ask for player names, create players and push into players vector list
-	for (int i = 0; i < numOfPlayers; i++) 
+	for (int i = 0; i < numOfPlayers; i++)
 	{
 		string name;
 		cout << "Enter the name for player #" << (i + 1) << ": ";
@@ -120,13 +111,13 @@ void GameEngine::loadMap()
 		{
 			cout << "Map " << i+1 << " " << loadedMapNames[i] << ": \n" << loadedMaps[i]->to_string() << "\n" << endl;
 		}
-		
+
 		//Loop to get user to pick a map from the previous printed maps. 
 		//Reject input if its not numerical, smaller or greater than the list of maps size 
 		while (true)
 		{
 			cout << "Please select the Map you would like to proceed with by entering its number : ";
-			
+
 			int mapNum;
 			while (!(cin >> mapNum))
 			{
@@ -155,26 +146,31 @@ void GameEngine::loadMap()
 	mapLoader = nullptr;
 }
 
-string GameEngine::selectMap() 
+string GameEngine::selectMap()
 {
 	string map;
 	cout << "What map would you like to play with ?: ";
 	cin >> map;
 	if (isMapInDirectory(map + ".map"))
 		return map + ".map";
-	else if(isMapInDirectory(map + ".txt"))
+	else if (isMapInDirectory(map + ".txt"))
 		return map + ".txt";
 	else
 		return "NO MAP FOUND";
 }
 
-bool GameEngine::isMapInDirectory(string fileName) 
+bool GameEngine::isMapInDirectory(string fileName)
 {
 	ifstream file("MapDirectory/" + fileName);
 	if (!file)
 		return false;
 	else
 		return true;
+}
+
+shared_ptr<Map> GameEngine::getMap()
+{
+	return map;
 }
 
 //******     Oberserver Methods    *****//
@@ -196,12 +192,12 @@ bool GameEngine::Observers()
 	return false;
 }
 
-bool GameEngine::getObserverStatus() 
+bool GameEngine::getObserverStatus()
 {
 	return activateObservers;
 }
 
-void GameEngine::setObserverStatus(bool status) 
+void GameEngine::setObserverStatus(bool status)
 {
 	activateObservers = status;
 }
@@ -233,6 +229,7 @@ void GameEngine::addPlayers(shared_ptr<Player> player)
 }
 
 //Return player vector list
+
 vector<shared_ptr<Player>> GameEngine::getPlayers()
 {
 	return players;
@@ -255,7 +252,7 @@ string GameEngine::getPlayersNames()
 	string str = "";
 	for (auto player : players)
 	{
-		str += "Player " ;
+		str += "Player ";
 		str += to_string(player->getPlayerID());
 		str += " ";
 		str += player->getName();
@@ -266,6 +263,7 @@ string GameEngine::getPlayersNames()
 
 //*************		PART II		**************//
 
+
 void GameEngine::startupPhase()
 {
 	//Part II: 1
@@ -273,25 +271,202 @@ void GameEngine::startupPhase()
 	random_shuffle(players.begin(), players.end());
 
 	//Reassign players id to match the new order
-	for (int i = 0; i<players.size(); i++)
+	for (int i = 0; i < players.size(); i++)
 	{
-		players.at(i)->setPlayerID(i+1);
+		players.at(i)->setPlayerID(i + 1);
 	}
-	
+
 	//Part II: 2
 	//All territories in the map are randomly assigned to players one by one in round-robin fashion
-	for (int i = 1; i != map->getTerritoriesCount() ; i++)
+	for (int i = 1; i != map->getTerritoriesCount(); i++)
 	{
 		//Circularly loop through players and assign territories in ascending order to each player
-		players.at((i-1)% players.size())->addTerritory(map->getTerritory(i));
+		players.at((i - 1) % players.size())->addTerritory(map->getTerritory(i));
 	}
-	
+
 	//Part II: 3
 	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
 	int armies = 50 - (5 * players.size());
 	for (auto player : players)
 		player->setArmies(armies);
-}	
+}
+
+//*************		PART 3		**************//
+
+void GameEngine::reinforcementsPhase()
+{
+	for (auto player : players)
+	{
+		cout << "\nGiving armies to player " << player->getName() << endl;
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		int armiesToGive = playerTerritories.size() / 3;
+
+		armiesToGive += findContinentBonusTotal(player);
+
+
+		if (armiesToGive < 3) armiesToGive = 3;
+		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
+		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
+	}
+
+}
+
+int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
+{
+	int bonus = 0;
+	vector<unsigned int> playerTerritoryIDs;
+
+	for (auto territory : *player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
+
+	sort(playerTerritoryIDs.begin(), playerTerritoryIDs.end()); // sort for std::includes
+
+	for (shared_ptr<Continent> continent : map->getContinents()) //Loop through all continents, could be simplified to only necessary continents but not necessary and complicates code
+	{
+		if (continent == nullptr) continue;
+
+		sort(continent->territoryIDs.begin(), continent->territoryIDs.end());
+
+		if (includes(playerTerritoryIDs.begin(), playerTerritoryIDs.end(), continent->territoryIDs.begin(), continent->territoryIDs.end())) //Check if continent's territory IDs list is a subset of Player's territory IDs list
+		{
+			bonus += continent->bonus;
+		}
+	}
+
+	return bonus;
+}
+
+void GameEngine::deployLoop(shared_ptr<Player> player)
+{
+
+	do
+	{
+		player->issueOrder("Deploy");
+	} while (player->getArmies() > 0);
+
+}
+
+void GameEngine::issueOrdersPhase()
+{
+	cout << "\nStart of issueOrderPhase()\n" << endl;
+	Sleep(1000);
+
+	cout << "Deploying Phase: \n" << endl;
+	Sleep(1000);
+
+	//Issuing all the rest of the orders
+	for (auto player : players)
+	{
+		player->updateAvailableUnits();
+
+		//Deploying, force player to deploy first
+		deployLoop(player);
+
+		cout << "\n" << player->getName() << " place your order!" << endl;
+		cout << "==================================================" << endl;
+		//(priorities: 1:deploy 2: airlift 3:blockade 4:all the others
+		Sleep(1000);
+		cout << "Advance" << endl;
+		cout << "Airlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;
+		cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;
+		cout << "Bomb (" << player->getHand()->findNumberOfType("Bomb") << ")" << endl;
+		cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;
+		cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;
+		cout << "End" << endl;
+		cout << "==================================================" << endl;
+
+		string decision = "";
+		while (true)
+		{
+			cin >> decision;
+
+			if (_stricmp(decision.c_str(), "Advance") == 0)
+			{
+				player->issueOrder("Advance");
+			}
+			else if (_stricmp(decision.c_str(), "Airlift") == 0)	//case where player chooses airlift
+			{
+				if (player->getHand()->findCardType("Airlift"))	//check if player has atleast 1 airlift card
+					player->issueOrder("Airlift");					//issue the order (puts it in order list)
+			}
+			else if (_stricmp(decision.c_str(), "Blockade") == 0)
+			{
+				if (player->getHand()->findCardType("Blockade"))
+					player->issueOrder("Blockade");
+			}
+			else if (_stricmp(decision.c_str(), "Bomb") == 0)
+			{
+				if (player->getHand()->findCardType("Bomb"))
+					player->issueOrder("Bomb");
+			}
+			else if (_stricmp(decision.c_str(), "Negotiate") == 0)
+			{
+				if (player->getHand()->findCardType("Diplomacy"))
+					player->issueOrder("Negotiate");
+			}
+			else if (_stricmp(decision.c_str(), "Reinforcement") == 0)
+			{
+				if (player->getHand()->findCardType("Reinforcement"))
+					//if condition and stuff
+					player->addArmies(20);
+				deployLoop(player);
+			}
+			else if (_stricmp(decision.c_str(), "End") == 0)
+			{
+				break;
+			}
+			else
+			{
+				cout << "Invalid input" << endl;
+			}
+
+		}
+	}
+}
+
+void GameEngine::executeOrdersPhase()
+{
+
+}
+
+void GameEngine::checkForEliminatedPlayers()
+{
+	for (int i = 0; i < players.size(); i++)
+	{
+		list<shared_ptr<Territory>> playerTerritories = *players[i]->getTerritoryList();
+		if (playerTerritories.size() == 0)
+		{
+			players.erase(players.begin() + i); //Because smart pointer, also calls destructor
+			//Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
+			checkForEliminatedPlayers();
+			break;
+		}
+	}
+}
+
+shared_ptr<Player> GameEngine::checkForWinner()
+{
+	int numberOfTerritories = map->getTerritoriesCount();
+
+	for (auto player : players)
+	{
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		if (playerTerritories.size() == numberOfTerritories)
+			return player;
+	}
+
+	return nullptr;
+
+}
+
+void GameEngine::mainGameLoop()
+{
+	reinforcementsPhase();
+	issueOrdersPhase();
+	executeOrdersPhase();
+
+	checkForEliminatedPlayers();
+
+}
 
 vector<string> GameEngine::findMapNames() {
 	vector<string> mapNames = vector<string>();
@@ -326,10 +501,15 @@ vector<string> GameEngine::findMapNames() {
 
 //*************		MAIN METHOD		**************//
 
-int main(){
+int main6(){
 	
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
+
+	if (gameEngine->getMap()->getTerritoriesCount() < Player::getPlayerCount())
+	{
+		cerr << "Not enough territories for all players. Quitting game..." << endl;
+	}
 
 	//Testing Part I
 	cout << "Calling gameStart(): Code from Part I" << endl;
@@ -337,16 +517,33 @@ int main(){
 
 	//A deck was created
 	cout << *gameEngine->getDeck() << endl;
-	
+
 	//Players were created
 	cout << gameEngine->getPlayersNames() << endl;
-		
+
 	//Testing Part II
 	cout << "Calling startupPhase(): Code from Part II" << endl;
 	gameEngine->startupPhase();
-	
+
 	//Player order was randomly changed, territories distributed and armies were assigned to each player
 	cout << gameEngine->getPlayersInfo() << endl;
+
+	//Main Game Loop
+	while (true)
+	{
+		cout << "Start of main loop" << endl;
+		gameEngine->mainGameLoop();
+		cout << "end of main loop" << endl;
+
+		//Check for winner, end game loop if true
+		shared_ptr<Player> winner = gameEngine->checkForWinner();
+		if (winner != nullptr)
+		{
+			cout << winner->getName() << " is the Winner!" << endl;
+			break;
+		}
+
+	}
 
 	return 0;
 }

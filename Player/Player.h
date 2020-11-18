@@ -14,24 +14,30 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
+#include <tuple>
+
 
 
 using namespace std;
 
+static list<tuple<int, int>> playersNegotiated;
+static vector<list<shared_ptr<Territory>>*> playerTerritories;
+
 class Player
 {
-
 private:
     static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
     string name;
-    unsigned int armies;
+    bool* capturedTerritory;
+    unsigned int armies;    //number of armies player has to place
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
     OrderList* orderList;  //A pointer to a list holding ptrs to order objects
 
 public:
+    static list<shared_ptr<Territory>>* getPlayerTerritories(int);
 
     Player();
     ~Player();
@@ -47,24 +53,29 @@ public:
     static int getPlayerCount();
     void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
+    void clearPlayersNegotiated();
+    bool* getCapturedTerritory();
+    void resetCapturedTerritory();
+    //list<shared_ptr<Territory>>* getPlayerTerritories(int);
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
-    void Player::addArmies(unsigned int armies);
-    void Player::removeArmies(unsigned int armies);
+    void addArmies(unsigned int armies);
+    void removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
-    list<shared_ptr<Territory>> getTerritoryList();
+    list<shared_ptr<Territory>>* getTerritoryList();
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
-    list<shared_ptr<Territory>> toDefend(Map aMap);
-    list<shared_ptr<Territory>> toAttack(Map aMap);
+    list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap);
+    list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap);
+    void updateAvailableUnits();
 
     //********* Card methods **********//
     Hand* getHand();
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType);
+    void issueOrder(string orderType, shared_ptr<Map> map = NULL);
 };
 
 //*************      INSTRUCTIONS    ****************
@@ -78,6 +89,3 @@ public:
 // Players contains an issueOrder() method that creates an order object and adds it to the list of orders
 
 // Driver creates players and demonstrates that the above features are available
-
-
-

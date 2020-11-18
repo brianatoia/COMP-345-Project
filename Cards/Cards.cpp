@@ -3,7 +3,6 @@
 #include <algorithm>
 using namespace std;
 
-
 Card::Card()
 {
 	this->cardType = BOMB;
@@ -153,7 +152,6 @@ void Hand::play(Card* aCard, Deck* aDeck)
 		cout << "You have no cards please draw" << endl;
 	}
 
-
 }
 
 
@@ -211,10 +209,28 @@ void Hand::removePlayedCardOfHand(Card* rCard)
 	}
 }
 
+bool Hand::findCardType(string type)
+{
+	for (auto card : hand)
+	{
+		if (type.compare(card->getCardType()) == 0) return true;
+	}
+	return false;
+}
+
+int Hand::findNumberOfType(string type)
+{
+	int amount = 0;
+	for (auto card : hand)
+	{
+		if (type.compare(card->getCardType()) == 0) amount ++;
+	}
+	return amount;
+}
+
 int Hand::getHandSize()
 {
 	return hand.size();
-
 }
 
 
