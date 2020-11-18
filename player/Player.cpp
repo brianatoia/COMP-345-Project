@@ -452,7 +452,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 		sourceTerritory->availableUnits -= numOfArmies;
 
-		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, &territoryList, playerTerritories[targetTerritory->ownerID - 1],capturedTerritory, &playersNegotiated));
+
+
+		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, &territoryList, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, &playersNegotiated));
 		this->orderList->addOrder(order);
 	}
 	else if (orderType == "Bomb")
@@ -609,12 +611,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		} while (targetPlayerID > playerCount || targetPlayerID < 0);
 
 
-		list<tuple<int, int>>* temp = &playersNegotiated;
-		shared_ptr<Order> order(new Negotiate(playerID, targetPlayerID, temp));
+		shared_ptr<Order> order(new Negotiate(playerID, targetPlayerID, &playersNegotiated));
 		this->orderList->addOrder(order);
-
-		delete temp;
-		temp = nullptr;
 	}
 	else
 	{
