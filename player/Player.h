@@ -54,15 +54,16 @@ public:
     void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
     void clearPlayersNegotiated();
-    bool getCapturedTerritory();
+    bool* getCapturedTerritory();
     void resetCapturedTerritory();
+    list<shared_ptr<Territory>>* getPlayerTerritories(int);
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
     void addArmies(unsigned int armies);
     void removeArmies(unsigned int armies);
 
     //********* Territory methods **********//
-    list<shared_ptr<Territory>> getTerritoryList();
+    list<shared_ptr<Territory>>* getTerritoryList();
     void addTerritory(shared_ptr<Territory> newTerritoryPtr);
     string printList(list<shared_ptr<Territory>> aList);
     list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap);

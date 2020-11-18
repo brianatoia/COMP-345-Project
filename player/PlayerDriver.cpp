@@ -24,7 +24,7 @@ int main4() {
     //Testing copy constructor
     Player* player3(new Player("Trudy"));
     Player* player4(new Player(*player3));
-    cout << "\nTesting copy constructor, printing address of player 3 territoryList :\n" << &(player3->getTerritoryList()) << " and address of player 4 territoryList: " << &(player4->getTerritoryList()) << endl;
+    cout << "\nTesting copy constructor, printing address of player 3 territoryList :\n" << (player3->getTerritoryList()) << " and address of player 4 territoryList: " << (player4->getTerritoryList()) << endl;
 
 
 
@@ -92,7 +92,7 @@ int main4() {
 
 
     //Displaying territoryList containing territories currently owned by player2
-    cout << "\nTesting players list of territories:\n" + player1->printList(player1->getTerritoryList());
+    cout << "\nTesting players list of territories:\n" + player1->printList(*player1->getTerritoryList());
 
 
     //Test issueOrder() creates an order objects and adds it to the OrderList

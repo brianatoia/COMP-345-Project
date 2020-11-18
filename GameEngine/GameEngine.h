@@ -33,6 +33,7 @@ public:
 	void loadMap();
 	string selectMap();
 	bool isMapInDirectory(string fileName);
+	shared_ptr<Map> getMap();
 
 	//******     Oberserver Methods    *****//
 	bool Observers();

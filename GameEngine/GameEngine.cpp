@@ -78,7 +78,7 @@ void GameEngine::gameStart()
 //Method to load map and store in map attribute of class GameEngine
 void GameEngine::loadMap()
 {
-	//declaring map loader 
+	//declaring map loader
 	shared_ptr<MapLoader> mapLoader(new MapLoader());
 
 	//implement vector of maps, player can choose one
@@ -122,8 +122,8 @@ void GameEngine::loadMap()
 			cout << "Map " << i + 1 << " " << mapNames[i] << ": \n" << listOfMaps[i]->to_string() << "\n" << endl;
 		}
 
-		//Loop to get user to pick a map from the previous printed maps. 
-		//Reject input if its not numerical, smaller or greater than the list of maps size 
+		//Loop to get user to pick a map from the previous printed maps.
+		//Reject input if its not numerical, smaller or greater than the list of maps size
 		while (true)
 		{
 			cout << "Please select the Map you would like to proceed with by entering its number : ";
@@ -176,6 +176,11 @@ bool GameEngine::isMapInDirectory(string fileName)
 		return false;
 	else
 		return true;
+}
+
+shared_ptr<Map> GameEngine::getMap()
+{
+	return map;
 }
 
 //******     Oberserver Methods    *****//
@@ -289,7 +294,7 @@ void GameEngine::startupPhase()
 	}
 
 	//Part II: 3
-	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25	
+	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25
 	int armies = 50 - (5 * players.size());
 	for (auto player : players)
 		player->setArmies(armies);
@@ -303,14 +308,15 @@ void GameEngine::reinforcementsPhase()
 	for (auto player : players)
 	{
 		cout << "\nGiving armies to player " << player->getName() << endl;
-		int armiesToGive = player->getTerritoryList().size() / 3;
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		int armiesToGive = playerTerritories.size() / 3;
 
 		armiesToGive += findContinentBonusTotal(player);
 
 
 		if (armiesToGive < 3) armiesToGive = 3;
 		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
-		
+
 		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
 
 		if (player->getCapturedTerritory())
@@ -328,7 +334,7 @@ int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
 	int bonus = 0;
 	vector<unsigned int> playerTerritoryIDs;
 
-	for (auto territory : player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
+	for (auto territory : *player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
 
 	sort(playerTerritoryIDs.begin(), playerTerritoryIDs.end()); // sort for std::includes
 
@@ -398,14 +404,14 @@ void GameEngine::issueOrdersPhase()
 			if (_stricmp(decision.c_str(), "Advance") == 0)
 			{
 				player->issueOrder("Advance", map);
-			}																				// === format followed for all order types === // 
+			}																				// === format followed for all order types === //
 			else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
 			{
 				if (player->getHand()->findCardType("Airlift"))								//check if player has atleast 1 airlift card
 				{
 					player->issueOrder("Airlift", map);										//issue the order (puts it in order list)
 					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);	//play the card
-				}				
+				}
 				else cout << "Not enough cards!" << endl;									//if not enough cards tell player
 			}
 			else if (_stricmp(decision.c_str(), "Blockade") == 0)
@@ -429,7 +435,7 @@ void GameEngine::issueOrdersPhase()
 			}
 			else if (_stricmp(decision.c_str(), "Negotiate") == 0)
 			{
-				if (player->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment 
+				if (player->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment
 				{
 					player->issueOrder("Negotiate");
 					player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
@@ -463,7 +469,7 @@ bool GameEngine::atleastOneOfType(string type)
 {
 	for (auto player : players)
 	{
-		if (player->getOrderList()->hasOrderType(type)) return true;		
+		if (player->getOrderList()->hasOrderType(type)) return true;
 	}
 	return false;
 }
@@ -489,7 +495,7 @@ void GameEngine::executeOrdersPhase()
 			if (inDeploy)
 			{
 				shared_ptr<Order> order = player->getOrderList()->getOrder("Deploy");
-				
+
 				if (!(order == nullptr))
 				{
 					order->execute();									//execute order
@@ -510,9 +516,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							
-					cout << *order << "\n" << endl;	Sleep(500);						
-					player->getOrderList()->remove(order);		
+					order->execute();
+					cout << *order << "\n" << endl;	Sleep(500);
+					player->getOrderList()->remove(order);
 				}
 
 				if (!atleastOneOfType("Airlift"))
@@ -528,9 +534,9 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							
-					cout << *order << "\n" << endl;	Sleep(500);						
-					player->getOrderList()->remove(order);		
+					order->execute();
+					cout << *order << "\n" << endl;	Sleep(500);
+					player->getOrderList()->remove(order);
 				}
 
 				if (!atleastOneOfType("Blockade"))
@@ -546,8 +552,8 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							
-					cout << *order << "\n" << endl;	Sleep(500);						
+					order->execute();
+					cout << *order << "\n" << endl;	Sleep(500);
 					player->getOrderList()->remove(order);
 				}
 
@@ -564,8 +570,8 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();							
-					cout << *order << "\n" << endl;	Sleep(500);	
+					order->execute();
+					cout << *order << "\n" << endl;	Sleep(500);
 					player->getOrderList()->remove(order);
 				}
 
@@ -582,7 +588,7 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();		
+					order->execute();
 					cout << *order << "\n" << endl;	Sleep(500);
 					player->getOrderList()->remove(order);
 				}
@@ -598,7 +604,7 @@ void GameEngine::executeOrdersPhase()
 
 		}
 	}
-	
+
 
 
 
@@ -608,7 +614,8 @@ void GameEngine::checkForEliminatedPlayers()
 {
 	for (int i = 0; i < players.size(); i++)
 	{
-		if (players[i]->getTerritoryList().size() == 0)
+		list<shared_ptr<Territory>> playerTerritories = *players[i]->getTerritoryList();
+		if (playerTerritories.size() == 0)
 		{
 			players.erase(players.begin() + i); //Because smart pointer, also calls destructor
 			//Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
@@ -624,7 +631,8 @@ shared_ptr<Player> GameEngine::checkForWinner()
 
 	for (auto player : players)
 	{
-		if (player->getTerritoryList().size() == numberOfTerritories)
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		if (playerTerritories.size() == numberOfTerritories)
 			return player;
 	}
 
@@ -642,13 +650,24 @@ void GameEngine::mainGameLoop()
 
 //*************		MAIN METHOD		**************//
 
-int main() {
+int main6() {
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
+
 
 	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
 	int decision = 0;
 	cin >> decision;
+
+	if (gameEngine->getMap()->getTerritoriesCount() < Player::getPlayerCount())
+	{
+		cerr << "Not enough territories for all players. Quitting game..." << endl;
+	}
+
+	//Testing Part I
+	cout << "Calling gameStart(): Code from Part I" << endl;
+	gameEngine->gameStart();
+
 
 	if (decision == 1)
 	{
@@ -658,7 +677,7 @@ int main() {
 
 		//A deck was created
 		cout << *gameEngine->getDeck() << endl;
-		
+
 		//Players were created
 		cout << gameEngine->getPlayersNames() << endl;
 
@@ -689,12 +708,12 @@ int main() {
 	{
 
 		/*
-		Logic for some points is hard to show using the driver but can clearly be seen in the manual game. For example, 
+		Logic for some points is hard to show using the driver but can clearly be seen in the manual game. For example,
 		(2) a player will only issue deploy orders and no other kind of orders if they still have armies in their reinforcement pool. This
-		can easily be seen above but is hard to show using just the driver. 
+		can easily be seen above but is hard to show using just the driver.
 		There is no ai either, so using the mainGameLoop() doesn't work with automatic gameplay, but works with manual gameplay as it should.
 		I will be creating the orders in a way to demonstrate the requirements.
-		Issue order asks for manual input, so to make it automatic I go straight to creating the order itself that I want to use to demonstrate. 
+		Issue order asks for manual input, so to make it automatic I go straight to creating the order itself that I want to use to demonstrate.
 		Execution will still happen corrently
 		*/
 
@@ -733,7 +752,7 @@ int main() {
 
 
 	}
-	
+
 
 
 	return 0;
