@@ -2,11 +2,11 @@
 #include "../Player/Player.h"
 #include "../GameEngine/GameEngine.h"
 
-int main7()
+int main()
 {
     //Creating two players
-    Player* player1(new Player("Berta"));
-    Player* player2(new Player("Rob"));
+    shared_ptr<Player> player1(new Player("Berta"));
+    shared_ptr<Player> player2(new Player("Rob"));
 
     //Creating a map
     shared_ptr<Map> testMap(new Map());
@@ -64,15 +64,18 @@ int main7()
 
     //Invalid Deploy - Deploying to a territory you do not own
     shared_ptr<Order> order1(new Deploy(10, t5, *player1->getTerritoryList()));
-    order1->execute();
+    player1->getOrderList()->addOrder(order1);  //adding to list for executeOrdersPhase later
+    order1->execute();  //Executing right away to show functionality
     cout << "\n" << *order1 << endl;
 
     //Valid Deploy - Deploying to a territory you do own
     shared_ptr<Order> order2(new Deploy(10, t4, *player1->getTerritoryList()));
+    player1->getOrderList()->addOrder(order2);
     order2->execute();
     cout << "\n" << *order2 << endl;
 
     shared_ptr<Order> order3(new Deploy(10, t3, *player2->getTerritoryList()));
+    player2->getOrderList()->addOrder(order3);
     order3->execute();
     cout << "\n" << *order3 << endl;
 
@@ -82,26 +85,31 @@ int main7()
 
     //Invalid Advance - If the source territory does not belong to the player that issued the order
     shared_ptr<Order> order4(new Advance(5, t5, t4, player1->getTerritoryList(), Player::getPlayerTerritories(t4->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order4);
     order4->execute();
     cout << "\n" << *order4 << endl;
 
     //Invalid Advance - If the target territory is not adjacent to the source territory
     shared_ptr<Order> order5(new Advance(5, t4, t6, player1->getTerritoryList(), Player::getPlayerTerritories(t6->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order5);
     order5->execute();
     cout << "\n" << *order5 << endl;
 
     //If the source and target territory both belong to the player that issued the order, the army units are moved from the source to the target territory.
     shared_ptr<Order> order6(new Advance(2, t4, t1, player1->getTerritoryList(), Player::getPlayerTerritories(t1->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order6);
     order6->execute();
     cout << "\n" << *order6 << endl;
 
     //If the source belongs to the player but the target does not
     shared_ptr<Order> order7(new Advance(2, t4, t5, player1->getTerritoryList(), Player::getPlayerTerritories(t5->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order7);
     order7->execute();
     cout << "\n" << *order7 << endl;
 
     //If the source belongs to the player, but the target territory belongs to the Neutral player
     shared_ptr<Order> order8(new Advance(1, t5, t6, player1->getTerritoryList(), Player::getPlayerTerritories(t5->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order8);
     order8->execute();
     cout << "\n" << *order8 << endl;
 
@@ -117,16 +125,20 @@ int main7()
         cout << t->name + " units: " << t->units << endl;
     }
 
+
+
     // CARD STUFF
     cout << "\nTESTING BLOCKADE" << endl;
 
     //Invalid Blockade - If the target territory belongs to an enemy player
     shared_ptr<Order> order9(new Blockade(t2, *player1->getTerritoryList()));
+    player1->getOrderList()->addOrder(order9);
     order9->execute();
     cout << "\n" << *order9 << endl;
 
     //Invalid Blockade - If the target territory belongs to an enemy player
     shared_ptr<Order> order10(new Blockade(t6, *player1->getTerritoryList()));
+    player1->getOrderList()->addOrder(order10);
     order10->execute();
     cout << "\n" << *order10 << endl;
 
@@ -142,16 +154,19 @@ int main7()
 
     //Invalid Airlift - If the source or target does not belong to the player that issued the order
     shared_ptr<Order> order11(new Airlift(2, t3, t5, player1->getTerritoryList(), Player::getPlayerTerritories(t5->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order11);
     order11->execute();
     cout << "\n" << *order11 << endl;
 
     //Valid Airlift - If both the source and target territories belong to the player that issue the airlift order
     shared_ptr<Order> order12(new Airlift(2, t4, t5, player1->getTerritoryList(), Player::getPlayerTerritories(t5->ownerID), player1->getCapturedTerritory(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order12);
     order12->execute();
     cout << "\n" << *order12 << endl;
 
     //If the target territory does not belong to the player that issued the airlift order, the selected number of armies is attacking that territory(see �advance order�)
     shared_ptr<Order> order13(new Airlift(3, t3, t4, player2->getTerritoryList(), Player::getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), &playersNegotiated));
+    player2->getOrderList()->addOrder(order13);
     order13->execute();
     cout << "\n" << *order13 << endl;
 
@@ -173,11 +188,13 @@ int main7()
 
     //Invalid Bomb - Cannot bomb your own territory
     shared_ptr<Order> order14(new Bomb(player2->getPlayerID(), t3, player2->getTerritoryList(), &playersNegotiated));
+    player2->getOrderList()->addOrder(order14);
     order14->execute();
     cout << "\n" << *order14 << endl;
 
     //Valid Bomb - Bomb territory you do not own
     shared_ptr<Order> order15(new Bomb(player1->getPlayerID(), t3, player1->getTerritoryList(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order15);
     order15->execute();
     cout << "\n" << *order15 << endl;
 
@@ -199,16 +216,19 @@ int main7()
 
     //Invalid Negotiate - Cannot negotiate with yourself
     shared_ptr<Order> order16(new Negotiate(player1->getPlayerID(), player1->getPlayerID(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order16);
     order16->execute();
     cout << "\n" << *order16 << endl;
 
     //Valid Negotiate
     shared_ptr<Order> order17(new Negotiate(player1->getPlayerID(), player2->getPlayerID(), &playersNegotiated));
+    player1->getOrderList()->addOrder(order17);
     order17->execute();
     cout << "\n" << *order17 << endl;
 
     //Test Negotiate
     shared_ptr<Order> order18(new Advance(4, t3, t4, player2->getTerritoryList(), Player::getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), &playersNegotiated));
+    player2->getOrderList()->addOrder(order18);
     order18->execute();
     cout << "\n" << *order18 << endl;
 
@@ -237,12 +257,16 @@ int main7()
     cout << "Player 2 Cards: " << player2->getHand()->getHandSize() << endl;
 
     GameEngine* game(new GameEngine());
+    game->addPlayers(player1);
+    game->addPlayers(player2);
+
+    cout << "\n=============================================================================================================" << endl;
+    cout << "\nAlso showing that the orders can be performed using executeOrdersPhase() from a GameEngine" << endl;
+    cout << "Will be using the same orders as above so some will not validate (like blockades)" << endl;
     game->executeOrdersPhase();
 
-    delete player1;
     player1 = nullptr;
 
-    delete player2;
     player2 = nullptr;
 
     delete deck;
@@ -250,20 +274,5 @@ int main7()
 
     delete game;
     game = nullptr;
-
-     //player1->issueOrder("Airlift", testMap);
-
-
-     //player1->issueOrder("Negotiate");
-
-     /*player1->issueOrder("Advance", testMap);
-     cout << t5->units << endl;
-     cout << t4->units << endl;
-
-     cout << "PLAYER1: " << endl;
-     cout << *player1 << endl;
-     cout << "\nPLAYER2: " << endl;
-     cout << *player2 << endl;*/
-
     return 0;
 }
