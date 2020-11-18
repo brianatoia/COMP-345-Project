@@ -15,7 +15,7 @@ public:
 		ADVANCE,
 		BOMB,
 		BLOCKADE,
-		AIRLIFT, 
+		AIRLIFT,
 		NEGOTIATE
 	};
 	Order();
@@ -56,7 +56,7 @@ public:
 	void setOrders(list<shared_ptr<Order>>);
 	void addOrder(shared_ptr<Order>);
 	void remove(shared_ptr<Order>);
-	void move(shared_ptr<Order>, MoveOption);
+	void move(shared_ptr<Order>, MoveOption*);
 	string to_string();
 	OrderList(const OrderList&);
 	OrderList& operator=(const OrderList&);
@@ -74,6 +74,7 @@ public:
 	void execute();
 	Deploy(const Deploy&);
 	Deploy& operator=(const Deploy&);
+	~Deploy();
 
 private:
 	int numOfArmies;
@@ -89,6 +90,7 @@ public:
 	void execute();
 	Advance(const Advance&);
 	Advance& operator=(const Advance&);
+	~Advance();
 
 private:
 	int numOfArmies;
@@ -108,6 +110,7 @@ public:
 	void execute();
 	Bomb(const Bomb&);
 	Bomb& operator=(const Bomb&);
+	~Bomb();
 private:
 	unsigned int attackerID;
 	shared_ptr<Territory> targetTerritory;
@@ -123,6 +126,7 @@ public:
 	void execute();
 	Blockade(const Blockade&);
 	Blockade& operator=(const Blockade&);
+	~Blockade();
 private:
 	shared_ptr<Territory> targetTerritory;
 	list<shared_ptr<Territory>>* playerTerritories;
@@ -136,6 +140,7 @@ public:
 	void execute();
 	Airlift(const Airlift&);
 	Airlift& operator=(const Airlift&);
+	~Airlift();
 private:
 	int numOfArmies;
 	shared_ptr<Territory> sourceTerritory;
@@ -154,6 +159,7 @@ public:
 	void execute();
 	Negotiate(const Negotiate&);
 	Negotiate& operator=(const Negotiate&);
+	~Negotiate();
 private:
 	int sourcePlayerID;
 	int targetPlayerID;

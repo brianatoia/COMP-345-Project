@@ -59,9 +59,6 @@ int main()
     {
         cout << t->name << endl;
     }
-    
-    //Each order is validated before being executed
-    
 
     cout << "\nTESTING DEPLOY" << endl;
 
@@ -242,6 +239,18 @@ int main()
 
     GameEngine* game(new GameEngine());
     game->executeOrdersPhase();
+
+    delete player1;
+    player1 = nullptr;
+
+    delete player2;
+    player2 = nullptr;
+
+    delete deck;
+    deck = nullptr;
+
+    delete game;
+    game = nullptr;
 
 	return 0;
 }

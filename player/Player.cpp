@@ -455,6 +455,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1],capturedTerritory, &playersNegotiated));
 		this->orderList->addOrder(order);
 
+		delete temp;
+		temp = nullptr;
 	}
 	else if (orderType == "Bomb")
 	{
@@ -486,6 +488,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		list<tuple<int, int>>* temp = &playersNegotiated;
 		shared_ptr<Order> order(new Bomb(playerID, territory, &territoryList, temp));
 		this->orderList->addOrder(order);
+
+		delete temp;
+		temp = nullptr;
 	}
 	else if (orderType == "Blockade")
 	{
@@ -601,6 +606,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		list<shared_ptr<Territory>>* temp = &territoryList;
 		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, &playersNegotiated));
 		this->orderList->addOrder(order);
+
+		delete temp;
+		temp = nullptr;
 	}
 	else if (orderType == "Negotiate")
 	{
@@ -615,6 +623,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		list<tuple<int, int>>* temp = &playersNegotiated;
 		shared_ptr<Order> order(new Negotiate(playerID, targetPlayerID, temp));
 		this->orderList->addOrder(order);
+
+		delete temp;
+		temp = nullptr;
 	}
 	else
 	{

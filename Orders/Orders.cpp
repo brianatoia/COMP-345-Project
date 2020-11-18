@@ -46,6 +46,9 @@ Order::Order(OrderType* orderType)
 	{
 		cerr << "Invalid Order Type" << endl;
 	}
+
+	delete orderType;
+	orderType = nullptr;
 }
 
 //Order Getters
@@ -82,6 +85,9 @@ string Order::getOrderEffect()
 void Order::setOrderType(OrderType* orderType)
 {
 	*(this->orderType) = *orderType;
+
+	delete orderType;
+	orderType = nullptr;
 }
 
 void Order::setOrderDescription(string orderDescription)
@@ -109,7 +115,7 @@ OrderList::OrderList()
 //OrderList Destructor
 OrderList::~OrderList()
 {
-	for (std::shared_ptr<Order> order : this->orders) 
+	for (shared_ptr<Order> order : this->orders) 
 	{
 		order.reset();
 	}
@@ -151,7 +157,7 @@ void OrderList::remove(shared_ptr<Order> orderToRemove)
 }
 
 //Moves an Order in the List: up, down, top or bottom
-void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
+void OrderList::move(shared_ptr<Order> order, MoveOption* moveOption)
 {
 	bool orderExists = false;
 	list<shared_ptr<Order>>::iterator it = orders.begin();
@@ -169,17 +175,17 @@ void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 		return;
 	}
 	//Move order to beginnning of list
-	if (moveOption == BEGINNING)
+	if (*moveOption == BEGINNING)
 	{
 		orders.splice(orders.begin(), orders, it);
 	}
 	//Move order to end of list
-	else if(moveOption == END)
+	else if(*moveOption == END)
 	{
 		orders.splice(orders.end(), orders, it);
 	}
 	//Move order up one position
-	else if (moveOption == UP)
+	else if (*moveOption == UP)
 	{
 		//check that it's not the first element
 		if (it != orders.begin())
@@ -190,7 +196,7 @@ void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 		}
 	}
 	//Move order down one position
-	else if (moveOption == DOWN)
+	else if (*moveOption == DOWN)
 	{
 		//check that it's not the last element
 		list<shared_ptr<Order>>::iterator itEnd = orders.end();
@@ -206,15 +212,28 @@ void OrderList::move(shared_ptr<Order> order, MoveOption moveOption)
 	{
 		cerr << "Invalid movement option" << endl;
 	}
+
+	delete moveOption;
+	moveOption = nullptr;
 }
 
 Order::OrderType deployO = Order::DEPLOY;
-Order::OrderType* deployO_ptr = &deployO;
-Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr<Territory>> playerTerritories) : Order(deployO_ptr)
+Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr<Territory>> playerTerritories) : Order(&deployO)
 {
 	this->numOfArmies = numOfArmies;
 	this->territory = territory;
 	this->playerTerritories = playerTerritories;
+}
+
+Deploy::~Deploy()
+{
+	territory.reset();
+
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories.clear();
 }
 
 bool Deploy::validate()
@@ -246,9 +265,8 @@ void Deploy::execute()
 }
 
 Order::OrderType advanceO = Order::ADVANCE;
-Order::OrderType* advanceO_ptr = &advanceO;
 Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<shared_ptr<Territory>>* targetPlayerTerritories, 
-							bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(advanceO_ptr)
+							bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(&advanceO)
 {
 	this->numOfArmies = numOfArmies;
 	this->sourceTerritory = sourceTerritory;
@@ -257,6 +275,37 @@ Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_
 	this->targetPlayerTerritories = targetPlayerTerritories;
 	this->capturedTerritory = capturedTerritory;
 	this->playersNegotiated = playersNegotiated;
+}
+
+Advance::~Advance()
+{
+	sourceTerritory.reset();
+	targetTerritory.reset();
+	
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories->clear();
+
+	delete playerTerritories;
+	playerTerritories = nullptr;
+
+	for (shared_ptr<Territory> t : *targetPlayerTerritories)
+	{
+		t.reset();
+	}
+	targetPlayerTerritories->clear();
+
+	delete targetPlayerTerritories;
+	targetPlayerTerritories = nullptr;
+
+	delete capturedTerritory;
+	capturedTerritory = nullptr;
+
+	playersNegotiated->clear();
+	delete playersNegotiated;
+	playersNegotiated = nullptr;
 }
 
 bool Advance::validate()
@@ -333,7 +382,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	numOfArmies -= targetArmiesDefending;
 
 	//Defending army defeated all of Attacking territoy armies
-	if (sourceTerritory->units == 0)
+	if (sourceTerritory->units == 0 && numOfArmies == 0)
 	{
 		sourceTerritory->ownerID = NULL;
 		playerTerritories->remove(sourceTerritory);
@@ -364,6 +413,27 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 		s += "Both territories remain standing.";
 	}
 	return(s);
+
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories->clear();
+
+	delete playerTerritories;
+	playerTerritories = nullptr;
+
+	for (shared_ptr<Territory> t : *targetPlayerTerritories)
+	{
+		t.reset();
+	}
+	targetPlayerTerritories->clear();
+
+	delete targetPlayerTerritories;
+	targetPlayerTerritories = nullptr;
+
+	delete capturedTerritory;
+	capturedTerritory = nullptr;
 }
 
 void Advance::execute()
@@ -417,13 +487,30 @@ void Advance::execute()
 }
 
 Order::OrderType bombO = Order::BOMB;
-Order::OrderType* bombO_ptr = &bombO;
-Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<tuple<int, int>>* playersNegotiated) : Order(bombO_ptr)
+Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<tuple<int, int>>* playersNegotiated) : Order(&bombO)
 {
 	this->attackerID = attackerID;
 	this->targetTerritory = targetTerritory;
 	this->playerTerritories = playerTerritories;
 	this->playersNegotiated = playersNegotiated;
+}
+
+Bomb::~Bomb()
+{
+	targetTerritory.reset();
+
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories->clear();
+
+	delete playerTerritories;
+	playerTerritories = nullptr;
+
+	playersNegotiated->clear();
+	delete playersNegotiated;
+	playersNegotiated = nullptr;
 }
 
 bool Bomb::validate()
@@ -462,11 +549,21 @@ void Bomb::execute()
 }
 
 Order::OrderType blockadeO = Order::BLOCKADE;
-Order::OrderType* blockadeO_ptr = &blockadeO;
-Blockade::Blockade(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>& playerTerritories) : Order(blockadeO_ptr)
+Blockade::Blockade(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>& playerTerritories) : Order(&blockadeO)
 {
 	this->targetTerritory = targetTerritory;
 	this->playerTerritories = &playerTerritories;
+}
+
+Blockade::~Blockade()
+{
+	targetTerritory.reset();
+
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories->clear();
 }
 
 bool Blockade::validate()
@@ -498,9 +595,8 @@ void Blockade::execute()
 }
 
 Order::OrderType airliftO = Order::AIRLIFT;
-Order::OrderType* airliftO_ptr = &airliftO;
 Airlift::Airlift(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<shared_ptr<Territory>>* targetPlayerTerritories, 
-						bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(airliftO_ptr)
+						bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(&airliftO)
 {
 	this->numOfArmies = numOfArmies;
 	this->sourceTerritory = sourceTerritory;
@@ -509,6 +605,37 @@ Airlift::Airlift(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_
 	this->targetPlayerTerritories = targetPlayerTerritories;
 	this->capturedTerritory = capturedTerritory;
 	this->playersNegotiated = playersNegotiated;
+}
+
+Airlift::~Airlift()
+{
+	sourceTerritory.reset();
+	targetTerritory.reset();
+
+	for (shared_ptr<Territory> t : *playerTerritories)
+	{
+		t.reset();
+	}
+	playerTerritories->clear();
+
+	delete playerTerritories;
+	playerTerritories = nullptr;
+
+	for (shared_ptr<Territory> t : *targetPlayerTerritories)
+	{
+		t.reset();
+	}
+	targetPlayerTerritories->clear();
+
+	delete targetPlayerTerritories;
+	targetPlayerTerritories = nullptr;
+
+	delete capturedTerritory;
+	capturedTerritory = nullptr;
+
+	playersNegotiated->clear();
+	delete playersNegotiated;
+	playersNegotiated = nullptr;
 }
 
 bool Airlift::validate()
@@ -582,12 +709,18 @@ void Airlift::execute()
 }
 
 Order::OrderType negotiateO = Order::NEGOTIATE;
-Order::OrderType* negotiateO_ptr = &negotiateO;
-Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int>>* playersNegotiated) : Order(negotiateO_ptr)
+Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int>>* playersNegotiated) : Order(&negotiateO)
 {
 	this->sourcePlayerID = sourcePlayerID;
 	this->targetPlayerID = targetPlayerID;
 	this->playersNegotiated = playersNegotiated;
+}
+
+Negotiate::~Negotiate()
+{
+	playersNegotiated->clear();
+	delete playersNegotiated;
+	playersNegotiated = nullptr;
 }
 
 bool Negotiate::validate()
