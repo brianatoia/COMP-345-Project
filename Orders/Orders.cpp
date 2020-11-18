@@ -373,10 +373,13 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 			sourceTerritory->units -= numOfArmies;
 			targetTerritory->ownerID = sourceTerritory->ownerID;
 			playerTerritories->push_back(targetTerritory);
-			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name;
+			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
 			*capturedTerritory = true;
 		}
-
+	}
+	if (targetTerritory->units != 0 && sourceTerritory->units != 0)
+	{
+		s += "Both territories remain standing.";
 	}
 	return(s);
 }
@@ -433,7 +436,7 @@ void Advance::execute()
 
 Order::OrderType bombO = Order::BOMB;
 Order::OrderType* bombO_ptr = &bombO;
-Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>> playerTerritories, list<tuple<int, int>>* playersNegotiated) : Order(bombO_ptr)
+Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<tuple<int, int>>* playersNegotiated) : Order(bombO_ptr)
 {
 	this->attackerID = attackerID;
 	this->targetTerritory = targetTerritory;
@@ -443,11 +446,11 @@ Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<
 
 bool Bomb::validate()
 {
-	for (shared_ptr<Territory> t : playerTerritories)
+	for (shared_ptr<Territory> t : *playerTerritories)
 	{
 		if (t == targetTerritory)
 		{
-			cerr << "Cannot bomb own territory." << endl;
+			cerr << "\nCannot bomb own territory." << endl;
 			return false;
 		}
 	}
@@ -530,19 +533,18 @@ bool Airlift::validate()
 {
 	bool playerOwnsSource = false;
 	bool playerOwnsTarget = false;
-	cout << playerTerritories->size() << endl;
+
 	for (shared_ptr<Territory> t : *playerTerritories)
 	{
-		cout << t->name + " " + targetTerritory->name << endl;
 		if (t == sourceTerritory)
 		{
 			playerOwnsSource = true;
-			break;
+			continue;
 		}
 		if (t == targetTerritory)
 		{
 			playerOwnsTarget = true;
-			break;
+			continue;
 		}
 	}
 	if (!playerOwnsSource)

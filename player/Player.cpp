@@ -495,7 +495,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		} while (!territoryAllowed);
 
 		list<tuple<int, int>>* temp = &playersNegotiated;
-		shared_ptr<Order> order(new Bomb(playerID, territory, territoryList, temp));
+		shared_ptr<Order> order(new Bomb(playerID, territory, &territoryList, temp));
 		this->orderList->addOrder(order);
 	}
 	else if (orderType == "Blockade")
@@ -531,9 +531,6 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 		shared_ptr<Order> order(new Blockade(territory, territoryList));
 		this->orderList->addOrder(order);
-
-		order->execute();
-		cout << *order << endl;
 	}
 	else if (orderType == "Airlift")
 	{
