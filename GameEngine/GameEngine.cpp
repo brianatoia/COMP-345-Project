@@ -20,15 +20,35 @@ GameEngine::GameEngine()
 	this->map = shared_ptr <Map>();
 }
 
-//Destructor
 GameEngine::~GameEngine()
 {
 	delete deck;
 	deck = nullptr;
-	cout << "GameEngine was deleted" << endl;
+
+	map.reset();
+
+	for (shared_ptr<Player> p : players)
+	{
+		p.reset();
+	}
+	players.clear();
 }
 
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
+{
+	this->numOfPlayers = gameEngine.numOfPlayers;
+	this->deck = gameEngine.deck;
+	this->map = gameEngine.map;
+	this->players = gameEngine.players;
+	this->activateObservers = gameEngine.activateObservers;
+	return *this;
+}
 
+ostream& operator<<(ostream& strm, GameEngine& gameEngine)
+{
+	//return strm << gameEngine.to_string();
+	return strm << "Soon to be implemented";
+}
 
 //*************		PART I		**************//
 
@@ -819,13 +839,13 @@ int main() {
 		shared_ptr<Order> order6(new Bomb(player1->getPlayerID(), t2, player1->getTerritoryList(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order6);
 
-		shared_ptr<Order> order7(new Advance(player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		shared_ptr<Order> order7(new Advance(player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order7);
 
-		shared_ptr<Order> order8(new Advance(10, t4, t5, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		shared_ptr<Order> order8(new Advance(10, t4, t5, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order8);
 
-		shared_ptr<Order> order9(new Advance(5, t3, t6, player3->getTerritoryList(), player3->getTerritoryList(), player3->getCapturedTerritory(), playersNegotiated));
+		shared_ptr<Order> order9(new Advance(5, t3, t6, player3->getTerritoryList(), player3->getTerritoryList(), player3->getCapturedTerritory(), &playersNegotiated));
 		player3->getOrderList()->addOrder(order9);
 
 		//execute the orders
@@ -871,10 +891,10 @@ int main() {
 
 		cout << "\nCreating advance orders" << endl;
 		//player 1 will advance into t3 from t2 and t6 from t5, eliminating player 3
-		shared_ptr<Order> order12(new Advance(100, t2, t3, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		shared_ptr<Order> order12(new Advance(100, t2, t3, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order12);
 
-		shared_ptr<Order> order13(new Advance(200, t5, t6, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		shared_ptr<Order> order13(new Advance(200, t5, t6, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order13);
 
 		//execute the orders
@@ -904,33 +924,4 @@ GameEngine::GameEngine(const GameEngine& gameEngine)
 	this->map = gameEngine.map;
 	this->players = gameEngine.players;
 	this->activateObservers = gameEngine.activateObservers;
-}
-
-GameEngine::~GameEngine()
-{
-	delete deck;
-	deck = nullptr;
-
-	map.reset();
-
-	for (shared_ptr<Player> p : players)
-	{
-		p.reset();
-	}
-	players.clear();
-}
-
-GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
-{
-	this->numOfPlayers = gameEngine.numOfPlayers;
-	this->deck = gameEngine.deck;
-	this->map = gameEngine.map;
-	this->players = gameEngine.players;
-	this->activateObservers = gameEngine.activateObservers;
-	return *this;
-}
-
-ostream& operator<<(ostream& strm, GameEngine& gameEngine)
-{
-	//return strm << gameEngine.to_string();
 }
