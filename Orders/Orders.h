@@ -103,7 +103,7 @@ private:
 class Bomb : public Order
 {
 public:
-	Bomb(unsigned int, shared_ptr<Territory>, list<shared_ptr<Territory>>, list<tuple<int, int>>*);
+	Bomb(unsigned int, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<tuple<int, int>>*);
 	bool validate();
 	void execute();
 	Bomb(const Bomb&);
@@ -111,7 +111,7 @@ public:
 private:
 	unsigned int attackerID;
 	shared_ptr<Territory> targetTerritory;
-	list<shared_ptr<Territory>> playerTerritories;
+	list<shared_ptr<Territory>>* playerTerritories;
 	list<tuple<int, int>>* playersNegotiated;
 };
 

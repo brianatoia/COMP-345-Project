@@ -32,12 +32,17 @@ int main()
     testMap->link(t6, t3);
     testMap->link(t6, t4);
 
-    //Adding two territories to player1
+    //Adding two territories to players
     player1->addTerritory(t1);
     player1->addTerritory(t4);
 
     player2->addTerritory(t3);
     player2->addTerritory(t5);
+
+    //Creating Deck
+    Deck* deck = new Deck();
+    deck->initializeDeck(Player::getPlayerCount());
+
 
     cout << "PLAYER1: " << endl;
     for (shared_ptr<Territory> t : *player1->getTerritoryList())
@@ -45,7 +50,8 @@ int main()
         cout << t->name << endl;
     }    
     //Number of Cards in Player1 hand
-    cout << player1->getHand()->getHandSize() << endl;
+    cout << "Player 1 Cards: " << player1->getHand()->getHandSize() << endl;
+    cout << "Player 2 Cards: " << player2->getHand()->getHandSize() << endl;
 
     cout << "\nPLAYER2: " << endl;
     for (shared_ptr<Territory> t : *player2->getTerritoryList())
@@ -112,8 +118,6 @@ int main()
     {
         cout << t->name + " units: " << t->units << endl;
     }
-    
-    // CARD STUFF
 
 
 
@@ -150,62 +154,91 @@ int main()
     cout << "\n" << *order12 << endl;
 
     //If the target territory does not belong to the player that issued the airlift order, the selected number of armies is attacking that territory(see “advance order”)
-   // shared_ptr<Order> order13(new Airlift(3, t3, t4, player2->getTerritoryList(), player2->getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), playersNegotiated));
-   // order13->execute();
-   // cout << "\n" << *order13 << endl;
-    
-    
-    cout << testMap->getTerritory(t2->borders[0])->name << endl;
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    //Test issueOrder() creates an order objects and adds it to the OrderList
-   /* cout << "\nTest issueing orders:\n";
-    cout << t4->units << endl;
-    player1->issueOrder("Deploy", testMap);
-    cout << t4->units << endl;
-        
-    t5->units = 20;*/
+    shared_ptr<Order> order13(new Airlift(3, t3, t4, player2->getTerritoryList(), player2->getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), playersNegotiated));
+    order13->execute();
+    cout << "\n" << *order13 << endl;
 
-    //player1->issueOrder("Negotiate");
-
-    /*cout << "Spain: " << t5->units;
-    player1->issueOrder("Bomb", testMap);
-    cout << "Spain2: " << t5->units << endl;*/
-
-   /* player1->issueOrder("Blockade", testMap);
-    cout << t4->units << endl;
-    for (shared_ptr<Territory> t : player1->getTerritoryList())
+    cout << "\nPLAYER1: " << endl;
+    for (shared_ptr<Territory> t : *player1->getTerritoryList())
     {
-        cout << t->name << endl;
-    }*/
+        cout << t->name + " units: " << t->units << endl;
+    }
 
-    /*cout << t5->units << endl;
-    player1->issueOrder("Advance", testMap);
-    cout << t5->units << endl;
-    cout << t4->units << endl;*/
-
-    
-    //player1->issueOrder("Airlift", testMap);
-    
-
-    //player1->issueOrder("Negotiate");
-   
-    /*player1->issueOrder("Advance", testMap);
-    cout << t5->units << endl;
-    cout << t4->units << endl;
-
-    cout << "PLAYER1: " << endl;
-    cout << *player1 << endl;
     cout << "\nPLAYER2: " << endl;
-    cout << *player2 << endl;*/
+    for (shared_ptr<Territory> t : *player2->getTerritoryList())
+    {
+        cout << t->name + " units: " << t->units << endl;
+    }
+
+
+
+    cout << "\nTESTING BOMB" << endl;
+
+    //Invalid Bomb - Cannot bomb your own territory
+    shared_ptr<Order> order14(new Bomb(player2->getPlayerID(), t3, player2->getTerritoryList(), &playersNegotiated));
+    order14->execute();
+    cout << "\n" << *order14 << endl;
+
+    //Valid Bomb - Bomb territory you do not own
+    shared_ptr<Order> order15(new Bomb(player1->getPlayerID(), t3, player1->getTerritoryList(), &playersNegotiated));
+    order15->execute();
+    cout << "\n" << *order15 << endl;
+
+    cout << "\nPLAYER1: " << endl;
+    for (shared_ptr<Territory> t : *player1->getTerritoryList())
+    {
+        cout << t->name + " units: " << t->units << endl;
+    }
+
+    cout << "\nPLAYER2: " << endl;
+    for (shared_ptr<Territory> t : *player2->getTerritoryList())
+    {
+        cout << t->name + " units: " << t->units << endl;
+    }
+
+
+
+    cout << "\nTESTING NEGOTIATE" << endl;
+    
+    //Invalid Negotiate - Cannot negotiate with yourself
+    shared_ptr<Order> order16(new Negotiate(player1->getPlayerID(), player1->getPlayerID(), &playersNegotiated));
+    order16->execute();
+    cout << "\n" << *order16 << endl;
+
+    //Valid Negotiate
+    shared_ptr<Order> order17(new Negotiate(player1->getPlayerID(), player2->getPlayerID(), &playersNegotiated));
+    order17->execute();
+    cout << "\n" << *order17 << endl;
+
+    //Test Negotiate
+    shared_ptr<Order> order18(new Advance(4, t3, t4, player2->getTerritoryList(), player1->getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), playersNegotiated));
+    order18->execute();
+    cout << "\n" << *order18 << endl;
+
+    cout << "\nPLAYER1: " << endl;
+    for (shared_ptr<Territory> t : *player1->getTerritoryList())
+    {
+        cout << t->name + " units: " << t->units << endl;
+    }
+
+    cout << "\nPLAYER2: " << endl;
+    for (shared_ptr<Territory> t : *player2->getTerritoryList())
+    {
+        cout << t->name + " units: " << t->units << endl;
+    }
+
+    if (player1->getCapturedTerritory())
+    {
+        player1->getHand()->addCard(deck->draw());
+    }
+    if (player2->getCapturedTerritory())
+    {
+        player2->getHand()->addCard(deck->draw());
+    }
+
+    cout << "Player 1 Cards: " << player1->getHand()->getHandSize() << endl;
+    cout << "Player 2 Cards: " << player2->getHand()->getHandSize() << endl;
+
 
 	return 0;
 }
