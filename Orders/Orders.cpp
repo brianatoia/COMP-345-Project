@@ -227,7 +227,7 @@ bool Deploy::validate()
 		}
 	}
 
-	cerr << "Invalid Order. Cannot deploy to a territory you do not control." << endl;
+	cerr << "\nInvalid Order. Cannot deploy to a territory you do not control." << endl;
 	
 	return false;
 }
@@ -274,7 +274,7 @@ bool Advance::validate()
 	}
 	if (!playerOwnsSource)
 	{
-		cerr << "Invalid Order. Source territory does not belong to player that issued order." << endl;
+		cerr << "\nInvalid Order. Source territory does not belong to player that issued order." << endl;
 		return false;
 	}
 
@@ -288,7 +288,7 @@ bool Advance::validate()
 	}
 	if (!sourceBordersTarget)
 	{
-		cerr << "Invalid Order. Source territory does not border target territory." << endl;
+		cerr << "\nInvalid Order. Source territory does not border target territory." << endl;
 		return false;
 	}
 
@@ -374,6 +374,7 @@ void Advance::execute()
 			targetTerritory->ownerID = sourceTerritory->ownerID;
 			targetTerritory->units += numOfArmies;
 			sourceTerritory->units -= numOfArmies;
+			playerTerritories->push_back(targetTerritory);
 			*capturedTerritory = true;
 
 			s = "Target territory does not belong to a player. Deploying " + std::to_string(numOfArmies) + " armies from " + sourceTerritory->name + " to " + targetTerritory->name;
@@ -475,7 +476,7 @@ bool Blockade::validate()
 		}
 	}
 
-	cerr << "Cannot blockade a territory player does not own." << endl;
+	cerr << "\nCannot blockade a territory player does not own." << endl;
 	return false;
 }
 
@@ -511,9 +512,10 @@ bool Airlift::validate()
 {
 	bool playerOwnsSource = false;
 	bool playerOwnsTarget = false;
-
+	cout << playerTerritories->size() << endl;
 	for (shared_ptr<Territory> t : *playerTerritories)
 	{
+		cout << t->name + " " + targetTerritory->name << endl;
 		if (t == sourceTerritory)
 		{
 			playerOwnsSource = true;
@@ -527,12 +529,12 @@ bool Airlift::validate()
 	}
 	if (!playerOwnsSource)
 	{
-		cerr << "Invalid Order. Player does not own source territory." << endl;
+		cerr << "\nInvalid Order. Player does not own source territory." << endl;
 		return false;
 	}
 	if (!playerOwnsTarget)
 	{
-		cerr << "Invalid Order. Player does not own target territory." << endl;
+		cerr << "\nInvalid Order. Player does not own target territory." << endl;
 		if (playerOwnsSource)
 		{
 			cerr << "Issuing Attack..." << endl;

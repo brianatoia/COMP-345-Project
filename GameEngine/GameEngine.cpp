@@ -308,7 +308,8 @@ void GameEngine::reinforcementsPhase()
 	for (auto player : players)
 	{
 		cout << "\nGiving armies to player " << player->getName() << endl;
-		int armiesToGive = player->getTerritoryList().size() / 3;
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		int armiesToGive = playerTerritories.size() / 3;
 
 		armiesToGive += findContinentBonusTotal(player);
 
@@ -325,7 +326,7 @@ int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
 	int bonus = 0;
 	vector<unsigned int> playerTerritoryIDs;
 
-	for (auto territory : player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
+	for (auto territory : *player->getTerritoryList()) playerTerritoryIDs.push_back(territory->getID()); //Get all the territory IDs owned by player
 
 	sort(playerTerritoryIDs.begin(), playerTerritoryIDs.end()); // sort for std::includes
 
@@ -441,7 +442,8 @@ void GameEngine::checkForEliminatedPlayers()
 {
 	for (int i = 0; i < players.size(); i++)
 	{
-		if (players[i]->getTerritoryList().size() == 0)
+		list<shared_ptr<Territory>> playerTerritories = *players[i]->getTerritoryList();
+		if (playerTerritories.size() == 0)
 		{
 			players.erase(players.begin() + i); //Because smart pointer, also calls destructor
 			//Removing a player shifts the vector, thus invalidating the interator. Therefore use recursion to perform check again.
@@ -457,7 +459,8 @@ shared_ptr<Player> GameEngine::checkForWinner()
 
 	for (auto player : players)
 	{
-		if (player->getTerritoryList().size() == numberOfTerritories)
+		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
+		if (playerTerritories.size() == numberOfTerritories)
 			return player;
 	}
 
@@ -484,8 +487,7 @@ int main6() {
 
 	if (gameEngine->getMap()->getTerritoriesCount() < Player::getPlayerCount())
 	{
-		cerr << "Not enough territories for all players. Quitting game...";
-		exit(0);
+		cerr << "Not enough territories for all players. Quitting game..." << endl;
 	}
 
 	//Testing Part I

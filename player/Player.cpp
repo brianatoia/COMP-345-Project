@@ -119,7 +119,7 @@ string Player::to_string()
 {
 	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
 	str += "\nList of Territories--------\n";
-	str += printList(getTerritoryList());
+	str += printList(*getTerritoryList());
 	str += "\nArmies to deploy--------\n";
 	str += ::to_string(armies);
 	str += "\nHand of Warzone cards--------\n";
@@ -192,9 +192,9 @@ void Player::clearPlayersNegotiated()
 	playersNegotiated.clear();
 }
 
-bool Player::getCapturedTerritory()
+bool* Player::getCapturedTerritory()
 {
-	return *capturedTerritory;
+	return capturedTerritory;
 }
 
 void Player::resetCapturedTerritory()
@@ -202,13 +202,25 @@ void Player::resetCapturedTerritory()
 	*(this->capturedTerritory) = false;
 }
 
+list<shared_ptr<Territory>>* Player::getPlayerTerritories(int playerID)
+{
+	if (playerID > 0 && playerID <= playerTerritories.size())
+	{
+		return playerTerritories[playerID - 1];
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 
 //********* Territory methods **********//
 
 //Returning TerritoryList
-list<shared_ptr<Territory>> Player::getTerritoryList()
+list<shared_ptr<Territory>>* Player::getTerritoryList()
 {
-	return territoryList;
+	return &territoryList;
 }
 
 //Adding a territory to the TerritoryList and assigning the ownerId to the playerID
