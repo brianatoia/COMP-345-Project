@@ -7,8 +7,6 @@
 //  Created by Lina Kretzschmar on 2020-09-27.
 //
 
-//
-
 #include "Player.h"
 #include <iostream>
 #include <stdio.h>

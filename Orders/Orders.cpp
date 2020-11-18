@@ -350,8 +350,10 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 
 	numOfArmies -= targetArmiesDefending;
 
+	bool attackSuccesful = false;
+
 	//Defending army defeated all of Attacking territoy armies
-	if (sourceTerritory->units == 0)
+	if (sourceTerritory->units == 0 && numOfArmies == 0)
 	{
 		sourceTerritory->ownerID = NULL;
 		playerTerritories->remove(sourceTerritory);
@@ -375,11 +377,12 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 			playerTerritories->push_back(targetTerritory);
 			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
 			*capturedTerritory = true;
+			attackSuccesful = true;
 		}
 	}
-	if (targetTerritory->units != 0 && sourceTerritory->units != 0)
+	if (!attackSuccesful)
 	{
-		s += "Both territories remain standing.";
+		s += sourceTerritory->name + " attacked " + targetTerritory->name + " but failed at conquering it.";
 	}
 	return(s);
 }

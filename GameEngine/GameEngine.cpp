@@ -38,6 +38,12 @@ void GameEngine::gameStart()
 	//Loading the map
 	loadMap();
 
+	if (map->getTerritoriesCount() < Player::getPlayerCount())
+	{
+		cerr << "Not enough territories for all players. Quitting game..." << endl;
+		exit(1);
+	}
+
 	//Part I: 2
 	//Asking for player amount, rejecting non numerical inputs and numbers out of range 2-5
 	while (true)
@@ -296,8 +302,11 @@ void GameEngine::startupPhase()
 	//Part II: 3
 	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25
 	int armies = 50 - (5 * players.size());
-	for (auto player : players)
+	for (auto player : players) {
 		player->setArmies(armies);
+	}
+		
+
 }
 
 //*************		PART 3		**************//
@@ -305,21 +314,21 @@ void GameEngine::startupPhase()
 //Give armies to each player and a card if they captured a territory in the last turn
 void GameEngine::reinforcementsPhase()
 {
+	cout << "\nReinforcement Phase:\n" << endl;
 	for (auto player : players)
 	{
-		cout << "\nGiving armies to player " << player->getName() << endl;
 		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
-		int armiesToGive = playerTerritories.size() / 3;
-
-		armiesToGive += findContinentBonusTotal(player);
-
+		int baseArmiesGiven = playerTerritories.size() / 3;
+		int continentBonus = findContinentBonusTotal(player);
+		int armiesToGive = continentBonus +  baseArmiesGiven;
 
 		if (armiesToGive < 3) armiesToGive = 3;
-		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << endl;
+		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << " (minimum 3)" << endl;
+		cout << "(" << baseArmiesGiven << ") plus (" << continentBonus << ") from continent bonus(es)\n" << endl;
 
 		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
 
-		if (player->getCapturedTerritory())
+		if (*(player->getCapturedTerritory()))
 		{
 			player->resetCapturedTerritory();
 			player->getHand()->addCard(deck->draw());
@@ -628,17 +637,12 @@ void GameEngine::checkForEliminatedPlayers()
 
 shared_ptr<Player> GameEngine::checkForWinner()
 {
-	int numberOfTerritories = map->getTerritoriesCount();
-
 	for (auto player : players)
 	{
-		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
-		if (playerTerritories.size() == numberOfTerritories)
+		if (players.size() == 1)
 			return player;
 	}
-
 	return nullptr;
-
 }
 
 void GameEngine::mainGameLoop()
@@ -659,16 +663,6 @@ int main() {
 	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
 	int decision = 0;
 	cin >> decision;
-
-	if (gameEngine->getMap()->getTerritoriesCount() < Player::getPlayerCount())
-	{
-		cerr << "Not enough territories for all players. Quitting game..." << endl;
-	}
-
-	//Testing Part I
-	cout << "Calling gameStart(): Code from Part I" << endl;
-	gameEngine->gameStart();
-
 
 	if (decision == 1)
 	{
@@ -729,8 +723,8 @@ int main() {
 		*/
 
 
-		cout << "\nAutomatic playing for demo purposes. Orders will be hardcoded as opposed to input by the player." << endl;
-		cout << "Use map Demo.map, with 3 players to show functionality all the functionality\n" << endl;
+		cout << "\nAutomatic playing for demo purposes. Orders will be hardcoded as opposed to entered by the player." << endl;
+		cout << "Use map Demo.map, with 3 players to show all the functionality\n" << endl;
 		Sleep(2000);
 
 		//Testing Part I
@@ -769,37 +763,126 @@ int main() {
 		shared_ptr<Territory> t6 = gameEngine->getMap()->getTerritory(6);
 
 		//getting the players to make order creation easier
-		shared_ptr<Player> player1 = gameEngine->getPlayers()[0];
-		shared_ptr<Player> player2 = gameEngine->getPlayers()[1];
-		shared_ptr<Player> player3 = gameEngine->getPlayers()[2];
-
+		//loop is to make sure no matter the order player 1 refers to the one that owns t1 and t4, etc...
+		//only used for automatic gameplay
+		shared_ptr<Player> player1;
+		shared_ptr<Player> player2;
+		shared_ptr<Player> player3;
+		for (auto player : gameEngine->getPlayers())
+		{
+			if (player->getPlayerID() == 1) player1 = player;
+			else if (player->getPlayerID() == 2) player2 = player;
+			else if (player->getPlayerID() == 3) player3 = player;
+		}
 
 		//Deploying the armies for the players
 		shared_ptr<Order> order1(new Deploy(player1->getArmies() - 10, t1, *player1->getTerritoryList()));
 		player1->getOrderList()->addOrder(order1);
+
 		shared_ptr<Order> order2(new Deploy(10, t4, *player1->getTerritoryList()));
 		player1->getOrderList()->addOrder(order2);
-		shared_ptr<Order> order3(new Deploy(player2->getArmies(), t2, *player1->getTerritoryList()));
+
+		shared_ptr<Order> order3(new Deploy(player2->getArmies(), t2, *player2->getTerritoryList()));
 		player2->getOrderList()->addOrder(order3);
-		shared_ptr<Order> order4(new Deploy(player3->getArmies() - 1, t3, *player1->getTerritoryList()));
+
+		shared_ptr<Order> order4(new Deploy(player3->getArmies() - 1, t3, *player3->getTerritoryList()));
 		player3->getOrderList()->addOrder(order4);
-		shared_ptr<Order> order5(new Deploy(1, t6, *player1->getTerritoryList()));
+
+		shared_ptr<Order> order5(new Deploy(1, t6, *player3->getTerritoryList()));
 		player3->getOrderList()->addOrder(order5);
+
+		//For demonstration purposes since orders are hard coded, this would be used in the issue orders during manual gameplay
+		for (auto player : gameEngine->getPlayers())
+		{
+			cout << "\n" << player->getName() << " can attack:" << endl;
+			for (auto territory : player->toAttack(gameEngine->getMap()))
+			{
+				cout << territory->name << endl;
+			}
+			cout << "\nAnd can defend:" << endl;
+			for (auto territory : player->toDefend(gameEngine->getMap()))
+			{
+				cout << territory->name << endl;
+			}
+			Sleep(2000);
+		}
 
 		//Player 1 has a huge continent bonus, he will eliminate player 2 to show eliminated players are removed and then eliminate player 3 to win.
 		//Our card design can be seen in the manual gameplay, they don't issue the orders themselves but instead give the player permission to use that order
-		//This may be hard to show here, so I will create a reinforcement for Player 1 and use it on territory 1.
+		//This may be hard to show here, so I will create a bomb order and use it on territory 2.
 
 		//Player 1 will move into t2 from t1 and t5 from t4, eliminating player 2
 		//player 2 will take no action
 		//player 3 will advance some units to t6 to show that you can advance to friendly territories
 		//shared_ptr<Order> order6(new Advance((player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		
+		shared_ptr<Order> order6(new Bomb(player1->getPlayerID(), t2, player1->getTerritoryList(), &playersNegotiated));
+		player1->getOrderList()->addOrder(order6);
 
+		shared_ptr<Order> order7(new Advance(player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		player1->getOrderList()->addOrder(order7);
 
+		shared_ptr<Order> order8(new Advance(10, t4, t5, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		player1->getOrderList()->addOrder(order8);
 
+		shared_ptr<Order> order9(new Advance(5, t3, t6, player3->getTerritoryList(), player3->getTerritoryList(), player3->getCapturedTerritory(), playersNegotiated));
+		player3->getOrderList()->addOrder(order9);
 
+		//execute the orders
+		gameEngine->executeOrdersPhase();
 
+		//This will eliminate player 2
+		gameEngine->checkForEliminatedPlayers();
+		Sleep(3000);
+		cout << "\nStart of next turn!\n" << endl;
+		Sleep(1000);
 
+		//start of next turn ========================================================
+		gameEngine->reinforcementsPhase();
+
+		for (auto player : gameEngine->getPlayers())
+		{
+			player->updateAvailableUnits();
+		}
+
+		cout << "Creating deploy orders\n" << endl;
+
+		//Will deploy player 1's units in t5 and player 3's units in t6
+		shared_ptr<Order> order10(new Deploy(player1->getArmies(), t5, *player1->getTerritoryList()));
+		player1->getOrderList()->addOrder(order10);
+
+		shared_ptr<Order> order11(new Deploy(player3->getArmies(), t6, *player3->getTerritoryList()));
+		player3->getOrderList()->addOrder(order11);
+
+		for (auto player : gameEngine->getPlayers())
+		{
+			cout << "\n" << player->getName() << " can attack:" << endl;
+			for (auto territory : player->toAttack(gameEngine->getMap()))
+			{
+				cout << territory->name << endl;
+			}
+			cout << "\nAnd can defend:" << endl;
+			for (auto territory : player->toDefend(gameEngine->getMap()))
+			{
+				cout << territory->name << endl;
+			}
+			Sleep(2000);
+		}
+
+		cout << "\nCreating advance orders" << endl;
+		//player 1 will advance into t3 from t2 and t6 from t5, eliminating player 3
+		shared_ptr<Order> order12(new Advance(100, t2, t3, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		player1->getOrderList()->addOrder(order12);
+
+		shared_ptr<Order> order13(new Advance(200, t5, t6, player1->getTerritoryList(), player3->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
+		player1->getOrderList()->addOrder(order13);
+
+		//execute the orders
+		gameEngine->executeOrdersPhase();
+
+		//This will eliminate player 3
+		gameEngine->checkForEliminatedPlayers();
+		Sleep(2000);
 
 		//Check for winner, this breaks out of main game loop in manual gameplay
 		shared_ptr<Player> winner = gameEngine->checkForWinner();
@@ -807,6 +890,8 @@ int main() {
 		{
 			cout << winner->getName() << " is the Winner!" << endl;
 		}
+
+		cout << "\nEnd of Game!\n" << endl;
 	}
 
 
