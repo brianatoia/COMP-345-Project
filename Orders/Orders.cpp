@@ -46,9 +46,6 @@ Order::Order(OrderType* orderType)
 	{
 		cerr << "Invalid Order Type" << endl;
 	}
-
-	delete orderType;
-	orderType = nullptr;
 }
 
 //Order Getters
@@ -85,9 +82,6 @@ string Order::getOrderEffect()
 void Order::setOrderType(OrderType* orderType)
 {
 	*(this->orderType) = *orderType;
-
-	delete orderType;
-	orderType = nullptr;
 }
 
 void Order::setOrderDescription(string orderDescription)
@@ -212,9 +206,6 @@ void OrderList::move(shared_ptr<Order> order, MoveOption* moveOption)
 	{
 		cerr << "Invalid movement option" << endl;
 	}
-
-	delete moveOption;
-	moveOption = nullptr;
 }
 
 bool OrderList::hasOrderType(string type)
@@ -243,7 +234,7 @@ Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr
 	this->playerTerritories = playerTerritories;
 }
 
-Deploy::~Deploy()
+/*Deploy::~Deploy()
 {
 	territory.reset();
 
@@ -252,7 +243,7 @@ Deploy::~Deploy()
 		t.reset();
 	}
 	playerTerritories.clear();
-}
+}*/
 
 bool Deploy::validate()
 {
@@ -295,7 +286,7 @@ Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_
 	this->playersNegotiated = playersNegotiated;
 }
 
-Advance::~Advance()
+/*Advance::~Advance()
 {
 	sourceTerritory.reset();
 	targetTerritory.reset();
@@ -306,8 +297,8 @@ Advance::~Advance()
 	}
 	playerTerritories->clear();
 
-	delete playerTerritories;
-	playerTerritories = nullptr;
+	//delete playerTerritories;
+	//playerTerritories = nullptr;
 
 	for (shared_ptr<Territory> t : *targetPlayerTerritories)
 	{
@@ -315,16 +306,15 @@ Advance::~Advance()
 	}
 	targetPlayerTerritories->clear();
 
-	delete targetPlayerTerritories;
-	targetPlayerTerritories = nullptr;
+	//delete targetPlayerTerritories;
+	//targetPlayerTerritories = nullptr;
 
-	delete capturedTerritory;
-	capturedTerritory = nullptr;
+	//delete capturedTerritory;
+	//capturedTerritory = nullptr;
 
-	playersNegotiated->clear();
-	delete playersNegotiated;
+	/*delete playersNegotiated;
 	playersNegotiated = nullptr;
-}
+}*/
 
 bool Advance::validate()
 {
@@ -434,27 +424,6 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 		s += sourceTerritory->name + " attacked " + targetTerritory->name + " but failed at conquering it.";
 	}
 	return(s);
-
-	for (shared_ptr<Territory> t : *playerTerritories)
-	{
-		t.reset();
-	}
-	playerTerritories->clear();
-
-	delete playerTerritories;
-	playerTerritories = nullptr;
-
-	for (shared_ptr<Territory> t : *targetPlayerTerritories)
-	{
-		t.reset();
-	}
-	targetPlayerTerritories->clear();
-
-	delete targetPlayerTerritories;
-	targetPlayerTerritories = nullptr;
-
-	delete capturedTerritory;
-	capturedTerritory = nullptr;
 }
 
 void Advance::execute()
@@ -516,7 +485,7 @@ Bomb::Bomb(unsigned int attackerID, shared_ptr<Territory> targetTerritory, list<
 	this->playersNegotiated = playersNegotiated;
 }
 
-Bomb::~Bomb()
+/*Bomb::~Bomb()
 {
 	targetTerritory.reset();
 
@@ -526,13 +495,13 @@ Bomb::~Bomb()
 	}
 	playerTerritories->clear();
 
-	delete playerTerritories;
-	playerTerritories = nullptr;
+	//delete playerTerritories;
+	//playerTerritories = nullptr;
 
 	playersNegotiated->clear();
-	delete playersNegotiated;
-	playersNegotiated = nullptr;
-}
+	//delete playersNegotiated;
+	//playersNegotiated = nullptr;
+}*/
 
 bool Bomb::validate()
 {
@@ -576,7 +545,7 @@ Blockade::Blockade(shared_ptr<Territory> targetTerritory, list<shared_ptr<Territ
 	this->playerTerritories = &playerTerritories;
 }
 
-Blockade::~Blockade()
+/*Blockade::~Blockade()
 {
 	targetTerritory.reset();
 
@@ -585,7 +554,7 @@ Blockade::~Blockade()
 		t.reset();
 	}
 	playerTerritories->clear();
-}
+}*/
 
 bool Blockade::validate()
 {
@@ -628,7 +597,7 @@ Airlift::Airlift(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_
 	this->playersNegotiated = playersNegotiated;
 }
 
-Airlift::~Airlift()
+/*Airlift::~Airlift()
 {
 	sourceTerritory.reset();
 	targetTerritory.reset();
@@ -639,8 +608,8 @@ Airlift::~Airlift()
 	}
 	playerTerritories->clear();
 
-	delete playerTerritories;
-	playerTerritories = nullptr;
+	//delete playerTerritories;
+	//playerTerritories = nullptr;
 
 	for (shared_ptr<Territory> t : *targetPlayerTerritories)
 	{
@@ -648,16 +617,16 @@ Airlift::~Airlift()
 	}
 	targetPlayerTerritories->clear();
 
-	delete targetPlayerTerritories;
-	targetPlayerTerritories = nullptr;
+	//delete targetPlayerTerritories;
+	//targetPlayerTerritories = nullptr;
 
-	delete capturedTerritory;
-	capturedTerritory = nullptr;
+	//delete capturedTerritory;
+	//capturedTerritory = nullptr;
 
 	playersNegotiated->clear();
-	delete playersNegotiated;
-	playersNegotiated = nullptr;
-}
+	//delete playersNegotiated;
+	//playersNegotiated = nullptr;
+}*/
 
 bool Airlift::validate()
 {
@@ -737,12 +706,12 @@ Negotiate::Negotiate(int sourcePlayerID, int targetPlayerID, list<tuple<int, int
 	this->playersNegotiated = playersNegotiated;
 }
 
-Negotiate::~Negotiate()
+/*Negotiate::~Negotiate()
 {
 	playersNegotiated->clear();
-	delete playersNegotiated;
-	playersNegotiated = nullptr;
-}
+	//delete playersNegotiated;
+	//playersNegotiated = nullptr;
+}*/
 
 bool Negotiate::validate()
 {

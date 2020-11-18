@@ -76,7 +76,7 @@ public:
 	void execute();
 	Deploy(const Deploy&);
 	Deploy& operator=(const Deploy&);
-	~Deploy();
+	//~Deploy();
 
 private:
 	int numOfArmies;
@@ -92,7 +92,7 @@ public:
 	void execute();
 	Advance(const Advance&);
 	Advance& operator=(const Advance&);
-	~Advance();
+	//~Advance();
 
 private:
 	int numOfArmies;
@@ -112,7 +112,7 @@ public:
 	void execute();
 	Bomb(const Bomb&);
 	Bomb& operator=(const Bomb&);
-	~Bomb();
+	//~Bomb();
 private:
 	unsigned int attackerID;
 	shared_ptr<Territory> targetTerritory;
@@ -128,7 +128,7 @@ public:
 	void execute();
 	Blockade(const Blockade&);
 	Blockade& operator=(const Blockade&);
-	~Blockade();
+	//~Blockade();
 private:
 	shared_ptr<Territory> targetTerritory;
 	list<shared_ptr<Territory>>* playerTerritories;
@@ -142,7 +142,7 @@ public:
 	void execute();
 	Airlift(const Airlift&);
 	Airlift& operator=(const Airlift&);
-	~Airlift();
+	//~Airlift();
 private:
 	int numOfArmies;
 	shared_ptr<Territory> sourceTerritory;
@@ -161,7 +161,7 @@ public:
 	void execute();
 	Negotiate(const Negotiate&);
 	Negotiate& operator=(const Negotiate&);
-	~Negotiate();
+	//~Negotiate();
 private:
 	int sourcePlayerID;
 	int targetPlayerID;

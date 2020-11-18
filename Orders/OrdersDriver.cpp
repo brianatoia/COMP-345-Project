@@ -239,7 +239,7 @@ int main4()
     GameEngine* game(new GameEngine());
     game->executeOrdersPhase();
 
-    delete player1;
+    /*delete player1;
     player1 = nullptr;
 
     delete player2;
@@ -249,7 +249,7 @@ int main4()
     deck = nullptr;
 
     delete game;
-    game = nullptr;
+    game = nullptr;*/
 
      //player1->issueOrder("Airlift", testMap);
 
