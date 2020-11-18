@@ -638,9 +638,7 @@ void GameEngine::mainGameLoop()
 	issueOrdersPhase();
 	executeOrdersPhase();
 	checkForEliminatedPlayers();
-
 }
-
 
 //*************		MAIN METHOD		**************//
 
@@ -648,39 +646,94 @@ int main() {
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
-	//Testing Part I
-	cout << "Calling gameStart(): Code from Part I" << endl;
-	gameEngine->gameStart();
+	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
+	int decision = 0;
+	cin >> decision;
 
-	//A deck was created
-	cout << *gameEngine->getDeck() << endl;
-
-	//Players were created
-	cout << gameEngine->getPlayersNames() << endl;
-
-	//Testing Part II
-	cout << "Calling startupPhase(): Code from Part II" << endl;
-	gameEngine->startupPhase();
-
-	//Player order was randomly changed, territories distributed and armies were assigned to each player
-	cout << gameEngine->getPlayersInfo() << endl;
-
-	//Main Game Loop
-	while (true)
+	if (decision == 1)
 	{
-		cout << "Start of main loop" << endl;
-		gameEngine->mainGameLoop();
-		cout << "end of main loop" << endl;
+		//Testing Part I
+		cout << "Calling gameStart(): Code from Part I" << endl;
+		gameEngine->gameStart();
 
-		//Check for winner, end game loop if true
-		shared_ptr<Player> winner = gameEngine->checkForWinner();
-		if (winner != nullptr)
+		//A deck was created
+		cout << *gameEngine->getDeck() << endl;
+		
+		//Players were created
+		cout << gameEngine->getPlayersNames() << endl;
+
+		//Testing Part II
+		cout << "Calling startupPhase(): Code from Part II" << endl;
+		gameEngine->startupPhase();
+
+		//Player order was randomly changed, territories distributed and armies were assigned to each player
+		cout << gameEngine->getPlayersInfo() << endl;
+
+		//Main Game Loop
+		while (true)
 		{
-			cout << winner->getName() << " is the Winner!" << endl;
-			break;
+			cout << "Start of main loop" << endl;
+			gameEngine->mainGameLoop();
+			cout << "end of main loop" << endl;
+
+			//Check for winner, end game loop if true
+			shared_ptr<Player> winner = gameEngine->checkForWinner();
+			if (winner != nullptr)
+			{
+				cout << winner->getName() << " is the Winner!" << endl;
+				break;
+			}
+		}
+	}
+	else if (decision == 2)
+	{
+
+		/*
+		Logic for some points is hard to show using the driver but can clearly be seen in the manual game. For example, 
+		(2) a player will only issue deploy orders and no other kind of orders if they still have armies in their reinforcement pool. This
+		can easily be seen above but is hard to show using just the driver. 
+		There is no ai either, so using the mainGameLoop() doesn't work with automatic gameplay, but works with manual gameplay as it should.
+		I will be creating the orders in a way to demonstrate the requirements.
+		Issue order asks for manual input, so to make it automatic I go straight to creating the order itself that I want to use to demonstrate. 
+		Execution will still happen corrently
+		*/
+
+		cout << "\nAutomatic playing for demo purposes. Orders will be hardcoded as opposed to input by the player." << endl;
+		cout << "Use map Demo.map, with 3 players to show functionality all the functionality\n" << endl;
+		Sleep(2000);
+
+		//Testing Part I
+		cout << "Calling gameStart(): Code from Part I" << endl;
+		gameEngine->gameStart();
+
+		//A deck was created
+		cout << *gameEngine->getDeck() << endl;
+
+		//Players were created
+		cout << gameEngine->getPlayersNames() << endl;
+
+		//Testing Part II
+		cout << "Calling startupPhase(): Code from Part II" << endl;
+		gameEngine->startupPhase();
+
+		//Player order was randomly changed, territories distributed and armies were assigned to each player
+		cout << gameEngine->getPlayersInfo() << endl;
+
+		gameEngine->reinforcementsPhase();
+
+		for (auto player : gameEngine->getPlayers())
+		{
+			player->updateAvailableUnits();
 		}
 
+		cout << "Creating Deploy Orders" << endl;
+		Sleep(2000);
+
+		//shared_ptr<Order> order(new Deploy(, gameEngine->getPlayers()[0]->getTerritoryList().front(), gameEngine->getPlayers()[0]->getTerritoryList()));
+
+
 	}
+	
 
 
 	return 0;

@@ -71,9 +71,7 @@ void Deck::initializeDeck(int numPlayers)
 			ptrCard->setCardType(DIPLOMACY);
 			deck.push_back(ptrCard);
 		}
-
 	}
-
 	random_shuffle(deck.begin(), deck.end());
 }
 

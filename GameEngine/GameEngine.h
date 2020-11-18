@@ -21,10 +21,9 @@ public:
 	//******     Constructor & Destructor    *****//
 	GameEngine();
 	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
-	//~GameEngine();
+	~GameEngine();
 	//GameEngine& operator= (const GameEngine&);
 	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
-	~GameEngine();
 
 	//******     PART I    *****//
 	void gameStart();
