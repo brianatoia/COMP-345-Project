@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../player/Player.h"
-#include "../cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Cards/Cards.h"
 //#include "Cards.h"//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
