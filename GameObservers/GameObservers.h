@@ -2,6 +2,7 @@
 #include <list>
 #include <iostream>
 #include <memory>
+#include <string>
 #include "../Map/Map.h"
 #include "../Player/Player.h"
 

@@ -55,32 +55,66 @@ void StatisticsObserver::show()
 	// model
 	int numOfTerritories = map->getTerritoriesCount() - 1;
 	
-	printf("%-20s %-20s\n", "Player", "Domination (%)");
-	printf("==================== ====================\n");
+	list<shared_ptr<Player>> activePlayers = list<shared_ptr<Player>>();
+
 	for (shared_ptr<Player> p : this->players)
 	{
-		printf("%-20s %.2f %%\n", p->getName().c_str(), 100.0f * (float)p->getTerritoryList().size() / (float)numOfTerritories);
+		if (p->getTerritoryList().size() > 0)
+		{
+			activePlayers.push_back(p);
+		}
 	};
 
-	int numOfContinents = map->getContinentsCount();
-
-	for (int c = 1; c < numOfContinents; c++)
+	if (activePlayers.size() > 1)
 	{
-		shared_ptr<Continent> continent = map->getContinent(c);
-
-		printf("\n%-20s %-20s %-20s\n", continent->name.c_str(), "Owner", "Units");
-		printf("==================== ==================== ====================\n");
-
-		for (int t = 0; t < continent->territoryIDs.size(); t++)
+		printf("\n%-2s %-20s %-20s\n", "ID","Player", "Domination (%)");
+		printf("== ==================== ====================\n");
+		for (shared_ptr<Player> p : activePlayers)
 		{
-			shared_ptr<Territory> territory = map->getTerritory(continent->territoryIDs[t]);
-			printf("%-20s %-20s %-20d\n", territory->name.c_str(), players[territory->ownerID - 1]->getName().c_str(), territory->units);
+
+			printf("%2d %-20s %.2f %%\n", p->getPlayerID(), p->getName().c_str(), 100.0f * (float)p->getTerritoryList().size() / (float)numOfTerritories);
+		};
+
+		int numOfContinents = map->getContinentsCount();
+
+		for (int c = 1; c < numOfContinents; c++)
+		{
+			shared_ptr<Continent> continent = map->getContinent(c);
+
+			printf("\n   %-20s\n", continent->name.c_str());
+			printf("== ==================== ==================== ==================== ====================\n");
+
+			printf("%-2s %-20s %-20s %-20s %-20s\n", "ID", "Name", "Owner", "Units", "Borders");
+
+			printf("== ==================== ==================== ==================== ====================\n");
+			
+			for (int t = 0; t < continent->territoryIDs.size(); t++)
+			{
+				shared_ptr<Territory> territory = map->getTerritory(continent->territoryIDs[t]);
+				string playerName = territory->ownerID - 1 >= 0 ? players[territory->ownerID - 1]->getName() : "None";
+				string borderList = "";
+
+				list<unsigned int> borders = list<unsigned int>(territory->borders.begin(), territory->borders.end());
+
+				borders.sort();
+
+				for (int b : borders)
+				{
+					borderList += to_string(b) + (b < 10 ? "  " : " ");
+				}
+
+				printf("%2d %-20s %-20s %-20d %-20s\n", territory->getID(), territory->name.c_str(), playerName.c_str(), territory->units, borderList.c_str());
+			}
 		}
+	}
+	else
+	{
+		printf("=== Congratulations ===\n");
+		printf("%s wins!\n", activePlayers.front()->getName().c_str());
 	}
 
 	/* TODO:
 	* Put a notify call in the methods that run the game loop
-	* Make a celebretory message once a player controls all territories
 	* Hookup Observers creation
 	* */
 
