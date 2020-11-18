@@ -268,7 +268,7 @@ string GameEngine::getPlayersNames()
 	for (auto player : players)
 	{
 		str += "Player ";
-		str += to_string(player->getPlayerID());
+		str += std::to_string(player->getPlayerID());
 		str += " ";
 		str += player->getName();
 		str += "\n";
@@ -956,7 +956,22 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 	return *this;
 }
 
-/*ostream& operator<<(ostream& strm, GameEngine& gameEngine)
+ostream& operator<<(ostream& strm, GameEngine& gameEngine)
 {
-	//return strm << gameEngine.to_string();
-}*/
+	return strm << gameEngine.to_string();
+}
+
+string GameEngine::to_string()
+{
+	string s = "GameEngine:";
+	s += "\nWith Map:\n";
+	s += map->to_string();
+	s += "\nWith Players:\n";
+	for (auto player : players) s += player->to_string() + "\n";
+	s += "\nWith Deck:\n";
+	s += deck->to_string();
+	s += "\nAnd with Observers:\n";
+	s += getObserverStatus() + "\n";
+
+	return s;
+}

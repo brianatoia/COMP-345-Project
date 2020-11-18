@@ -28,6 +28,7 @@ public:
 	~GameEngine();
 	GameEngine& operator=(const GameEngine&);
 	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	string to_string();
 
 	//******     PART I    *****//
 	void gameStart();
