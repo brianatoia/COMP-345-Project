@@ -3,6 +3,7 @@
 #include <algorithm>
 using namespace std;
 
+
 Card::Card()
 {
 	this->cardType = BOMB;
