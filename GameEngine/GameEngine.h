@@ -11,6 +11,10 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iterator>
+#include <vector>
+#include <windows.h>
+
 
 using namespace std;
 
@@ -34,6 +38,7 @@ public:
 	string selectMap();
 	bool isMapInDirectory(string fileName);
 	shared_ptr<Map> getMap();
+	vector<string> findMapNames();
 
 	//******     Oberserver Methods    *****//
 	bool Observers();

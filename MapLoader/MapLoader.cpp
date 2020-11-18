@@ -22,7 +22,7 @@ ostream& operator<<(std::ostream& strm, MapLoader& mapLoader)
 	return strm << "This is a map loader. It can be used to load .map and .txt files";
 }
 
-shared_ptr<Map> MapLoader::createMap(string fileName)
+shared_ptr<Map> MapLoader::createMap(string fileName, string pathToDirectory)
 {
 	//Obtain map name from filename by removing extensions .map or .txt
 	string mapName = fileName.substr(0, fileName.length() - 4);
@@ -31,7 +31,7 @@ shared_ptr<Map> MapLoader::createMap(string fileName)
 
 	//file stream
 	ifstream inputFileStream;
-	inputFileStream.open(fileName);
+	inputFileStream.open(pathToDirectory+fileName);
 
 	if (!inputFileStream.is_open())
 	{
