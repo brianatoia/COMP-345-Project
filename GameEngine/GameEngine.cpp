@@ -604,10 +604,6 @@ void GameEngine::executeOrdersPhase()
 
 		}
 	}
-
-
-
-
 }
 
 void GameEngine::checkForEliminatedPlayers()
@@ -650,10 +646,9 @@ int main() {
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());
 
-
 	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
 	int decision = 0;
-	cin >> decision;
+	while (decision != 1 | decision != 2)	cin >> decision;
 
 	if (decision == 1)
 	{

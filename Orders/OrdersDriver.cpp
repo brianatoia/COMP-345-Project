@@ -2,7 +2,7 @@
 #include "../Player/Player.h"
 #include "../GameEngine/GameEngine.h"
 
-int main4()
+int main7()
 {
     //Creating two players
     Player* player1(new Player("Berta"));
