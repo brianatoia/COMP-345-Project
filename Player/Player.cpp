@@ -516,7 +516,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		} while (!territoryAllowed);
 
 
-		shared_ptr<Order> order(new Blockade(territory, territoryList));
+		shared_ptr<Order> order(new Blockade(territory, &territoryList));
 		this->orderList->addOrder(order);
 	}
 	else if (orderType == "Airlift")
