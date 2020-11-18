@@ -6,14 +6,14 @@
 //Order Constructors
 Order::Order()
 {
-	*orderType = UNDEFINED;
+	this->orderType = new OrderType(UNDEFINED);	
 	orderDescription = "Undefined";
 	orderEffect = "Undefined";
 }
 
 Order::Order(OrderType* orderType)
 {
-	this->orderType = orderType;
+	this->orderType = new OrderType(*orderType);
 	this->orderEffect = "Undefined";
 	if (*orderType == DEPLOY)
 	{
@@ -50,14 +50,14 @@ Order::Order(OrderType* orderType)
 
 Order::~Order()
 {
-	//delete orderType;
-	//orderType = nullptr;
+	delete orderType;
+	orderType = nullptr;
 }
 
 //Order Getters
-Order::OrderType Order::getOrderType()
+Order::OrderType* Order::getOrderType()
 {
-	return *orderType;
+	return orderType;
 }
 
 string Order::getOrderTypeString()
@@ -219,7 +219,12 @@ Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr
 {
 	this->numOfArmies = numOfArmies;
 	this->territory = territory;
-	this->playerTerritories = playerTerritories;
+
+	for (shared_ptr<Territory> t : playerTerritories)
+	{
+		this->playerTerritories.push_back(t);
+	}
+
 }
 
 Deploy::~Deploy()
@@ -269,6 +274,8 @@ Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_
 	this->sourceTerritory = sourceTerritory;
 	this->targetTerritory = targetTerritory;
 	this->playerTerritories = playerTerritories;
+	//this->playerTerritories = new list<shared_ptr<Territory>>(*playerTerritories);
+	//this->targetPlayerTerritories = new list<shared_ptr<Territory>>(*targetPlayerTerritories);
 	this->targetPlayerTerritories = targetPlayerTerritories;
 	this->capturedTerritory = capturedTerritory;
 	this->playersNegotiated = playersNegotiated;
@@ -279,7 +286,6 @@ Advance::~Advance()
 	sourceTerritory.reset();
 	targetTerritory.reset();
 
-
 	/*for (shared_ptr<Territory> t : *playerTerritories)
 	{
 		t.reset();
@@ -287,9 +293,9 @@ Advance::~Advance()
 	playerTerritories->clear();
 
 	delete playerTerritories;
-	playerTerritories = nullptr;
+	playerTerritories = nullptr;*/
 
-	for (shared_ptr<Territory> t : *targetPlayerTerritories)
+	/*for (shared_ptr<Territory> t : *targetPlayerTerritories)
 	{
 		t.reset();
 	}

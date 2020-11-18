@@ -20,7 +20,7 @@ public:
 	};
 	Order();
 	~Order();
-	enum OrderType getOrderType();
+	enum OrderType* getOrderType();
 	string getOrderTypeString();
 	string getOrderDescription();
 	string getOrderEffect();
