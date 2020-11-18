@@ -20,15 +20,6 @@ GameEngine::GameEngine()
 	this->map = shared_ptr <Map>();
 }
 
-//Destructor
-GameEngine::~GameEngine()
-{
-	delete deck;
-	deck = nullptr;
-	cout << "GameEngine was deleted" << endl;
-}
-
-
 
 //*************		PART I		**************//
 
@@ -560,7 +551,7 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 	return *this;
 }
 
-ostream& operator<<(ostream& strm, GameEngine& gameEngine)
+/*ostream& operator<<(ostream& strm, GameEngine& gameEngine)
 {
 	//return strm << gameEngine.to_string();
-}
+}*/

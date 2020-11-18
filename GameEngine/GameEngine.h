@@ -24,7 +24,6 @@ public:
 	~GameEngine();
 	GameEngine& operator=(const GameEngine&);
 	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
-	~GameEngine();
 
 	//******     PART I    *****//
 	void gameStart();
