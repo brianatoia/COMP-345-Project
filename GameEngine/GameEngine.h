@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../player/Player.h"
-#include "../cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Cards/Cards.h"
 //#include "Cards.h"//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
@@ -11,6 +11,10 @@
 #include <iostream>
 #include <algorithm>
 #include <fstream>
+#include <iterator>
+#include <vector>
+#include <windows.h>
+
 
 using namespace std;
 
@@ -33,7 +37,7 @@ public:
 	void loadMap();
 	string selectMap();
 	bool isMapInDirectory(string fileName);
-	shared_ptr<Map> getMap();
+	vector<string> findMapNames();
 
 	//******     Oberserver Methods    *****//
 	bool Observers();

@@ -2,7 +2,7 @@
 #include "../Player/Player.h"
 #include "../GameEngine/GameEngine.h"
 
-int main()
+int main1233()
 {
     //Creating two players
     Player* player1(new Player("Berta"));   
@@ -151,7 +151,7 @@ int main()
     order12->execute();
     cout << "\n" << *order12 << endl;
 
-    //If the target territory does not belong to the player that issued the airlift order, the selected number of armies is attacking that territory(see “advance order”)
+    //If the target territory does not belong to the player that issued the airlift order, the selected number of armies is attacking that territory(see ï¿½advance orderï¿½)
     shared_ptr<Order> order13(new Airlift(3, t3, t4, player2->getTerritoryList(), Player::getPlayerTerritories(t4->ownerID), player2->getCapturedTerritory(), &playersNegotiated));
     order13->execute();
     cout << "\n" << *order13 << endl;
