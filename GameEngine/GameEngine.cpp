@@ -524,6 +524,43 @@ int main6() {
 
 	}
 
-
 	return 0;
+}
+
+GameEngine::GameEngine(const GameEngine& gameEngine)
+{
+	this->numOfPlayers = gameEngine.numOfPlayers;
+	this->deck = gameEngine.deck;
+	this->map = gameEngine.map;
+	this->players = gameEngine.players;
+	this->activateObservers = gameEngine.activateObservers;
+}
+
+GameEngine::~GameEngine()
+{
+	delete deck;
+	deck = nullptr;
+
+	map.reset();
+
+	for (shared_ptr<Player> p : players)
+	{
+		p.reset();
+	}
+	players.clear();
+}
+
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
+{
+	this->numOfPlayers = gameEngine.numOfPlayers;
+	this->deck = gameEngine.deck;
+	this->map = gameEngine.map;
+	this->players = gameEngine.players;
+	this->activateObservers = gameEngine.activateObservers;
+	return *this;
+}
+
+ostream& operator<<(ostream& strm, GameEngine& gameEngine)
+{
+	//return strm << gameEngine.to_string();
 }
