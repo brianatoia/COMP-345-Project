@@ -248,7 +248,7 @@ void Deploy::execute()
 Order::OrderType advanceO = Order::ADVANCE;
 Order::OrderType* advanceO_ptr = &advanceO;
 Advance::Advance(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<shared_ptr<Territory>>* targetPlayerTerritories, 
-							bool* capturedTerritory, list<tuple<int, int>> playersNegotiated) : Order(advanceO_ptr)
+							bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(advanceO_ptr)
 {
 	this->numOfArmies = numOfArmies;
 	this->sourceTerritory = sourceTerritory;
@@ -302,7 +302,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	string s = "";
 	random_device rd;
 	mt19937 mt(rd());
-	uniform_int_distribution<int> dist(0, 1);
+	uniform_real_distribution<float> dist(0, 1);
 
 	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
 	//Each attacking army unit involved has 60% chances of killing one defending army. 
@@ -394,7 +394,7 @@ void Advance::execute()
 		else
 		{
 			bool negotiatedWith = false;
-			for (tuple<int, int> t : playersNegotiated)
+			for (tuple<int, int> t : *playersNegotiated)
 			{
 				if (t == make_tuple(sourceTerritory->ownerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, sourceTerritory->ownerID))
 				{
@@ -500,7 +500,7 @@ void Blockade::execute()
 Order::OrderType airliftO = Order::AIRLIFT;
 Order::OrderType* airliftO_ptr = &airliftO;
 Airlift::Airlift(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, list<shared_ptr<Territory>>* targetPlayerTerritories, 
-						bool* capturedTerritory, list<tuple<int, int>> playersNegotiated) : Order(airliftO_ptr)
+						bool* capturedTerritory, list<tuple<int, int>>* playersNegotiated) : Order(airliftO_ptr)
 {
 	this->numOfArmies = numOfArmies;
 	this->sourceTerritory = sourceTerritory;
@@ -542,7 +542,7 @@ bool Airlift::validate()
 			cerr << "Issuing Attack..." << endl;
 			string s;
 			bool negotiatedWith = false;
-			for (tuple<int, int> t : playersNegotiated)
+			for (tuple<int, int> t : *playersNegotiated)
 			{
 				if (t == make_tuple(sourceTerritory->ownerID, targetTerritory->ownerID) || t == make_tuple(targetTerritory->ownerID, sourceTerritory->ownerID))
 				{

@@ -84,7 +84,7 @@ private:
 class Advance : public Order
 {
 public:
-	Advance(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>);
+	Advance(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>*);
 	bool validate();
 	void execute();
 	Advance(const Advance&);
@@ -97,7 +97,7 @@ private:
 	list<shared_ptr<Territory>>* playerTerritories;
 	list<shared_ptr<Territory>>* targetPlayerTerritories;
 	bool* capturedTerritory;
-	list<tuple<int, int>> playersNegotiated;
+	list<tuple<int, int>>* playersNegotiated;
 };
 
 class Bomb : public Order
@@ -131,7 +131,7 @@ private:
 class Airlift : public Order
 {
 public:
-	Airlift(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>);
+	Airlift(int, shared_ptr<Territory>, shared_ptr<Territory>, list<shared_ptr<Territory>>*, list<shared_ptr<Territory>>*, bool*, list<tuple<int, int>>*);
 	bool validate();
 	void execute();
 	Airlift(const Airlift&);
@@ -143,7 +143,7 @@ private:
 	list<shared_ptr<Territory>>* playerTerritories;
 	list<shared_ptr<Territory>>* targetPlayerTerritories;
 	bool* capturedTerritory;
-	list<tuple<int, int>> playersNegotiated;
+	list<tuple<int, int>>* playersNegotiated;
 };
 
 class Negotiate : public Order

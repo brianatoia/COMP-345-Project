@@ -202,7 +202,7 @@ void Player::resetCapturedTerritory()
 	*(this->capturedTerritory) = false;
 }
 
-list<shared_ptr<Territory>>* Player::getPlayerTerritories(int playerID)
+ list<shared_ptr<Territory>>* Player::getPlayerTerritories(int playerID)
 {
 	if (playerID > 0 && playerID <= playerTerritories.size())
 	{
@@ -452,7 +452,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 		sourceTerritory->availableUnits -= numOfArmies;
 		list<shared_ptr<Territory>>* temp = &territoryList;
-		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1],capturedTerritory, playersNegotiated));
+		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1],capturedTerritory, &playersNegotiated));
 		this->orderList->addOrder(order);
 
 	}
@@ -599,7 +599,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		targetTerritory->availableUnits += numOfArmies;
 
 		list<shared_ptr<Territory>>* temp = &territoryList;
-		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, playersNegotiated));
+		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, temp, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, &playersNegotiated));
 		this->orderList->addOrder(order);
 	}
 	else if (orderType == "Negotiate")
