@@ -5,7 +5,7 @@ using namespace std;
 
 Card::Card()
 {
-	this->cardType = UNDEFINED;
+	this->cardType = NULL;
 }
 
 Card::~Card()
@@ -13,14 +13,14 @@ Card::~Card()
 
 }
 
-void Card::setCardType(order o)
+void Card::setCardType(order *o)
 {
 	this->cardType = o;
 }
 
 string Card::getCardType()
 {
-	switch (cardType)
+	switch (*cardType)
 	{
 	case BOMB: return "Bomb";
 	case AIRLIFT: return "Airlift";
@@ -45,6 +45,11 @@ Deck::~Deck()
 
 void Deck::initializeDeck(int numPlayers)
 {
+	order* bomb = new order{ BOMB };
+	order* airlift = new order{ AIRLIFT };
+	order* blockade = new order{ BLOCKADE };
+	order* reinforcement = new order{ REINFORCEMENT };
+	order* dipliomacy = new order{ DIPLOMACY };
 
 	int deckSize = (numPlayers * 10);
 	int handSize = deckSize / numPlayers;
@@ -52,23 +57,23 @@ void Deck::initializeDeck(int numPlayers)
 	for (int i = 0; i <= deckSize; i++) {
 		Card* ptrCard = new Card();
 		if (i % handSize == 0 || i % handSize == 5) {
-			ptrCard->setCardType(BOMB);
+			ptrCard->setCardType(bomb);
 			deck.push_back(ptrCard);
 		}
 		else if (i % handSize == 1 || i % handSize == 6) {
-			ptrCard->setCardType(AIRLIFT);
+			ptrCard->setCardType(airlift);
 			deck.push_back(ptrCard);
 		}
 		else if (i % handSize == 2 || i % handSize == 7) {
-			ptrCard->setCardType(BLOCKADE);
+			ptrCard->setCardType(blockade);
 			deck.push_back(ptrCard);
 		}
 		else if (i % handSize == 3 || i % handSize == 8) {
-			ptrCard->setCardType(REINFORCEMENT);
+			ptrCard->setCardType(reinforcement);
 			deck.push_back(ptrCard);
 		}
 		else if (i % handSize == 4 || i % handSize == 9) {
-			ptrCard->setCardType(DIPLOMACY);
+			ptrCard->setCardType(dipliomacy);
 			deck.push_back(ptrCard);
 		}
 
@@ -269,7 +274,7 @@ Hand& Hand::operator=(const Hand& rightSide)
 //to_string functions
 string Card::to_string()
 {
-	string str = "Card: " + cardType;
+	string str = "Card: " + *cardType;
 	return str;
 }
 
