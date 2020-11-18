@@ -131,13 +131,13 @@ int main7()
     cout << "\nTESTING BLOCKADE" << endl;
 
     //Invalid Blockade - If the target territory belongs to an enemy player
-    shared_ptr<Order> order9(new Blockade(t2, *player1->getTerritoryList()));
+    shared_ptr<Order> order9(new Blockade(t2, player1->getTerritoryList()));
     player1->getOrderList()->addOrder(order9);
     order9->execute();
     cout << "\n" << *order9 << endl;
 
     //Invalid Blockade - If the target territory belongs to an enemy player
-    shared_ptr<Order> order10(new Blockade(t6, *player1->getTerritoryList()));
+    shared_ptr<Order> order10(new Blockade(t6, player1->getTerritoryList()));
     player1->getOrderList()->addOrder(order10);
     order10->execute();
     cout << "\n" << *order10 << endl;

@@ -20,7 +20,7 @@ public:
 	};
 	Order();
 	~Order();
-	enum OrderType getOrderType();
+	enum OrderType* getOrderType();
 	string getOrderTypeString();
 	string getOrderDescription();
 	string getOrderEffect();
@@ -124,7 +124,7 @@ private:
 class Blockade : public Order
 {
 public:
-	Blockade(shared_ptr<Territory>, list<shared_ptr<Territory>>&);
+	Blockade(shared_ptr<Territory>, list<shared_ptr<Territory>>*);
 	bool validate();
 	void execute();
 	Blockade(const Blockade&);
