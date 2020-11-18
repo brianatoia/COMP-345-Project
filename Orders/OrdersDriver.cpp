@@ -1,7 +1,7 @@
 #include "Orders.h"
 #include "../Player/Player.h"
 
-int main4()
+int main()
 {
     //Creating two players
     Player* player1(new Player("Berta"));
