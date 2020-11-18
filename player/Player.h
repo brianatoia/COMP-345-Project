@@ -25,7 +25,6 @@ static vector<list<shared_ptr<Territory>>*> playerTerritories;
 
 class Player
 {
-
 private:
     static int playerCount; //Static counter, counting players of the game
     unsigned int playerID;
@@ -38,6 +37,7 @@ private:
     OrderList* orderList;  //A pointer to a list holding ptrs to order objects
 
 public:
+    static list<shared_ptr<Territory>>* getPlayerTerritories(int);
 
     Player();
     ~Player();
@@ -56,7 +56,7 @@ public:
     void clearPlayersNegotiated();
     bool* getCapturedTerritory();
     void resetCapturedTerritory();
-    list<shared_ptr<Territory>>* getPlayerTerritories(int);
+    //list<shared_ptr<Territory>>* getPlayerTerritories(int);
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
     void addArmies(unsigned int armies);

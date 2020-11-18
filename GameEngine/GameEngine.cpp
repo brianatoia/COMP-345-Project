@@ -305,7 +305,7 @@ void GameEngine::startupPhase()
 	for (auto player : players) {
 		player->setArmies(armies);
 	}
-		
+
 
 }
 
@@ -815,7 +815,7 @@ int main() {
 		//player 2 will take no action
 		//player 3 will advance some units to t6 to show that you can advance to friendly territories
 		//shared_ptr<Order> order6(new Advance((player1->getArmies() - 10, t1, t2, player1->getTerritoryList(), player2->getTerritoryList(), player1->getCapturedTerritory(), playersNegotiated));
-		
+
 		shared_ptr<Order> order6(new Bomb(player1->getPlayerID(), t2, player1->getTerritoryList(), &playersNegotiated));
 		player1->getOrderList()->addOrder(order6);
 
@@ -894,7 +894,43 @@ int main() {
 		cout << "\nEnd of Game!\n" << endl;
 	}
 
-
-
 	return 0;
+}
+
+GameEngine::GameEngine(const GameEngine& gameEngine)
+{
+	this->numOfPlayers = gameEngine.numOfPlayers;
+	this->deck = gameEngine.deck;
+	this->map = gameEngine.map;
+	this->players = gameEngine.players;
+	this->activateObservers = gameEngine.activateObservers;
+}
+
+GameEngine::~GameEngine()
+{
+	delete deck;
+	deck = nullptr;
+
+	map.reset();
+
+	for (shared_ptr<Player> p : players)
+	{
+		p.reset();
+	}
+	players.clear();
+}
+
+GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
+{
+	this->numOfPlayers = gameEngine.numOfPlayers;
+	this->deck = gameEngine.deck;
+	this->map = gameEngine.map;
+	this->players = gameEngine.players;
+	this->activateObservers = gameEngine.activateObservers;
+	return *this;
+}
+
+ostream& operator<<(ostream& strm, GameEngine& gameEngine)
+{
+	//return strm << gameEngine.to_string();
 }
