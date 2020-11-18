@@ -58,6 +58,8 @@ public:
 	void addOrder(shared_ptr<Order>);
 	void remove(shared_ptr<Order>);
 	void move(shared_ptr<Order>, MoveOption*);
+	bool hasOrderType(string type);
+	shared_ptr<Order> getOrder(string type);
 	string to_string();
 	OrderList(const OrderList&);
 	OrderList& operator=(const OrderList&);
@@ -166,4 +168,3 @@ private:
 	int targetPlayerID;
 	list<tuple<int, int>>* playersNegotiated;
 };
-

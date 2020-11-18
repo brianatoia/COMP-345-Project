@@ -214,6 +214,24 @@ void OrderList::move(shared_ptr<Order> order, MoveOption* moveOption)
 	}
 }
 
+bool OrderList::hasOrderType(string type)
+{
+	for (auto order : orders)
+	{
+		if (type.compare(order->getOrderTypeString()) == 0) return true;
+	}
+	return false;
+}
+
+shared_ptr<Order> OrderList::getOrder(string type)
+{
+	for (auto order : orders)
+	{
+		if (type.compare(order->getOrderTypeString()) == 0) return order;
+	}
+	return nullptr;
+}
+
 Order::OrderType deployO = Order::DEPLOY;
 Deploy::Deploy(int numOfArmies, shared_ptr<Territory> territory, list<shared_ptr<Territory>> playerTerritories) : Order(&deployO)
 {
@@ -353,6 +371,8 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 
 	numOfArmies -= targetArmiesDefending;
 
+	bool attackSuccesful = false;
+
 	//Defending army defeated all of Attacking territoy armies
 	if (sourceTerritory->units == 0 && numOfArmies == 0)
 	{
@@ -378,11 +398,12 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 			playerTerritories->push_back(targetTerritory);
 			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
 			*capturedTerritory = true;
+			attackSuccesful = true;
 		}
 	}
-	if (targetTerritory->units != 0 && sourceTerritory->units != 0)
+	if (!attackSuccesful)
 	{
-		s += "Both territories remain standing.";
+		s += sourceTerritory->name + " attacked " + targetTerritory->name + " but failed at conquering it.";
 	}
 	return(s);
 }

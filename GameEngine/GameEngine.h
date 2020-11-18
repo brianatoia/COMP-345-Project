@@ -28,6 +28,7 @@ public:
 	~GameEngine();
 	GameEngine& operator=(const GameEngine&);
 	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	string to_string();
 
 	//******     PART I    *****//
 	void gameStart();
@@ -37,6 +38,7 @@ public:
 	void loadMap();
 	string selectMap();
 	bool isMapInDirectory(string fileName);
+	shared_ptr<Map> getMap();
 	vector<string> findMapNames();
 
 	//******     Oberserver Methods    *****//
@@ -67,6 +69,7 @@ public:
 	int findContinentBonusTotal(shared_ptr<Player> player);
 	void deployLoop(shared_ptr<Player>);
 	void issueOrdersPhase();
+	bool atleastOneOfType(string type);
 	void executeOrdersPhase();
 	void checkForEliminatedPlayers();
 	shared_ptr<Player> checkForWinner();

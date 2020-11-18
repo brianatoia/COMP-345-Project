@@ -108,6 +108,8 @@ public:
 
 	int findNumberOfType(string type);
 
+	Card* getCard(string type);
+
 	int getHandSize();
 
 	string to_string();

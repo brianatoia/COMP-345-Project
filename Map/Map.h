@@ -31,7 +31,9 @@ struct Territory : Land
     ~Territory();
 
     unsigned int units;
-    unsigned int availableUnits;    //The amount a player has to use (pre deploy execution)
+    //The amount a player has to use in a country. Needed to know how many armies will be in a territory after a deploy and available for things like 
+    //advance, but before the deploy orders are actually executed (that is, the armies aren't there yet but will be once its time for the other orders)
+    unsigned int availableUnits;
     unsigned int ownerID;
     unsigned int continentID;
 
@@ -64,7 +66,6 @@ private:
 
 public:
     int getTerritoriesCount();
-
     const vector<shared_ptr<Continent>> getContinents();
 
     shared_ptr<Territory> add(Territory territory);

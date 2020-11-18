@@ -7,8 +7,6 @@
 //  Created by Lina Kretzschmar on 2020-09-27.
 //
 
-//
-
 #include "Player.h"
 #include <iostream>
 #include <stdio.h>
@@ -239,6 +237,14 @@ void Player::updateAvailableUnits()
 	}
 }
 
+bool Player::canAdvance()
+{
+	for (auto territory : territoryList)
+	{
+		if (territory->availableUnits > 0) return true;
+	}
+	return false;
+}
 
 //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
 list<shared_ptr<Territory>> Player::toAttack(shared_ptr<Map> aMap)
@@ -334,6 +340,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			}
 			cout << "--------------------------------------------" << endl;
 			cout << "\nWhich territory would you like to deploy to?" << endl;
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> territoryName;
 			territory = map->findTerritory(territoryName);
 
@@ -392,6 +400,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			}
 			cout << "--------------------------------------------" << endl;
 			cout << "\nEnter territory you would like to advance from: " << endl;
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> sourceTerritoryName;
 			sourceTerritory = map->findTerritory(sourceTerritoryName);
 
@@ -444,11 +454,18 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			}
 		} while (!territoryAllowed);
 
-		do
+		cout << "Enter number of armies to advance. Should be > 0 and <= " << sourceTerritory->availableUnits << endl;
+		while (true)
 		{
-			cout << "Enter number of armies to advance. Should be <= " << sourceTerritory->availableUnits << " and >= 0: ";
 			cin >> numOfArmies;
-		} while (numOfArmies >= sourceTerritory->availableUnits || numOfArmies < 0);
+			if (numOfArmies < 0 || sourceTerritory->availableUnits < numOfArmies || cin.fail())
+			{
+				cout << "\nInvalid input, please try again" << endl;
+				cin.clear();
+				cin.ignore(10000, '\n');
+			}
+			else break;
+		}
 
 		sourceTerritory->availableUnits -= numOfArmies;
 
@@ -502,6 +519,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			}
 			cout << "--------------------------------------------" << endl;
 			cout << "\nWhich territory would you like to blockade?" << endl;
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> territoryName;
 			territory = map->findTerritory(territoryName);
 
@@ -543,6 +562,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			}
 			cout << "--------------------------------------------" << endl;
 			cout << "\nEnter territory you would like to airlift from: " << endl;
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> sourceTerritoryName;
 			sourceTerritory = map->findTerritory(sourceTerritoryName);
 
@@ -577,6 +598,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 			cout << "--------------------------------------------" << endl;
 
 			cout << "\nEnter territory you would like to airlift to: " << endl;
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> targetTerritoryName;
 			targetTerritory = map->findTerritory(targetTerritoryName);
 
@@ -593,6 +616,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		do
 		{
 			cout << "Enter number of armies to airlift. Should be <= " + std::to_string(sourceTerritory->units) + " and >= 0: ";
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> numOfArmies;
 		} while (numOfArmies >= sourceTerritory->units && numOfArmies < 0);
 
@@ -607,6 +632,8 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		do
 		{
 			cout << "Enter the ID of the player you would like to negotiate with: ";
+			cin.clear();
+			cin.ignore(123, '\n');
 			cin >> targetPlayerID;
 		} while (targetPlayerID > playerCount || targetPlayerID < 0);
 
