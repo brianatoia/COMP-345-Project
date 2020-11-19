@@ -10,7 +10,7 @@ using namespace std;
 
 enum order
 {
-	BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY
+	BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY, UNDEFINED
 };
 
 class Card
@@ -21,7 +21,7 @@ public:
 	~Card();
 
 	//set card type of enum
-	void setCardType(order o);
+	void setCardType(order* o);
 
 	//get card type returns a string based off enum
 	string getCardType();
@@ -36,7 +36,7 @@ public:
 
 
 private:
-	order cardType;
+	order* cardType;
 
 
 };
@@ -72,7 +72,7 @@ public:
 
 private:
 	vector<Card*> deck;
-	
+
 };
 
 
@@ -107,6 +107,8 @@ public:
 	bool findCardType(string type);
 
 	int findNumberOfType(string type);
+
+	Card* getCard(string type);
 
 	int getHandSize();
 

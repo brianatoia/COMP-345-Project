@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <windows.h>
 #include "../Map/Map.h"
 #include "../Player/Player.h"
 
@@ -18,7 +19,7 @@ public:
 	~Subject();
 	void attach(class Observer* observer);
 	void detach(class Observer* observer);
-	void notify();
+	void notify(string message);
 };
 
 class Observer
@@ -28,8 +29,9 @@ public:
 	Observer(Subject* model);
 	~Observer();
 
-	virtual void update() = 0;
-	virtual void show() = 0;
+	virtual void update(string message) = 0;
+
+	vector<string> tokenize(string);
 
 protected:
 	Subject* getSubject() { return model; };
@@ -37,12 +39,13 @@ protected:
 
 class PhaseObserver : public Observer
 {
+	vector<shared_ptr<Player>> players;
+
 public:
-	PhaseObserver(Subject* model);
+	PhaseObserver(Subject* model, vector<shared_ptr<Player>> players);
 	~PhaseObserver();
 
-	void update();
-	void show();
+	void update(string message);
 };
 
 class StatisticsObserver : public Observer
@@ -54,6 +57,6 @@ public:
 	StatisticsObserver(Subject* model, shared_ptr<Map> map, vector<shared_ptr<Player>> players);
 	~StatisticsObserver();
 
-	void update();
+	void update(string message);
 	void show();
 };
