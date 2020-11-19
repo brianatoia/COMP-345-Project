@@ -343,6 +343,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	mt19937 mt(rd());
 	uniform_real_distribution<float> dist(0, 1);
 
+	if (numOfArmies > sourceTerritory->units) numOfArmies = sourceTerritory->units;
 	sourceTerritory->units -= numOfArmies;
 
 	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
