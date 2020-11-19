@@ -4,17 +4,18 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <string>
 #include <Windows.h>
-#include <filesystem>
 
 
 //Default constructor
 
-GameEngine::GameEngine()
+GameEngine::GameEngine() : Subject()
 {
 	numOfPlayers = 0;
 	this->deck = new Deck();
-	activateObservers = true;
+	this->phaseObserver = false;
+	this->mapObserver = false;
 	this->players = vector<shared_ptr<Player>>();
 	this->map = shared_ptr <Map>();
 }
@@ -66,7 +67,7 @@ void GameEngine::gameStart()
 
 	//Part I: 3
 	//Turning on/off observers
-	activateObservers = Observers();
+	Observers();
 }
 
 //******     Map Methods    *****//
@@ -183,38 +184,65 @@ bool GameEngine::isMapInDirectory(string fileName)
 		return true;
 }
 
-shared_ptr<Map> GameEngine::getMap()
-{
-	return map;
-}
-
 //******     Oberserver Methods    *****//
 
-bool GameEngine::Observers()
+void GameEngine::Observers()
 {
 	string answer;
-	bool loopAgain;
-	cout << "activate the observers for this game? (Yes or No): ";
+	cout << "activate phase observer for this game? (Yes or No): ";
 	cin >> answer;
 	while (!equals(answer, "yes") && !equals(answer, "no")) {
 		cout << "Your answer has been deemed invalid. Please enter again: ";
 		cin >> answer;
 	}
 	if (equals(answer, "yes"))
-		return true;
+	{
+		phaseObserver = true;
+	}
 	else if (equals(answer, "no"))
-		return false;
-	return false;
+	{
+		phaseObserver = false;
+	}
+
+	answer = "";
+	cout << "activate map observer for this game? (Yes or No): ";
+	cin >> answer;
+	while (!equals(answer, "yes") && !equals(answer, "no")) {
+		cout << "Your answer has been deemed invalid. Please enter again: ";
+		cin >> answer;
+	}
+	if (equals(answer, "yes"))
+	{
+		mapObserver = true;
+	}
+	else if (equals(answer, "no"))
+	{
+		mapObserver = false;
+	}
 }
 
-bool GameEngine::getObserverStatus()
+bool GameEngine::getObserverStatus(int o)
 {
-	return activateObservers;
+	if (o == 1)
+	{
+		return phaseObserver;
+	}
+	else if (o == 2)
+	{
+		return mapObserver;
+	}
 }
 
-void GameEngine::setObserverStatus(bool status)
+void GameEngine::setObserverStatus(int o, bool status)
 {
-	activateObservers = status;
+	if (o == 1)
+	{
+		phaseObserver = status;
+	}
+	else if (o == 2)
+	{
+		mapObserver = status;
+	}
 }
 
 bool GameEngine::equals(const string& a, const string& b) {
@@ -276,6 +304,11 @@ string GameEngine::getPlayersNames()
 	return str;
 }
 
+shared_ptr<Map> GameEngine::getMap()
+{
+	return shared_ptr<Map>(map);
+}
+
 //*************		PART II		**************//
 
 void GameEngine::startupPhase()
@@ -313,7 +346,10 @@ void GameEngine::startupPhase()
 //Give armies to each player and a card if they captured a territory in the last turn
 void GameEngine::reinforcementsPhase()
 {
-	cout << "\nReinforcement Phase:\n" << endl;
+	if (this->phaseObserver)
+	{
+		this->notify("reinforcement_phase_start");
+	}
 	for (auto player : players)
 	{
 		list<shared_ptr<Territory>> playerTerritories = *player->getTerritoryList();
@@ -322,8 +358,16 @@ void GameEngine::reinforcementsPhase()
 		int armiesToGive = continentBonus +  baseArmiesGiven;
 
 		if (armiesToGive < 3) armiesToGive = 3;
-		cout << "Gave " << armiesToGive << " armies to Player " << player->getName() << " (minimum 3)" << endl;
-		cout << "(" << baseArmiesGiven << ") plus (" << continentBonus << ") from continent bonus(es)\n" << endl;
+
+		if (this->phaseObserver)
+		{
+			string message = "give_armies";
+			string armies = std::to_string(armiesToGive);
+			string id = std::to_string(player->getPlayerID());
+			string baseArmies = std::to_string(baseArmiesGiven);
+			string continentB = std::to_string(continentBonus);
+			this->notify(message + " " + armies + " " + id + " " + baseArmies + " " + continentB);
+		}
 
 		player->addArmies(armiesToGive); //Using add and not set because of the initial armies given from setup. Will always be 0 at start of a turn.
 
@@ -331,9 +375,10 @@ void GameEngine::reinforcementsPhase()
 		{
 			player->resetCapturedTerritory();
 			player->getHand()->addCard(deck->draw());
-			cout << player->getName() << " also draws a card because they captured atleast one territory last turn" << endl;
+			string message = "draws_card";
+			string id = std::to_string(player->getPlayerID());
+			this->notify(message + " " + id);
 		}
-		Sleep(2000);
 	}
 }
 
@@ -371,11 +416,11 @@ void GameEngine::deployLoop(shared_ptr<Player> player)
 
 void GameEngine::issueOrdersPhase()
 {
-	cout << "\nStart of issueOrderPhase()\n" << endl;
-	Sleep(1000); //Small sleeps to make information readable to player (don't want to fill screen with text)
-
-	cout << "Deploying Phase: \n" << endl;
-	Sleep(1000);
+	if (this->phaseObserver)
+	{
+		this->notify("issue_order_start");
+	}
+	
 
 	//Issuing all the rest of the orders
 	for (auto player : players)
@@ -388,24 +433,25 @@ void GameEngine::issueOrdersPhase()
 		cout << "\n==================================================" << endl;
 		cout << player->getName() << " place your orders!" << endl;
 		cout << "==================================================" << endl;
-		Sleep(2000);
+		
+		if (this->phaseObserver)
+		{
+			string message = "wait";
+			string time = std::to_string(1000);
+			this->notify(message + " " + time);
+		}
+
 
 		//Player issues orders here
 		string decision = "";
 		while (true)
 		{
-			cout << "\nAirlift (" << player->getHand()->findNumberOfType("Airlift") << ")" << endl;				Sleep(200);
-			cout << "Blockade (" << player->getHand()->findNumberOfType("Blockade") << ")" << endl;				Sleep(200);
-			cout << "Reinforcement (" << player->getHand()->findNumberOfType("Reinforcement") << ")" << endl;	Sleep(200);
-			cout << "Negotiate (" << player->getHand()->findNumberOfType("Diplomacy") << ")" << endl;			Sleep(200);
-			cout << "Bomb (" << player->getHand()->findNumberOfType("Bomb") << ")" << endl;						Sleep(200);
-			cout << "Advance" << endl;																			Sleep(200);
-			cout << "Finish" << endl;																			Sleep(200);
-			cout << "\nOrders are listed top - down in order of execution priority, but all orders of one type must execute before the next can occur!" << endl;	Sleep(200);
-			cout << "Only one order is played at a time for a player, unless they are the last one with that order type in queue." << endl;							Sleep(200);
-			cout << "Orders of a type you create first happen first, so start with what you want to have happen right away!" << endl;
-			cout << "Use Advance to move armies to another adjacent friendly territory or to attack enemy territories" << endl;
-			cout << "==================================================" << endl;
+			if (this->phaseObserver)
+			{
+				string message = "order ";
+				string id = std::to_string(player->getPlayerID());
+				this->notify(message+id);
+			}
 
 			cin >> decision;
 
@@ -494,7 +540,16 @@ void GameEngine::executeOrdersPhase()
 	bool inAdvance = false;
 	bool done = false;
 
-	cout << "\nStart of executeOrdersPhase()" << endl;			Sleep(2000);
+	if (this->mapObserver)
+	{
+		this->notify("map");
+	}
+
+	if (this->phaseObserver)
+	{
+		this->notify("map");
+		this->notify("execute_orders_phase_start");
+	}
 
 	while (!done)
 	{
@@ -507,8 +562,14 @@ void GameEngine::executeOrdersPhase()
 
 				if (!(order == nullptr))
 				{
-					order->execute();									//execute order
-					cout << *order << "\n" << endl;	Sleep(500);			//print order effects
+					order->execute();
+					//execute order
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute "+ order->to_string());
+					}
+
 					player->getOrderList()->remove(order);				//remove order from orderlist for that player
 				}
 
@@ -526,7 +587,11 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();
-					cout << *order << "\n" << endl;	Sleep(500);
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute " + order->to_string());
+					}
 					player->getOrderList()->remove(order);
 				}
 
@@ -544,7 +609,12 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();
-					cout << *order << "\n" << endl;	Sleep(500);
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute " + order->to_string());
+					}
+
 					player->getOrderList()->remove(order);
 				}
 
@@ -562,7 +632,12 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();
-					cout << *order << "\n" << endl;	Sleep(500);
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute " + order->to_string());
+					}
+
 					player->getOrderList()->remove(order);
 				}
 
@@ -580,7 +655,12 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();
-					cout << *order << "\n" << endl;	Sleep(500);
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute " + order->to_string());
+					}
+
 					player->getOrderList()->remove(order);
 				}
 
@@ -598,7 +678,12 @@ void GameEngine::executeOrdersPhase()
 				if (!(order == nullptr))
 				{
 					order->execute();
-					cout << *order << "\n" << endl;	Sleep(500);
+					
+					if (this->phaseObserver)
+					{
+						this->notify("execute " + order->to_string());
+					}
+
 					player->getOrderList()->remove(order);
 				}
 
@@ -612,6 +697,11 @@ void GameEngine::executeOrdersPhase()
 
 
 		}
+	}
+	
+	if (this->mapObserver)
+	{
+		this->notify("map");
 	}
 }
 
@@ -682,10 +772,10 @@ vector<string> GameEngine::findMapNames() {
 
 //*************		MAIN METHOD		**************//
 
-int main6(){
+int main(){
 
 	//Declaring gameEngine
-	shared_ptr<GameEngine> gameEngine(new GameEngine());
+	GameEngine* gameEngine = new GameEngine();
 
 	cout << "Enter 1 for manual game\nEnter 2 for automatic game for demo purposes only" << endl;
 	int decision = 0;
@@ -696,6 +786,9 @@ int main6(){
 		//Testing Part I
 		cout << "Calling gameStart(): Code from Part I" << endl;
 		gameEngine->gameStart();
+
+		StatisticsObserver* stats = new StatisticsObserver(gameEngine, gameEngine->getMap(), gameEngine->getPlayers());
+		PhaseObserver* phases = new PhaseObserver(gameEngine, gameEngine->getPlayers());
 
 		//A deck was created
 		cout << *gameEngine->getDeck() << endl;
@@ -721,10 +814,12 @@ int main6(){
 			shared_ptr<Player> winner = gameEngine->checkForWinner();
 			if (winner != nullptr)
 			{
-				cout << winner->getName() << " is the Winner!" << endl;
 				break;
 			}
 		}
+
+		delete phases;
+		delete stats;
 	}
 	else if (decision == 2)
 	{
@@ -757,6 +852,10 @@ int main6(){
 		//Testing Part I
 		cout << "Calling gameStart(): Code from Part I" << endl;
 		gameEngine->gameStart();
+
+		StatisticsObserver* stats = new StatisticsObserver(gameEngine, gameEngine->getMap(), gameEngine->getPlayers());
+		PhaseObserver* phases = new PhaseObserver(gameEngine, gameEngine->getPlayers());
+
 
 		//A deck was created
 		cout << *gameEngine->getDeck() << endl;
@@ -911,16 +1010,19 @@ int main6(){
 		gameEngine->checkForEliminatedPlayers();
 		Sleep(2000);
 
-		//Check for winner, this breaks out of main game loop in manual gameplay
-		shared_ptr<Player> winner = gameEngine->checkForWinner();
-		if (winner != nullptr)
-		{
-			cout << winner->getName() << " is the Winner!" << endl;
-		}
-
 		cout << "\nEnd of Game!\n" << endl;
+
+		delete phases;
+		delete stats;
 	}
-	else cout << "\nInvalid choice, ending program" << endl;
+	else
+	{
+		cout << "\nInvalid choice, ending program" << endl;
+	}
+
+	delete gameEngine;
+	Sleep(5000);
+
 	return 0;
 }
 
@@ -930,7 +1032,8 @@ GameEngine::GameEngine(const GameEngine& gameEngine)
 	this->deck = gameEngine.deck;
 	this->map = gameEngine.map;
 	this->players = gameEngine.players;
-	this->activateObservers = gameEngine.activateObservers;
+	this->phaseObserver = gameEngine.phaseObserver;
+	this->mapObserver = gameEngine.mapObserver;
 }
 
 GameEngine::~GameEngine()
@@ -953,7 +1056,8 @@ GameEngine& GameEngine::operator=(const GameEngine& gameEngine)
 	this->deck = gameEngine.deck;
 	this->map = gameEngine.map;
 	this->players = gameEngine.players;
-	this->activateObservers = gameEngine.activateObservers;
+	this->phaseObserver = gameEngine.phaseObserver;
+	this->mapObserver = gameEngine.mapObserver;
 	return *this;
 }
 
@@ -972,7 +1076,11 @@ string GameEngine::to_string()
 	s += "\nWith Deck:\n";
 	s += deck->to_string();
 	s += "\nAnd with Observers:\n";
-	s += getObserverStatus() + "\n";
-
+	s += "phase observer: ";
+	s += getObserverStatus(1);
+	s += "\n";
+	s += "map observer: ";
+	s += getObserverStatus(2);
+	s += "\n";
 	return s;
 }

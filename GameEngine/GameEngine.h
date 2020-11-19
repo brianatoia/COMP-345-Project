@@ -2,10 +2,10 @@
 
 #include "../Player/Player.h"
 #include "../Cards/Cards.h"
-//#include "Cards.h"//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Orders/Orders.h"
+#include "../GameObservers/GameObservers.h"
 
 
 #include <iostream>
@@ -18,7 +18,7 @@
 
 using namespace std;
 
-class GameEngine
+class GameEngine : public Subject
 {
 public:
 
@@ -42,9 +42,9 @@ public:
 	vector<string> findMapNames();
 
 	//******     Oberserver Methods    *****//
-	bool Observers();
-	bool getObserverStatus();
-	void setObserverStatus(bool status);
+	void Observers();
+	bool getObserverStatus(int);
+	void setObserverStatus(int, bool);
 	bool equals(const string& a, const string& b);
 
 
@@ -57,7 +57,7 @@ public:
 	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
-
+	
 
 	//******     PART II    *****//
 	void startupPhase();
@@ -82,5 +82,6 @@ private:
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
 
-	bool activateObservers;
+	bool phaseObserver;
+	bool mapObserver;
 };

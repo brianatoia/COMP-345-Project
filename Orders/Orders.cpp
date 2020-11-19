@@ -334,14 +334,17 @@ bool Advance::validate()
 	return true;
 }
 
-string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories, 
-					list<shared_ptr<Territory>>* targetPlayerTerritories, bool* capturedTerritory)
+string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr<Territory> targetTerritory, list<shared_ptr<Territory>>* playerTerritories,
+	list<shared_ptr<Territory>>* targetPlayerTerritories, bool* capturedTerritory)
 {
 	int n;
 	string s = "";
 	random_device rd;
 	mt19937 mt(rd());
 	uniform_real_distribution<float> dist(0, 1);
+
+	if (numOfArmies > sourceTerritory->units) numOfArmies = sourceTerritory->units;
+	sourceTerritory->units -= numOfArmies;
 
 	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
 	//Each attacking army unit involved has 60% chances of killing one defending army. 
@@ -365,18 +368,16 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 
 	n = targetTerritory->units - sourceArmiesAttacking;
 	targetTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
-	
-	n = sourceTerritory->units - targetArmiesDefending;
-	sourceTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
 
-	numOfArmies -= targetArmiesDefending;
+	n = numOfArmies - targetArmiesDefending;
+	numOfArmies = n < 0 ? 0 : n;
 
 	bool attackSuccesful = false;
 
 	//Defending army defeated all of Attacking territoy armies
 	if (sourceTerritory->units == 0 && numOfArmies == 0)
 	{
-		sourceTerritory->ownerID = NULL;
+		sourceTerritory->ownerID = 0;
 		playerTerritories->remove(sourceTerritory);
 
 		s += sourceTerritory->name + " has no armies remaining. Player " + std::to_string(sourceTerritory->ownerID) + " no longer owns this territory.\n";
@@ -384,7 +385,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	//Attacking army defeated all Defending territory armies
 	if (targetTerritory->units == 0)
 	{
-		targetTerritory->ownerID = NULL;
+		targetTerritory->ownerID = 0;
 		targetPlayerTerritories->remove(targetTerritory);
 
 		s += targetTerritory->name + " has been defeated.\n";
@@ -393,16 +394,16 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 		if (numOfArmies != 0)
 		{
 			targetTerritory->units = numOfArmies;
-			sourceTerritory->units -= numOfArmies;
 			targetTerritory->ownerID = sourceTerritory->ownerID;
 			playerTerritories->push_back(targetTerritory);
-			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
+			s += "Player " + std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
 			*capturedTerritory = true;
 			attackSuccesful = true;
 		}
 	}
 	if (!attackSuccesful)
 	{
+		sourceTerritory->units += numOfArmies;
 		s += sourceTerritory->name + " attacked " + targetTerritory->name + " but failed at conquering it.";
 	}
 	return(s);
@@ -538,7 +539,7 @@ void Blockade::execute()
 	if (validate())
 	{
 		targetTerritory->units *= 2;
-		targetTerritory->ownerID = NULL;
+		targetTerritory->ownerID = 0;
 		playerTerritories->remove(targetTerritory);
 
 		//Separating string avoided an error
