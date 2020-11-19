@@ -1,8 +1,7 @@
 #pragma once
 
-#include "../GameObservers/GameObservers.h"
-#include "../player/Player.h"
-#include "../cards/Cards.h"
+#include "../Player/Player.h"
+#include "../Cards/Cards.h"
 //#include "Cards.h"//have to correct this with the correct folder structure after
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
@@ -25,11 +24,11 @@ public:
 
 	//******     Constructor & Destructor    *****//
 	GameEngine();
-	//GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
-	//~GameEngine();
-	//GameEngine& operator= (const GameEngine&);
-	//friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
 	~GameEngine();
+	GameEngine& operator=(const GameEngine&);
+	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);
+	string to_string();
 
 	//******     PART I    *****//
 	void gameStart();
@@ -39,6 +38,7 @@ public:
 	void loadMap();
 	string selectMap();
 	bool isMapInDirectory(string fileName);
+	shared_ptr<Map> getMap();
 	vector<string> findMapNames();
 
 	//******     Oberserver Methods    *****//
@@ -63,20 +63,27 @@ public:
 	
 
 	//******     PART II    *****//
-	void startupPhase();	
+	void startupPhase();
+
+	//shared_ptr<GameEngine> createEngine();
+
+	void mainGameLoop();
+	void reinforcementsPhase();
+	int findContinentBonusTotal(shared_ptr<Player> player);
+	void deployLoop(shared_ptr<Player>);
+	void issueOrdersPhase();
+	bool atleastOneOfType(string type);
+	void executeOrdersPhase();
+	void checkForEliminatedPlayers();
+	shared_ptr<Player> checkForWinner();
 
 
-//******     Private Members    *****//
+	//******     Private Members    *****//
 private:
 	int numOfPlayers;
 	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+
 	bool activateObservers;
-	
-
-	//bool reinforcementsPhase();
-	//bool issueOrdersPhase();
-	//bool executeOrdersPhase();
-
 };

@@ -94,7 +94,7 @@ shared_ptr<Territory> Map::add(Territory territory)
     }
 
     // Putting the territory in the map
-    this->territories[territory.getID()] = shared_ptr<Territory> (new Territory(territory));
+    this->territories[territory.getID()] = shared_ptr<Territory>(new Territory(territory));
 
     // Matching the owning continent with this territory if it exists already
     shared_ptr<Continent> c = getContinent(territory.continentID);
@@ -128,7 +128,7 @@ shared_ptr<Continent> Map::add(Continent continent)
     }
 
     // Putting the continent in the map
-    this->continents[continent.getID()] = shared_ptr<Continent> (new Continent(continent));
+    this->continents[continent.getID()] = shared_ptr<Continent>(new Continent(continent));
 
     // Matching its territories to itself
     for (shared_ptr<Territory> t : this->territories)
@@ -257,7 +257,7 @@ bool Map::validate()
             // Push the current connectedTerritories list to connectedLists
             // It's very well possible that right before this step, connectedLists is empty
             connectedLists.push_back(connectedTerritories);
-        } 
+        }
         else
         {
             // our element is pointed to by one of the connectedLists list, then it is connected, otherwise it isn't
@@ -375,7 +375,12 @@ shared_ptr<Territory> Map::findTerritory(string name)
     for (shared_ptr<Territory> t : this->territories)
     {
         if (t == nullptr) continue;
-        if (t->name.compare(name) == 0)
+
+        string territoryName = t->name;
+        transform(territoryName.begin(), territoryName.end(), territoryName.begin(), ::tolower);
+        transform(name.begin(), name.end(), name.begin(), ::tolower);
+
+        if (territoryName.compare(name) == 0)
         {
             return shared_ptr<Territory>(t);
         }
@@ -389,7 +394,7 @@ shared_ptr<Territory> Map::getTerritory(unsigned int id)
 {
     if (id >= this->territories.size())
     {
-        throw out_of_range ("id is out of bounds");
+        throw out_of_range("id is out of bounds");
     }
 
     return shared_ptr<Territory>(this->territories[id]);
@@ -416,11 +421,17 @@ shared_ptr<Continent> Map::getContinent(unsigned int id)
 {
     if (id >= this->continents.size())
     {
-        throw out_of_range ("id is out of bounds");
+        throw out_of_range("id is out of bounds");
     }
 
     return shared_ptr<Continent>(this->continents[id]);
 }
+
+const vector<shared_ptr<Continent>> Map::getContinents()
+{
+    return continents;
+}
+
 
 // Assignment operator for map, copies over territories and continents
 Map& Map::operator=(const Map& map)
@@ -437,14 +448,16 @@ Map& Map::operator=(const Map& map)
 Territory::Territory(unsigned int id, string name, unsigned int continentID) : Land(id, name)
 {
     this->units = 0;
+    this->availableUnits = 0;
     this->continentID = continentID;
     this->borders = vector<unsigned int>();
     this->ownerID = 0;
 }
 
-Territory::Territory(const Territory &territory) : Land(territory)
+Territory::Territory(const Territory& territory) : Land(territory)
 {
     this->units = territory.units;
+    this->availableUnits = territory.availableUnits;
     this->continentID = territory.continentID;
     this->borders = vector<unsigned int>();
     this->ownerID = territory.ownerID;
@@ -487,7 +500,7 @@ Continent::Continent(int id, string name, unsigned int bonus) : Land(id, name)
     this->territoryIDs = vector<unsigned int>();
 }
 
-Continent::Continent(const Continent &continent) : Land(continent)
+Continent::Continent(const Continent& continent) : Land(continent)
 {
     this->bonus = continent.bonus;
     this->territoryIDs = vector<unsigned int>();
@@ -529,7 +542,7 @@ Land::Land(unsigned int id, string name)
     this->name = name;
 }
 
-Land::Land(const Land &land)
+Land::Land(const Land& land)
 {
     this->id = land.id;
     this->name = string(land.name.c_str());
@@ -545,17 +558,17 @@ unsigned int Land::getID()
     return this->id;
 }
 
-ostream& operator<<(ostream& strm, Map &map)
+ostream& operator<<(ostream& strm, Map& map)
 {
     return strm << map.to_string();
 }
 
-ostream& operator<<(ostream& strm, Territory &territory)
+ostream& operator<<(ostream& strm, Territory& territory)
 {
     return strm << territory.to_string();
 }
 
-ostream& operator<<(ostream& strm, Continent &continent)
+ostream& operator<<(ostream& strm, Continent& continent)
 {
     return strm << continent.to_string();
 }

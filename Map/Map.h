@@ -31,6 +31,9 @@ struct Territory : Land
     ~Territory();
 
     unsigned int units;
+    //The amount a player has to use in a country. Needed to know how many armies will be in a territory after a deploy and available for things like 
+    //advance, but before the deploy orders are actually executed (that is, the armies aren't there yet but will be once its time for the other orders)
+    unsigned int availableUnits;
     unsigned int ownerID;
     unsigned int continentID;
 
@@ -38,7 +41,7 @@ struct Territory : Land
 
     string to_string();
     Territory& operator=(const Territory& territory);
-    friend ostream& operator<<(ostream& strm, Territory &territory);
+    friend ostream& operator<<(ostream& strm, Territory& territory);
 };
 
 struct Continent : Land
@@ -52,7 +55,7 @@ struct Continent : Land
 
     string to_string();
     Continent& operator=(const Continent& continent);
-    friend ostream& operator<<(ostream& strm, Continent &continent);
+    friend ostream& operator<<(ostream& strm, Continent& continent);
 };
 
 class Map
@@ -64,6 +67,7 @@ private:
 public:
     int getTerritoriesCount();
     int getContinentsCount();
+    const vector<shared_ptr<Continent>> getContinents();
 
     shared_ptr<Territory> add(Territory territory);
     shared_ptr<Continent> add(Continent continent);
@@ -78,9 +82,9 @@ public:
 
     bool validate();
 
-    string to_string ();
+    string to_string();
     Map& operator=(const Map& map);
-    friend ostream& operator<<(ostream& strm, Map &map);
+    friend ostream& operator<<(ostream& strm, Map& map);
 
     Map();
     Map(int numOfTerritories, int numOfContinents);

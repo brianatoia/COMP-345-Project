@@ -5,7 +5,7 @@
 
 using namespace std;
 
-int main()
+int main2()
 {
     Map hello = Map();
 
@@ -106,4 +106,6 @@ int main()
 
     delete hello3;
     delete hello4;
+
+    return 0;
 }
