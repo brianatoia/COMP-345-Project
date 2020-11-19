@@ -682,7 +682,7 @@ vector<string> GameEngine::findMapNames() {
 
 //*************		MAIN METHOD		**************//
 
-int main6(){
+int main(){
 
 	//Declaring gameEngine
 	shared_ptr<GameEngine> gameEngine(new GameEngine());

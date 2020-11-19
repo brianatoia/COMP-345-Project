@@ -266,6 +266,8 @@ list<shared_ptr<Territory>> Player::toAttack(shared_ptr<Map> aMap)
 			}
 		}
 	}
+	copyList.sort();
+	copyList.unique();
 	return copyList;
 }
 
@@ -289,6 +291,8 @@ list<shared_ptr<Territory>> Player::toDefend(shared_ptr<Map> aMap)
 			}
 		}
 	}
+	copyList.sort();
+	copyList.unique();
 	return copyList;
 }
 
@@ -329,6 +333,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 		shared_ptr<Territory> territory;
 		string territoryName;
 		bool territoryAllowed = false;
+		cout << name << " deploy your armies!\n" << endl;
 
 		do {
 			cout << "You have " << armies << " deployable armies" << endl;

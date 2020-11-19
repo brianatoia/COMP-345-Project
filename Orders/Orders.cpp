@@ -343,6 +343,8 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	mt19937 mt(rd());
 	uniform_real_distribution<float> dist(0, 1);
 
+	sourceTerritory->units -= numOfArmies;
+
 	int sourceArmiesAttacking = 0, targetArmiesDefending = 0;
 	//Each attacking army unit involved has 60% chances of killing one defending army. 
 	for (int i = 0; i < numOfArmies; i++)
@@ -365,11 +367,9 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 
 	n = targetTerritory->units - sourceArmiesAttacking;
 	targetTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
-	
-	n = sourceTerritory->units - targetArmiesDefending;
-	sourceTerritory->units = n < 0 ? 0 : n; //fixes issue with unsigned int
 
-	numOfArmies -= targetArmiesDefending;
+	n = numOfArmies - targetArmiesDefending;
+	numOfArmies = n < 0 ? 0 : n;
 
 	bool attackSuccesful = false;
 
@@ -393,7 +393,6 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 		if (numOfArmies != 0)
 		{
 			targetTerritory->units = numOfArmies;
-			sourceTerritory->units -= numOfArmies;
 			targetTerritory->ownerID = sourceTerritory->ownerID;
 			playerTerritories->push_back(targetTerritory);
 			s += "Player "+ std::to_string(sourceTerritory->ownerID) + " now has " + std::to_string(numOfArmies) + " armies in " + targetTerritory->name + ". ";
@@ -403,6 +402,7 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	}
 	if (!attackSuccesful)
 	{
+		sourceTerritory->units += numOfArmies;
 		s += sourceTerritory->name + " attacked " + targetTerritory->name + " but failed at conquering it.";
 	}
 	return(s);
