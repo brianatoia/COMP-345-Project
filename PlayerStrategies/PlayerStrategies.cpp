@@ -92,7 +92,7 @@ AggressivePlayerStrategy::AggressivePlayerStrategy(unsigned int playerID, Hand* 
 
 string AggressivePlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-
+	return "Finish";
 }
 
 //********* BenevolentPlayerStrategy  **********//
@@ -100,7 +100,7 @@ BenevolentPlayerStrategy::BenevolentPlayerStrategy(unsigned int playerID, Hand* 
 
 string BenevolentPlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-
+	return "Finish";
 }
 
 //********* NeutralPlayerStrategy  **********//
@@ -108,7 +108,7 @@ NeutralPlayerStrategy::NeutralPlayerStrategy(unsigned int playerID, Hand* hand, 
 
 string NeutralPlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-
+	return "Finish";
 }
 
 list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList)
