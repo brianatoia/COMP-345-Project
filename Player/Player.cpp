@@ -31,6 +31,7 @@ Player::Player()
 	this->hand = new Hand();    //Creates a pointer to a Hand object which contains cards
 	this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
 	this->capturedTerritory = new bool(false);
+	this->playerStrategy = new NeutralPlayerStrategy();
 	playerTerritories.push_back(&territoryList);
 }
 
@@ -70,6 +71,7 @@ Player::Player(string playerName)
 	this->orderList = new OrderList();
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
+	this->playerStrategy = new NeutralPlayerStrategy();
 }
 
 //Copy constructor enables deep copy of pointer attributes
@@ -665,9 +667,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
-	if (this->playerStrategy != newPS)
+	if(this->playerStrategy != newPS && this->playerStrategy != nullptr)
 	{
 		delete this->playerStrategy;
-		this->playerStrategy = newPS;
 	}
+	this->playerStrategy = newPS;
 }

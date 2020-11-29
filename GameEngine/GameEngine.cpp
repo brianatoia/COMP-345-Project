@@ -63,14 +63,39 @@ void GameEngine::gameStart()
 	}
 
 	//Ask for player strategies
-	cout << "Please select a player stategy for each player. The following strategies can be selected: Human, Benevolent, Aggressive, Neutral." << endl;
+	cout << "Please select a player stategy for each player by selecting either 1, 2 or 3: [1] Human, [2] Aggressive, [3] Benevolent." << endl;
 	for (int i = 0; i < numOfPlayers; i++)
 	{
-		string strategy = "";
-		cout << "Player strategy for player #" << (i + 1) <<" with name "<< players[i]->getName() << ": ";
-		cin >> strategy;
+		while (true)
+		{
+			int strategy;	//User input to decide 1 for Human, 2 for Aggressive, 3 for Benevolent
+			cout << "Player strategy for player #" << (i + 1) << " with name " << players[i]->getName() << ": ";
 
-		//need to add more here
+			while (!(cin >> strategy))	//while cin is not a numerical value
+			{
+				cout << "Only numerical values are accepted. Please select a number between 1 and 3: ";
+				cin.clear();
+				cin.ignore(123, '\n');
+			}
+			//If numerical value was entered, verify it was between 1 - 3 and set strategy accordingly
+			if (strategy == 1)
+			{
+				players[i]->setPlayerStrategy(new HumanPlayerStrategy);
+				break;
+			}
+			else if (strategy == 2)
+			{
+				players[i]->setPlayerStrategy(new AggressivePlayerStrategy());
+				break;
+			}
+			else if (strategy == 3)
+			{
+				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy());
+				break;
+			}
+			else
+				cout << "The strategy number you have entered has been deemed invalid. ";
+		}
 	}
 
 	//initialize a card deck with amount of players
@@ -463,6 +488,7 @@ void GameEngine::issueOrdersPhase()
 				string id = std::to_string(player->getPlayerID());
 				this->notify(message+id);
 			}
+
 
 			cin >> decision;
 
