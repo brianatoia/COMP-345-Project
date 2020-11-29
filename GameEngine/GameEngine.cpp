@@ -76,7 +76,8 @@ void GameEngine::gameStart()
 void GameEngine::loadMap()
 {
 	//declaring map loader
-	shared_ptr<MapLoader> mapLoader(new MapLoader());
+	//shared_ptr<MapLoader> mapLoader(new MapLoader());
+	shared_ptr<ConquestFileReader> conquestFileReader(new ConquestFileReader);
 
 	//implement vector of maps, player can choose one
 	vector <shared_ptr<Map>> loadedMaps;
@@ -109,7 +110,8 @@ void GameEngine::loadMap()
 		}
 		else
 		{
-			shared_ptr<Map> loadedMap = mapLoader->createMap(userInput, "MapDirectory/");
+			//shared_ptr<Map> loadedMap = mapLoader->createMap(userInput, "MapDirectory/");
+			shared_ptr<Map> loadedMap = conquestFileReader->createMap(userInput, "MapDirectory/");
 			if (loadedMap != nullptr)
 			{
 				loadedMaps.push_back(loadedMap);
@@ -158,8 +160,10 @@ void GameEngine::loadMap()
 	}
 
 	//Resetting MapLoader
-	mapLoader.reset();
-	mapLoader = nullptr;
+	//mapLoader.reset();
+	//mapLoader = nullptr;
+	conquestFileReader.reset();
+	conquestFileReader = nullptr;
 }
 
 string GameEngine::selectMap()
