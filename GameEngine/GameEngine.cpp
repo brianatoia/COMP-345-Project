@@ -63,14 +63,15 @@ void GameEngine::gameStart()
 	}
 
 	//Ask for player strategies
-	//cout << "Please select a player stategy for each player. The following strategies can be selected: Human, Benevolent, Aggressive, Neutral." << endl;
-	//for (int i = 0; i < numOfPlayers; i++)
-	//{
-	//	string strategy = "";
-	//	cout << "Player strategy for player #" << (i + 1) <<" with name "<< players[i]->getName() << ": ";
-	//	cin >> strategy;
-	//	players[i] = setStrategy(strategy);
-	//}
+	cout << "Please select a player stategy for each player. The following strategies can be selected: Human, Benevolent, Aggressive, Neutral." << endl;
+	for (int i = 0; i < numOfPlayers; i++)
+	{
+		string strategy = "";
+		cout << "Player strategy for player #" << (i + 1) <<" with name "<< players[i]->getName() << ": ";
+		cin >> strategy;
+
+		//need to add more here
+	}
 
 	//initialize a card deck with amount of players
 	deck->initializeDeck(numOfPlayers);

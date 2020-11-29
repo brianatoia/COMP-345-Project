@@ -52,6 +52,9 @@ Player::~Player()
 	delete capturedTerritory;    //Delete pointer to orderList structure
 	capturedTerritory = nullptr;	//Resolve dangling pointer
 
+	delete ps;
+	ps = nullptr;
+
 	cout << "Player " << this->getName() << " with id " << this->getPlayerID() << " was deleted.\n";
 }
 
@@ -655,4 +658,12 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 	{
 		cerr << "Invalid Order Type" << endl;
 	}
+}
+
+
+//********** PlayerStrategies methods *************//
+
+void Player::setPlayerStrategy(PlayerStrategies* newPS)
+{
+	this->ps = newPS;
 }

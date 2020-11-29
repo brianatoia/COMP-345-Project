@@ -6,6 +6,8 @@
 #include "../MapLoader/MapLoader.h"
 #include "../Orders/Orders.h"
 #include "../GameObservers/GameObservers.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
+
 
 
 #include <iostream>

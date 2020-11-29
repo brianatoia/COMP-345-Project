@@ -10,6 +10,7 @@
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -31,6 +32,7 @@ private:
     string name;
     bool* capturedTerritory;
     unsigned int armies;    //number of armies player has to place
+    PlayerStrategies* ps;   //pointer to different concrete player strategies
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -47,16 +49,17 @@ public:
     string to_string();
     friend ostream& operator <<(ostream&, Player&);
 
-
+    //********* Player Methods **********//
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
     void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
+
+    //********* Game Engine Player Methods **********//
     void clearPlayersNegotiated();
     bool* getCapturedTerritory();
     void resetCapturedTerritory();
-    //list<shared_ptr<Territory>>* getPlayerTerritories(int);
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
     void addArmies(unsigned int armies);
@@ -77,16 +80,8 @@ public:
     //********** Order methods *************//
     OrderList* getOrderList();
     void issueOrder(string orderType, shared_ptr<Map> map = NULL);
+
+    //********** PlayerStrategy methods *************//
+    void setPlayerStrategy(PlayerStrategies* newPS = NULL);
 };
 
-//*************      INSTRUCTIONS    ****************
-
-// Player owns a collection of territories
-
-// Players own a HandCards of Warzone cards
-
-// Player contains methods toDefend() and toAttack() that return a list of territories that are to be defended and to be attaked, respectively
-
-// Players contains an issueOrder() method that creates an order object and adds it to the list of orders
-
-// Driver creates players and demonstrates that the above features are available
