@@ -26,8 +26,8 @@ public:
 	string getOrderEffect();
 	void setOrderType(OrderType*);
 	void setOrderDescription(string);
-	virtual bool validate();
-	virtual void execute();
+	virtual bool validate() = 0;
+	virtual void execute() = 0;
 	string to_string();
 	Order(const Order&);
 	Order& operator=(const Order&);
