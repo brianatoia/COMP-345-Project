@@ -661,9 +661,9 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 }
 
 
-//********** PlayerStrategies methods *************//
+//********** PlayerStrategy methods *************//
 
-void Player::setPlayerStrategy(PlayerStrategies* newPS)
+void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
 	this->ps = newPS;
 }

@@ -32,7 +32,7 @@ private:
     string name;
     bool* capturedTerritory;
     unsigned int armies;    //number of armies player has to place
-    PlayerStrategies* ps;   //pointer to different concrete player strategies
+    PlayerStrategy* ps;   //pointer to different concrete player strategies
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -82,6 +82,6 @@ public:
     void issueOrder(string orderType, shared_ptr<Map> map = NULL);
 
     //********** PlayerStrategy methods *************//
-    void setPlayerStrategy(PlayerStrategies* newPS = NULL);
+    void setPlayerStrategy(PlayerStrategy* newPS);
 };
 

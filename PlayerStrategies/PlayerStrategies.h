@@ -1,16 +1,21 @@
 #pragma once
 
-#include "../Player/Player.h"
+#include "../Map/Map.h"
 
-class PlayerStrategies
+#include <list>
+#include <memory>
+
+using namespace std;
+
+class PlayerStrategy
 {
 public:
 	virtual void issueOrder(string orderType, shared_ptr<Map> map) = 0;
 	virtual list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap) = 0;
-	virtual  list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap) = 0;
+	virtual list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap) = 0;
 };
 
-class HumanPlayerStrategy : public PlayerStrategies
+class HumanPlayerStrategy : public PlayerStrategy
 {
 public:
 	void issueOrder(string orderType, shared_ptr<Map> map);
@@ -18,7 +23,7 @@ public:
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
 };
 
-class AggressivePlayerStrategy : public PlayerStrategies
+class AggressivePlayerStrategy : public PlayerStrategy
 {
 public:
 	void issueOrder(string orderType, shared_ptr<Map> map);
@@ -26,7 +31,7 @@ public:
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
 };
 
-class BenevolentPlayerStrategy : public PlayerStrategies
+class BenevolentPlayerStrategy : public PlayerStrategy
 {
 public:
 	void issueOrder(string orderType, shared_ptr<Map> map);
@@ -34,7 +39,7 @@ public:
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
 };
 
-class NeutralPlayerStrategy : public PlayerStrategies
+class NeutralPlayerStrategy : public PlayerStrategy
 {
 public:
 	void issueOrder(string orderType, shared_ptr<Map> map);

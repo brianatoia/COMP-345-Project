@@ -8,15 +8,12 @@
 #include "../GameObservers/GameObservers.h"
 #include "../PlayerStrategies/PlayerStrategies.h"
 
-
-
 #include <iostream>
 #include <algorithm>
 #include <fstream>
 #include <iterator>
 #include <vector>
 #include <windows.h>
-
 
 using namespace std;
 
