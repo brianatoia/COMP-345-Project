@@ -56,7 +56,6 @@ public:
     void clearPlayersNegotiated();
     bool* getCapturedTerritory();
     void resetCapturedTerritory();
-    //list<shared_ptr<Territory>>* getPlayerTerritories(int);
     void setArmies(unsigned int armies);
     unsigned int getArmies() const;
     void addArmies(unsigned int armies);
