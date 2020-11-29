@@ -80,7 +80,7 @@ void GameEngine::gameStart()
 			//If numerical value was entered, verify it was between 1 - 3 and set strategy accordingly
 			if (strategy == 1)
 			{
-				players[i]->setPlayerStrategy(new HumanPlayerStrategy(players[i]->getPlayerID(), players[i]->getHand(), players[i]->getOrderList());
+				players[i]->setPlayerStrategy(new HumanPlayerStrategy(players[i]->getPlayerID(), players[i]->getHand(), players[i]->getOrderList()));
 				break;
 			}
 			else if (strategy == 2)

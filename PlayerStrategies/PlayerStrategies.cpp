@@ -20,7 +20,7 @@ PlayerStrategy::~PlayerStrategy()
 	delete this->strategyType;
 }
 
-PlayerStrategy::getStrategyType()
+StrategyType PlayerStrategy::getStrategyType()
 {
 	return *this->strategyType;
 }
