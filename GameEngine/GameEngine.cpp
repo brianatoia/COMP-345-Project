@@ -98,6 +98,9 @@ void GameEngine::gameStart()
 		}
 	}
 
+	for (auto player : players)
+		cout << "Testing Strategies: " << player->getStrategyType() << endl;
+
 	//initialize a card deck with amount of players
 	deck->initializeDeck(numOfPlayers);
 

@@ -87,6 +87,7 @@ Player::Player(const Player& aPlayer)
 		this->territoryList.push_back(*i);
 	}
 
+	//this->playerStrategy = new PlayerStrategy(*(aPlayer.playerStrategy));
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
@@ -99,7 +100,6 @@ Player& Player::operator=(const Player& aPlayer)
 	this->name = aPlayer.name;
 	this->armies = aPlayer.armies;
 
-
 	for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
 	{
 		i->reset();
@@ -111,6 +111,9 @@ Player& Player::operator=(const Player& aPlayer)
 		this->territoryList.push_back(*i);
 	}
 
+	delete playerStrategy;
+	//this->playerStrategy = new PlayerStrategy(aPlayer->getPlayerStrategy());
+	
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
@@ -120,7 +123,7 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
+	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and player strategy " + this->getStrategyType() + ":";
 	str += "\nList of Territories--------\n";
 	str += printList(*getTerritoryList());
 	str += "\nArmies to deploy--------\n";
@@ -629,6 +632,7 @@ string Player::issueOrder(shared_ptr<Map> map)
 
 //********** PlayerStrategy methods *************//
 
+//Setting player startegy and deleting pointer for previous stategy
 void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
 	if(this->playerStrategy != newPS && this->playerStrategy != nullptr)
@@ -636,4 +640,29 @@ void Player::setPlayerStrategy(PlayerStrategy* newPS)
 		delete this->playerStrategy;
 	}
 	this->playerStrategy = newPS;
+}
+
+//Returns the concrete strategy type of the player as a string
+string Player::getStrategyType()
+{
+	string concreteStrategyType = "";
+	switch (this->playerStrategy->getStrategyType())
+	{
+	case HUMAN:
+		concreteStrategyType = "HumanPlayerStrategy";
+		break;
+	case AGGRESSIVE:
+		concreteStrategyType = "AggressivePlayerStrategy";
+		break;
+	case BENEVOLENT:
+		concreteStrategyType = "BenevolentPlayerStrategy";
+		break;
+	case NEUTRAL:
+		concreteStrategyType = "NeutralPlayerStrategy";
+		break;
+	default:
+		concreteStrategyType = "No valid strategy";
+		break;
+	}
+	return concreteStrategyType;//after add this to to_string()
 }

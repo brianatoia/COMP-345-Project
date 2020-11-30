@@ -84,5 +84,6 @@ public:
 
     //********** PlayerStrategy methods *************//
     void setPlayerStrategy(PlayerStrategy* newPS);
-};
+    string getStrategyType();
+};  
 
