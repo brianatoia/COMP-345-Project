@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string>
 #include <list>
-#include <tuple>
+#include <utility>
 
 using namespace std;
 
@@ -342,58 +342,18 @@ void Player::createOrder(string orderType, shared_ptr<Map> map)
 {
 	if (orderType == "Deploy")
 	{
-		shared_ptr<Territory> territory;
-		string territoryName;
-		bool territoryAllowed = false;
+		cout << name << " deploy your armies!" << endl;
 
-		cout << name << "deploy your armies!" << endl;
+		auto deployInfo = this->playerStrategy->deploy(this->getArmies(), map, this->territoryList);
 
-		do {
-			cout << "You have " << armies << " deployable armies" << endl;
-			cout << "\nCurrent territories you can deploy to: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				cout << t->name << " (" << t->availableUnits << ")" << endl;
-			}
-			cout << "--------------------------------------------" << endl;
-			cout << "\nWhich territory would you like to deploy to?" << endl;
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> territoryName;
-			territory = map->findTerritory(territoryName);
-
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				if (t == territory)
-				{
-					territoryAllowed = true;
-				}
-			}
-
-		} while (!territoryAllowed);
-
-		cout << "\nHow many armies would you like to deploy? (Max " << armies << ")" << endl;
-		cout << "--------------------------------------------" << endl;
-		int numberOfArmiesToDeploy;
-		while (true)
-		{
-			cin >> numberOfArmiesToDeploy;
-			if (numberOfArmiesToDeploy < 0 || numberOfArmiesToDeploy > armies || cin.fail())
-			{
-				cout << "\nInvalid input, please try again" << endl;
-				cin.clear();
-				cin.ignore(10000, '\n');
-			}
-			else break;
-		}
+		shared_ptr<Territory> territory = deployInfo.first;
+		int numberOfArmiesToDeploy = deployInfo.second;
 
 		territory->availableUnits += numberOfArmiesToDeploy;
 		armies -= numberOfArmiesToDeploy;
 
 		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, territoryList));
 		this->orderList->addOrder(order);
-
 	}
 	else if (orderType == "Advance")
 	{
