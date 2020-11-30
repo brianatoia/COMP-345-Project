@@ -23,7 +23,7 @@ public:
 
 	//******     Constructor & Destructor    *****//
 	GameEngine();
-	GameEngine(const GameEngine&);//All functions for Gamestart here with parameters
+	GameEngine(const GameEngine&); //All functions for Gamestart here with parameters
 	~GameEngine();
 	GameEngine& operator=(const GameEngine&);
 	friend ostream& operator<<(ostream& strm, GameEngine& gameEngine);

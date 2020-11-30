@@ -16,8 +16,8 @@
 #include <iostream>
 #include <string>
 #include <tuple>
-
-
+#include <list>
+#include <utility>
 
 using namespace std;
 
@@ -80,7 +80,7 @@ public:
     //********** Order methods *************//
     OrderList* getOrderList();
     void createOrder(string orderType, shared_ptr<Map> map);
-    string issueOrder(shared_ptr<Map> map);
+    void issueOrder(shared_ptr<Map> map, Deck* deck);
 
     //********** PlayerStrategy methods *************//
     void setPlayerStrategy(PlayerStrategy* newPS);

@@ -28,7 +28,7 @@ class PlayerStrategy
 public:
 	PlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList, StrategyType* strategyType = nullptr);
 	~PlayerStrategy();
-	virtual string issueOrder(shared_ptr<Map> map) = 0;
+	virtual string issueOrder(shared_ptr<Map> map, Deck* deck) = 0;
 	virtual pair<shared_ptr<Territory>, int> deploy(int armies, shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList) = 0;
 	virtual list<shared_ptr<Territory>> toDefend(shared_ptr<Map> aMap, list<shared_ptr<Territory>> territoryList);
 	virtual list<shared_ptr<Territory>> toAttack(shared_ptr<Map> aMap, list<shared_ptr<Territory>> territoryList);
@@ -39,7 +39,7 @@ class HumanPlayerStrategy : public PlayerStrategy
 {
 public:
 	HumanPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList);
-	string issueOrder(shared_ptr<Map> map);
+	string issueOrder(shared_ptr<Map> map, Deck* deck);
 	pair<shared_ptr<Territory>, int> deploy(int armies, shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);
 };
 
@@ -47,7 +47,7 @@ class AggressivePlayerStrategy : public PlayerStrategy
 {
 public:
 	AggressivePlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList);
-	string issueOrder(shared_ptr<Map> map);
+	string issueOrder(shared_ptr<Map> map, Deck* deck);
 	pair<shared_ptr<Territory>, int> deploy(int armies, shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);
 };
 
@@ -55,7 +55,7 @@ class BenevolentPlayerStrategy : public PlayerStrategy
 {
 public:
 	BenevolentPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList);
-	string issueOrder(shared_ptr<Map> map);
+	string issueOrder(shared_ptr<Map> map, Deck* deck);
 	pair<shared_ptr<Territory>, int> deploy(int armies, shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);
 };
 
@@ -63,7 +63,7 @@ class NeutralPlayerStrategy : public PlayerStrategy
 {
 public:
 	NeutralPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList);
-	string issueOrder(shared_ptr<Map> map);
+	string issueOrder(shared_ptr<Map> map, Deck* deck);
 	pair<shared_ptr<Territory>, int> deploy(int armies, shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);
 	list<shared_ptr<Territory>> toDefend(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList);

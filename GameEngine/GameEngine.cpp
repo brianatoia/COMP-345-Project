@@ -464,95 +464,14 @@ void GameEngine::issueOrdersPhase()
 	//Issuing all the rest of the orders
 	for (auto player : players)
 	{
-		player->updateAvailableUnits();	//reset the temp display units (shows addition of subtraction of armies from deploy and advance before execution)
-
-		//Deploying phase, force player to deploy first
-		deployLoop(player);
-
-		cout << "\n==================================================" << endl;
-		cout << player->getName() << " place your orders!" << endl;
-		cout << "==================================================" << endl;
-		
-		if (this->phaseObserver)
+		if (this->getObserverStatus(1))
 		{
-			string message = "wait";
-			string time = std::to_string(1000);
-			this->notify(message + " " + time);
+			string message = "order ";
+			string id = std::to_string(player->getPlayerID());
+			this->notify(message + id);
 		}
 
-
-		//Player issues orders here
-		while (true)
-		{
-			if (this->phaseObserver)
-			{
-				string message = "order ";
-				string id = std::to_string(player->getPlayerID());
-				this->notify(message+id);
-			}
-
-			string decision = player->issueOrder(map);
-
-			if (_stricmp(decision.c_str(), "Advance") == 0)
-			{
-				if (player->canAdvance()) player->createOrder("Advance", map);
-				else cout << "You no longer have any armies to advance!" << endl;
-			}																				// === format followed for all order types === //
-			else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
-			{
-				if (player->getHand()->findCardType("Airlift"))								//check if player has atleast 1 airlift card
-				{
-					player->createOrder("Airlift", map);										//issue the order (puts it in order list)
-					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);	//play the card
-				}
-				else cout << "Not enough cards!" << endl;									//if not enough cards tell player
-			}
-			else if (_stricmp(decision.c_str(), "Blockade") == 0)
-			{
-				if (player->getHand()->findCardType("Blockade"))
-				{
-					player->createOrder("Blockade", map);
-					player->getHand()->play(player->getHand()->getCard("Blockade"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Reinforcement") == 0)
-			{
-				if (player->getHand()->findCardType("Reinforcement"))
-				{
-					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);
-					player->addArmies(20);	//Reinforcement is not an order so do it directly and treat it as a deploy
-					deployLoop(player);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Negotiate") == 0)
-			{
-				if (player->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment
-				{
-					player->createOrder("Negotiate", map);
-					player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Bomb") == 0)
-			{
-				if (player->getHand()->findCardType("Bomb"))
-				{
-					player->createOrder("Bomb", map);
-					player->getHand()->play(player->getHand()->getCard("Bomb"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Finish") == 0)
-			{
-				break;
-			}
-			else
-			{
-				cout << "Invalid input" << endl;
-			}
-		}
+		player->issueOrder(this->getMap(), this->getDeck());
 	}
 }
 

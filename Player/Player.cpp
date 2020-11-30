@@ -8,14 +8,8 @@
 //
 
 #include "Player.h"
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include <list>
-#include <utility>
 
 using namespace std;
-
 
 int Player::playerCount = 0;
 
@@ -338,296 +332,100 @@ OrderList* Player::getOrderList()
 }
 
 //Method issueOrder - creates a new order objects according to orderType and adds it to the players OrderList
-void Player::createOrder(string orderType, shared_ptr<Map> map)
+
+
+void Player::issueOrder(shared_ptr<Map> map, Deck* deck)
 {
-	if (orderType == "Deploy")
+	this->updateAvailableUnits();	//reset the temp display units (shows addition of subtraction of armies from deploy and advance before execution)
+
+	//Deploying phase, force player to deploy first
+	do
 	{
-		cout << name << " deploy your armies!" << endl;
+		this->createOrder("Deploy", map);
+	} while (this->getArmies() > 0);
 
-		auto deployInfo = this->playerStrategy->deploy(this->getArmies(), map, this->territoryList);
+	cout << "\n==================================================" << endl;
+	cout << this->getName() << " place your orders!" << endl;
+	cout << "==================================================" << endl;
 
-		shared_ptr<Territory> territory = deployInfo.first;
-		int numberOfArmiesToDeploy = deployInfo.second;
+	// if (gameEngine->getObserverStatus(1))
+	// {
+	//	string message = "wait";
+	//	string time = std::to_string(1000);
+	//	gameEngine->notify(message + " " + time);
+	//}
 
-		territory->availableUnits += numberOfArmiesToDeploy;
-		armies -= numberOfArmiesToDeploy;
+	this->playerStrategy->issueOrder(map, deck);
 
-		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, territoryList));
-		this->orderList->addOrder(order);
-	}
-	else if (orderType == "Advance")
+	//Player issues orders here
+	while (true)
 	{
-		string sourceTerritoryName;
-		string targetTerritoryName;
-		shared_ptr<Territory> sourceTerritory = nullptr;
-		shared_ptr<Territory> targetTerritory = nullptr;
-		list<shared_ptr<Territory>> playerTerritoryOptions;
-		int numOfArmies = 0;
-		bool territoryAllowed = false;
+		string decision = "";
+		cin >> decision;
 
-		do {
-			cout << "Current territories you can advance from: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				if (t->availableUnits > 0)
-				{
-					playerTerritoryOptions.push_back(t);
-					cout << t->name << " (" << t->availableUnits << ")" << endl;
-				}
-			}
-			cout << "--------------------------------------------" << endl;
-			cout << "\nEnter territory you would like to advance from: " << endl;
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> sourceTerritoryName;
-			sourceTerritory = map->findTerritory(sourceTerritoryName);
-
-			for (shared_ptr<Territory> t : playerTerritoryOptions)
-			{
-				if (t == sourceTerritory)
-				{
-					territoryAllowed = true;
-				}
-			}
-
-		} while (!territoryAllowed);
-
-		territoryAllowed = false;
-		do {
-			cout << "Current territories you can move to: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (int border : sourceTerritory->borders)
-			{
-				shared_ptr<Territory> territory = map->getTerritory(border);
-				if (territory->ownerID == sourceTerritory->ownerID)
-				{
-					cout << territory->name << " (" << territory->availableUnits << ")" << endl;
-				}
-			}
-			cout << "--------------------------------------------" << endl;
-
-			cout << "Current territories you can attack: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (int border : sourceTerritory->borders)
-			{
-				shared_ptr<Territory> territory = map->getTerritory(border);
-				if (territory->ownerID != sourceTerritory->ownerID)
-				{
-					cout << territory->name << " (" << territory->units << ")" << endl;
-				}
-			}
-			cout << "--------------------------------------------" << endl;
-			cout << "\nEnter territory you would like to advance to: " << endl;
-			cin >> targetTerritoryName;
-			targetTerritory = map->findTerritory(targetTerritoryName);
-
-			for (int border : sourceTerritory->borders)
-			{
-				shared_ptr<Territory> territory = map->getTerritory(border);
-				if (territory == targetTerritory)
-				{
-					territoryAllowed = true;
-				}
-			}
-		} while (!territoryAllowed);
-
-		cout << "Enter number of armies to advance. Should be > 0 and <= " << sourceTerritory->availableUnits << endl;
-		while (true)
+		if (_stricmp(decision.c_str(), "Advance") == 0)
 		{
-			cin >> numOfArmies;
-			if (numOfArmies < 0 || sourceTerritory->availableUnits < numOfArmies || cin.fail())
+			if (this->canAdvance()) this->createOrder("Advance", map);
+			else cout << "You no longer have any armies to advance!" << endl;
+		}																				// === format followed for all order types === //
+		else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
+		{
+			if (this->getHand()->findCardType("Airlift"))								//check if player has atleast 1 airlift card
 			{
-				cout << "\nInvalid input, please try again" << endl;
-				cin.clear();
-				cin.ignore(10000, '\n');
+				this->createOrder("Airlift", map);										//issue the order (puts it in order list)
+				this->getHand()->play(this->getHand()->getCard("Airlift"), deck);	//play the card
 			}
-			else break;
+			else cout << "Not enough cards!" << endl;									//if not enough cards tell player
 		}
-
-		sourceTerritory->availableUnits -= numOfArmies;
-
-
-
-		shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, &territoryList, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, &playersNegotiated));
-		this->orderList->addOrder(order);
-	}
-	else if (orderType == "Bomb")
-	{
-		shared_ptr<Territory> territory = nullptr;
-		string territoryName;
-		bool territoryAllowed = false;
-
-		do {
-			cout << "\nWhich territory would you like to bomb?" << endl;
-			cout << "--------------------------------------------" << endl;
-			for (shared_ptr<Territory> t : toAttack(map))
-			{
-				cout << t->name << endl;
-			}
-			cout << "--------------------------------------------" << endl;
-			cin >> territoryName;
-
-			territory = map->findTerritory(territoryName);
-
-			for (shared_ptr<Territory> t : toAttack(map))
-			{
-				if (t == territory)
-				{
-					territoryAllowed = true;
-				}
-			}
-		} while (!territoryAllowed);
-
-		shared_ptr<Order> order(new Bomb(playerID, territory, &territoryList, &playersNegotiated));
-		this->orderList->addOrder(order);
-	}
-	else if (orderType == "Blockade")
-	{
-		shared_ptr<Territory> territory;
-		string territoryName;
-		bool territoryAllowed = false;
-
-		do {
-			cout << "\nCurrent territories you can blockade: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				cout << t->name << " (" << t->availableUnits << ")" << endl;
-			}
-			cout << "--------------------------------------------" << endl;
-			cout << "\nWhich territory would you like to blockade?" << endl;
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> territoryName;
-			territory = map->findTerritory(territoryName);
-
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				if (t == territory)
-				{
-					territoryAllowed = true;
-				}
-			}
-
-		} while (!territoryAllowed);
-
-
-		shared_ptr<Order> order(new Blockade(territory, &territoryList));
-		this->orderList->addOrder(order);
-	}
-	else if (orderType == "Airlift")
-	{
-		string sourceTerritoryName;
-		string targetTerritoryName;
-		shared_ptr<Territory> sourceTerritory = nullptr;
-		shared_ptr<Territory> targetTerritory = nullptr;
-		list<shared_ptr<Territory>> playerTerritoryOptions;
-		int numOfArmies = 0;
-		bool territoryAllowed = false;
-		int numOfTargets = 0;
-
-		do {
-			cout << "Current territories you can airlift from: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (shared_ptr<Territory> t : territoryList)
-			{
-				if (t->availableUnits > 0)
-				{
-					playerTerritoryOptions.push_back(t);
-					cout << t->name << " (" << t->availableUnits << ")" << endl;
-				}
-			}
-			cout << "--------------------------------------------" << endl;
-			cout << "\nEnter territory you would like to airlift from: " << endl;
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> sourceTerritoryName;
-			sourceTerritory = map->findTerritory(sourceTerritoryName);
-
-			for (shared_ptr<Territory> t : playerTerritoryOptions)
-			{
-				if (t == sourceTerritory)
-				{
-					territoryAllowed = true;
-				}
-			}
-
-		} while (!territoryAllowed);
-
-		territoryAllowed = false;
-		do {
-			cout << "Current territories you can move to: " << endl;
-			cout << "--------------------------------------------" << endl;
-			for (int border : sourceTerritory->borders)
-			{
-				shared_ptr<Territory> territory = map->getTerritory(border);
-				if (territory->ownerID == sourceTerritory->ownerID)
-				{
-					cout << territory->name << " (" << territory->availableUnits << ")" << endl;
-					numOfTargets++;
-				}
-			}
-			if (numOfTargets == 0)
-			{
-				cout << "No available territories to move to. Cancelling Airlift." << endl;
-				return;
-			}
-			cout << "--------------------------------------------" << endl;
-
-			cout << "\nEnter territory you would like to airlift to: " << endl;
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> targetTerritoryName;
-			targetTerritory = map->findTerritory(targetTerritoryName);
-
-			for (int border : sourceTerritory->borders)
-			{
-				shared_ptr<Territory> territory = map->getTerritory(border);
-				if (territory == targetTerritory)
-				{
-					territoryAllowed = true;
-				}
-			}
-		} while (!territoryAllowed);
-
-		do
+		else if (_stricmp(decision.c_str(), "Blockade") == 0)
 		{
-			cout << "Enter number of armies to airlift. Should be <= " + std::to_string(sourceTerritory->units) + " and >= 0: ";
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> numOfArmies;
-		} while (numOfArmies >= sourceTerritory->units && numOfArmies < 0);
-
-		targetTerritory->availableUnits += numOfArmies;
-
-		shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, &territoryList, playerTerritories[targetTerritory->ownerID - 1], capturedTerritory, &playersNegotiated));
-		this->orderList->addOrder(order);
-	}
-	else if (orderType == "Negotiate")
-	{
-		int targetPlayerID;
-		do
+			if (this->getHand()->findCardType("Blockade"))
+			{
+				this->createOrder("Blockade", map);
+				this->getHand()->play(this->getHand()->getCard("Blockade"), deck);
+			}
+			else cout << "Not enough cards!" << endl;
+		}
+		else if (_stricmp(decision.c_str(), "Reinforcement") == 0)
 		{
-			cout << "Enter the ID of the player you would like to negotiate with: ";
-			cin.clear();
-			cin.ignore(123, '\n');
-			cin >> targetPlayerID;
-		} while (targetPlayerID > playerCount || targetPlayerID < 0);
-
-
-		shared_ptr<Order> order(new Negotiate(playerID, targetPlayerID, &playersNegotiated));
-		this->orderList->addOrder(order);
+			if (this->getHand()->findCardType("Reinforcement"))
+			{
+				this->getHand()->play(this->getHand()->getCard("Airlift"), deck);
+				this->addArmies(20);	//Reinforcement is not an order so do it directly and treat it as a deploy
+				do
+				{
+					this->createOrder("Deploy", map);
+				} while (this->getArmies() > 0);
+			}
+			else cout << "Not enough cards!" << endl;
+		}
+		else if (_stricmp(decision.c_str(), "Negotiate") == 0)
+		{
+			if (this->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment
+			{
+				this->createOrder("Negotiate", map);
+				this->getHand()->play(this->getHand()->getCard("Diplomacy"), deck);
+			}
+			else cout << "Not enough cards!" << endl;
+		}
+		else if (_stricmp(decision.c_str(), "Bomb") == 0)
+		{
+			if (this->getHand()->findCardType("Bomb"))
+			{
+				this->createOrder("Bomb", map);
+				this->getHand()->play(this->getHand()->getCard("Bomb"), deck);
+			}
+			else cout << "Not enough cards!" << endl;
+		}
+		else if (_stricmp(decision.c_str(), "Finish") == 0)
+		{
+			break;
+		}
+		else
+		{
+			cout << "Invalid input" << endl;
+		}
 	}
-	else
-	{
-		cerr << "Invalid Order Type" << endl;
-	}
-}
-
-string Player::issueOrder(shared_ptr<Map> map)
-{
-	return this->playerStrategy->issueOrder(map);
 }
 
 //********** PlayerStrategy methods *************//
