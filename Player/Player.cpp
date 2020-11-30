@@ -53,9 +53,6 @@ Player::~Player()
 	delete capturedTerritory;    //Delete pointer to orderList structure
 	capturedTerritory = nullptr;	//Resolve dangling pointer
 
-	delete playerStrategy;
-	playerStrategy = nullptr;
-
 	cout << "Player " << this->getName() << " with id " << this->getPlayerID() << " was deleted.\n";
 }
 
@@ -87,6 +84,7 @@ Player::Player(const Player& aPlayer)
 		this->territoryList.push_back(*i);
 	}
 
+	//this->playerStrategy = new PlayerStrategy(*(aPlayer.playerStrategy));
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
@@ -99,7 +97,6 @@ Player& Player::operator=(const Player& aPlayer)
 	this->name = aPlayer.name;
 	this->armies = aPlayer.armies;
 
-
 	for (auto i = this->territoryList.begin(); i != this->territoryList.end(); advance(i, 1))
 	{
 		i->reset();
@@ -111,6 +108,9 @@ Player& Player::operator=(const Player& aPlayer)
 		this->territoryList.push_back(*i);
 	}
 
+	delete playerStrategy;
+	//this->playerStrategy = new PlayerStrategy(aPlayer->getPlayerStrategy());
+	
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
@@ -665,6 +665,7 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 //********** PlayerStrategy methods *************//
 
+//
 void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
 	if(this->playerStrategy != newPS && this->playerStrategy != nullptr)
@@ -673,3 +674,29 @@ void Player::setPlayerStrategy(PlayerStrategy* newPS)
 	}
 	this->playerStrategy = newPS;
 }
+
+////Returns the concrete strategy type of the player as a string
+//string Player::getStrategyType()
+//{
+//	enum strategyType = this->playerStrategy->getStrategyType();
+//	string concreteStrategyType;
+//	switch (strategyType)
+//	{
+//	case HUMAN:
+//		concreteStrategyType = "HumanPlayerStrategy";
+//		break;
+//	case AGGRESSIVE:
+//		concreteStrategyType = "HumanPlayerStrategy";
+//		break;
+//	case BENEVOLENT:
+//		concreteStrategyType = "HumanPlayerStrategy";
+//		break;
+//	case NEUTRAL:
+//		concreteStrategyType = "HumanPlayerStrategy";
+//		break;
+//	default:
+//		concreteStrategyType = "No valid strategy";
+//		break;
+//	}
+//	return concreteStrategyType;//after add this to to_string()
+//}
