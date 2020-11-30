@@ -40,7 +40,12 @@ Deck::Deck()
 
 Deck::~Deck()
 {
+	for (auto i : deck) {
+		delete i;
+		i = nullptr;
+	}
 	deck.clear();
+
 }
 
 void Deck::initializeDeck(int numPlayers)
@@ -124,12 +129,14 @@ Hand::~Hand()
 		delete i;
 		i = nullptr;
 	}
+	hand.clear();
 
 	for (auto p : playCards)
 	{
 		delete p;
 		p = nullptr;
 	}
+	playCards.clear();
 }
 
 void Hand::addCard(Card* aCard)
