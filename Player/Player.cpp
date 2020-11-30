@@ -123,7 +123,7 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
+	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and player strategy " + this->getStrategyType() + ":";
 	str += "\nList of Territories--------\n";
 	str += printList(*getTerritoryList());
 	str += "\nArmies to deploy--------\n";
@@ -672,7 +672,7 @@ string Player::issueOrder(shared_ptr<Map> map)
 
 //********** PlayerStrategy methods *************//
 
-//
+//Setting player startegy and deleting pointer for previous stategy
 void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
 	if(this->playerStrategy != newPS && this->playerStrategy != nullptr)
@@ -682,28 +682,27 @@ void Player::setPlayerStrategy(PlayerStrategy* newPS)
 	this->playerStrategy = newPS;
 }
 
-////Returns the concrete strategy type of the player as a string
-//string Player::getStrategyType()
-//{
-//	enum strategyType = this->playerStrategy->getStrategyType();
-//	string concreteStrategyType;
-//	switch (strategyType)
-//	{
-//	case HUMAN:
-//		concreteStrategyType = "HumanPlayerStrategy";
-//		break;
-//	case AGGRESSIVE:
-//		concreteStrategyType = "HumanPlayerStrategy";
-//		break;
-//	case BENEVOLENT:
-//		concreteStrategyType = "HumanPlayerStrategy";
-//		break;
-//	case NEUTRAL:
-//		concreteStrategyType = "HumanPlayerStrategy";
-//		break;
-//	default:
-//		concreteStrategyType = "No valid strategy";
-//		break;
-//	}
-//	return concreteStrategyType;//after add this to to_string()
-//}
+//Returns the concrete strategy type of the player as a string
+string Player::getStrategyType()
+{
+	string concreteStrategyType = "";
+	switch (this->playerStrategy->getStrategyType())
+	{
+	case HUMAN:
+		concreteStrategyType = "HumanPlayerStrategy";
+		break;
+	case AGGRESSIVE:
+		concreteStrategyType = "AggressivePlayerStrategy";
+		break;
+	case BENEVOLENT:
+		concreteStrategyType = "BenevolentPlayerStrategy";
+		break;
+	case NEUTRAL:
+		concreteStrategyType = "NeutralPlayerStrategy";
+		break;
+	default:
+		concreteStrategyType = "No valid strategy";
+		break;
+	}
+	return concreteStrategyType;//after add this to to_string()
+}
