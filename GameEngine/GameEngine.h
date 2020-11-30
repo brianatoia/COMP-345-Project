@@ -56,6 +56,7 @@ public:
 	vector<shared_ptr <Player>> getPlayers();
 	string getPlayersInfo();
 	string getPlayersNames();
+	shared_ptr<Player>getNeutralPlayer();
 	
 
 	//******     PART II    *****//
@@ -80,6 +81,7 @@ private:
 	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+	shared_ptr<Player> neutralPlayer;
 
 	bool phaseObserver;
 	bool mapObserver;

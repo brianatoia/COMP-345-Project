@@ -62,6 +62,11 @@ void GameEngine::gameStart()
 		addPlayers(player);
 	}
 
+	//Create neutral Player with playerID0 and NeutralPlayerStrategy
+	neutralPlayer = shared_ptr<Player>(new Player("neutralPlayer"));
+	neutralPlayer->setPlayerID(0);
+	neutralPlayer->setPlayerStrategy(new NeutralPlayerStrategy(neutralPlayer->getPlayerID(), neutralPlayer->getHand(), neutralPlayer->getOrderList()));
+
 	//Ask for player strategies
 	cout << "Please select a player stategy for each player by selecting either 1, 2 or 3: [1] Human, [2] Aggressive, [3] Benevolent." << endl;
 	for (int i = 0; i < numOfPlayers; i++)
@@ -97,9 +102,6 @@ void GameEngine::gameStart()
 				cout << "The strategy number you have entered has been deemed invalid. ";
 		}
 	}
-
-	for (auto player : players)
-		cout << "Testing Strategies: " << player->getStrategyType() << endl;
 
 	//initialize a card deck with amount of players
 	deck->initializeDeck(numOfPlayers);
@@ -223,6 +225,11 @@ bool GameEngine::isMapInDirectory(string fileName)
 		return true;
 }
 
+shared_ptr<Map> GameEngine::getMap()
+{
+	return shared_ptr<Map>(map);
+}
+
 //******     Oberserver Methods    *****//
 
 void GameEngine::Observers()
@@ -230,7 +237,8 @@ void GameEngine::Observers()
 	string answer;
 	cout << "activate phase observer for this game? (Yes or No): ";
 	cin >> answer;
-	while (!equals(answer, "yes") && !equals(answer, "no")) {
+	while (!equals(answer, "yes") && !equals(answer, "no")) 
+	{
 		cout << "Your answer has been deemed invalid. Please enter again: ";
 		cin >> answer;
 	}
@@ -246,7 +254,8 @@ void GameEngine::Observers()
 	answer = "";
 	cout << "activate map observer for this game? (Yes or No): ";
 	cin >> answer;
-	while (!equals(answer, "yes") && !equals(answer, "no")) {
+	while (!equals(answer, "yes") && !equals(answer, "no")) 
+	{
 		cout << "Your answer has been deemed invalid. Please enter again: ";
 		cin >> answer;
 	}
@@ -343,10 +352,11 @@ string GameEngine::getPlayersNames()
 	return str;
 }
 
-shared_ptr<Map> GameEngine::getMap()
+shared_ptr<Player> GameEngine::getNeutralPlayer()
 {
-	return shared_ptr<Map>(map);
+	return neutralPlayer;
 }
+
 
 //*************		PART II		**************//
 
@@ -373,11 +383,10 @@ void GameEngine::startupPhase()
 	//Part II: 3
 	//Players are given a number of initial armies, 2 players = 40, 3 Player = 35, 4 players = 30, 5 players = 25
 	int armies = 50 - (5 * players.size());
-	for (auto player : players) {
+	for (auto player : players) 
+	{
 		player->setArmies(armies);
 	}
-
-
 }
 
 //*************		PART 3		**************//
