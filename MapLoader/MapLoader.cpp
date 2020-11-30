@@ -69,7 +69,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName, string pathToDirectory)
 		if (inContinents)
 		{
 			string continentName, bonus, temp;
-			cout << nextWord;
 			continentName = nextWord;
 			inputFileStream >> bonus;
 			inputFileStream >> temp;
