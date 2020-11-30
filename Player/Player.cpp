@@ -31,7 +31,7 @@ Player::Player()
 	this->hand = new Hand();    //Creates a pointer to a Hand object which contains cards
 	this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
 	this->capturedTerritory = new bool(false);
-	this->playerStrategy = new NeutralPlayerStrategy();
+	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
 	playerTerritories.push_back(&territoryList);
 }
 
@@ -43,6 +43,9 @@ Player::~Player()
 		i->reset();
 	}
 	territoryList.clear();
+
+	delete playerStrategy;
+	playerStrategy = nullptr;
 
 	delete hand;    //Delete pointer to hand stucture
 	hand = nullptr;     //Resolve dangling pointer
@@ -68,7 +71,7 @@ Player::Player(string playerName)
 	this->orderList = new OrderList();
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
-	this->playerStrategy = new NeutralPlayerStrategy();
+	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
 }
 
 //Copy constructor enables deep copy of pointer attributes
@@ -335,7 +338,7 @@ OrderList* Player::getOrderList()
 }
 
 //Method issueOrder - creates a new order objects according to orderType and adds it to the players OrderList
-void Player::issueOrder(string orderType, shared_ptr<Map> map)
+void Player::createOrder(string orderType, shared_ptr<Map> map)
 {
 	if (orderType == "Deploy")
 	{
@@ -662,6 +665,10 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 	}
 }
 
+string Player::issueOrder(shared_ptr<Map> map)
+{
+	return this->playerStrategy->issueOrder(map);
+}
 
 //********** PlayerStrategy methods *************//
 

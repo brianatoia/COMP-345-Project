@@ -80,17 +80,17 @@ void GameEngine::gameStart()
 			//If numerical value was entered, verify it was between 1 - 3 and set strategy accordingly
 			if (strategy == 1)
 			{
-				players[i]->setPlayerStrategy(new HumanPlayerStrategy);
+				players[i]->setPlayerStrategy(new HumanPlayerStrategy(players[i]->getPlayerID(), players[i]->getHand(), players[i]->getOrderList()));
 				break;
 			}
 			else if (strategy == 2)
 			{
-				players[i]->setPlayerStrategy(new AggressivePlayerStrategy());
+				players[i]->setPlayerStrategy(new AggressivePlayerStrategy(players[i]->getPlayerID(), players[i]->getHand(), players[i]->getOrderList()));
 				break;
 			}
 			else if (strategy == 3)
 			{
-				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy());
+				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy(players[i]->getPlayerID(), players[i]->getHand(), players[i]->getOrderList()));
 				break;
 			}
 			else
@@ -446,7 +446,7 @@ void GameEngine::deployLoop(shared_ptr<Player> player)
 {
 	do
 	{
-		player->issueOrder("Deploy", map);
+		player->createOrder("Deploy", map);
 	} while (player->getArmies() > 0);
 }
 
@@ -479,7 +479,6 @@ void GameEngine::issueOrdersPhase()
 
 
 		//Player issues orders here
-		string decision = "";
 		while (true)
 		{
 			if (this->phaseObserver)
@@ -489,19 +488,18 @@ void GameEngine::issueOrdersPhase()
 				this->notify(message+id);
 			}
 
-
-			cin >> decision;
+			string decision = player->issueOrder(map);
 
 			if (_stricmp(decision.c_str(), "Advance") == 0)
 			{
-				if (player->canAdvance()) player->issueOrder("Advance", map);
+				if (player->canAdvance()) player->createOrder("Advance", map);
 				else cout << "You no longer have any armies to advance!" << endl;
 			}																				// === format followed for all order types === //
 			else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
 			{
 				if (player->getHand()->findCardType("Airlift"))								//check if player has atleast 1 airlift card
 				{
-					player->issueOrder("Airlift", map);										//issue the order (puts it in order list)
+					player->createOrder("Airlift", map);										//issue the order (puts it in order list)
 					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);	//play the card
 				}
 				else cout << "Not enough cards!" << endl;									//if not enough cards tell player
@@ -510,7 +508,7 @@ void GameEngine::issueOrdersPhase()
 			{
 				if (player->getHand()->findCardType("Blockade"))
 				{
-					player->issueOrder("Blockade", map);
+					player->createOrder("Blockade", map);
 					player->getHand()->play(player->getHand()->getCard("Blockade"), deck);
 				}
 				else cout << "Not enough cards!" << endl;
@@ -529,7 +527,7 @@ void GameEngine::issueOrdersPhase()
 			{
 				if (player->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment
 				{
-					player->issueOrder("Negotiate");
+					player->createOrder("Negotiate", map);
 					player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
 				}
 				else cout << "Not enough cards!" << endl;
@@ -538,7 +536,7 @@ void GameEngine::issueOrdersPhase()
 			{
 				if (player->getHand()->findCardType("Bomb"))
 				{
-					player->issueOrder("Bomb", map);
+					player->createOrder("Bomb", map);
 					player->getHand()->play(player->getHand()->getCard("Bomb"), deck);
 				}
 				else cout << "Not enough cards!" << endl;

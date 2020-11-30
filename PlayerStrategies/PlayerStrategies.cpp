@@ -1,66 +1,122 @@
 #include "../PlayerStrategies/PlayerStrategies.h"
 
-void HumanPlayerStrategy::issueOrder(string orderType, shared_ptr<Map> map)
+PlayerStrategy::PlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList, StrategyType* strategyType)
 {
-
+	this->playerID = playerID;
+	this->hand = hand;
+	this->orderList = orderList;
+	if (strategyType == nullptr)
+	{
+		this->strategyType = new StrategyType(NONE);
+	}
+	else
+	{
+		this->strategyType = strategyType;
+	}
 }
 
-list<shared_ptr<Territory>> HumanPlayerStrategy::toDefend(shared_ptr<Map> map)
+PlayerStrategy::~PlayerStrategy()
 {
-	return list<shared_ptr<Territory>>();
+	delete this->strategyType;
 }
 
-list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(shared_ptr<Map> map)
+StrategyType PlayerStrategy::getStrategyType()
 {
-	return list<shared_ptr<Territory>>();
+	return *this->strategyType;
+}
+
+list<shared_ptr<Territory>> PlayerStrategy::toDefend(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList)
+{
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+
+
+	for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders;
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID == playerID) //if adjacent territory is owned by the player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
+}
+
+list<shared_ptr<Territory>> PlayerStrategy::toAttack(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList)
+{
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = territoryList.begin();
+
+
+	for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID != playerID) //if adjacent territory is not owned by player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
+}
+
+
+HumanPlayerStrategy::HumanPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList) : PlayerStrategy(playerID, hand, orderList, new StrategyType(HUMAN)) {}
+
+string HumanPlayerStrategy::issueOrder(shared_ptr<Map> map)
+{
+	string decision = "";
+	cin >> decision;
+	return decision;
 }
 
 //*********  AggressivePlayerStrategy  **********//
-void AggressivePlayerStrategy::issueOrder(string orderType, shared_ptr<Map> map)
-{
+AggressivePlayerStrategy::AggressivePlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList) : PlayerStrategy(playerID, hand, orderList, new StrategyType(AGGRESSIVE)) {}
 
-}
-
-list<shared_ptr<Territory>> AggressivePlayerStrategy::toDefend(shared_ptr<Map> map)
+string AggressivePlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
-}
-
-list<shared_ptr<Territory>> AggressivePlayerStrategy::toAttack(shared_ptr<Map> map)
-{
-	return list<shared_ptr<Territory>>();
+	return "Finish";
 }
 
 //********* BenevolentPlayerStrategy  **********//
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList) : PlayerStrategy(playerID, hand, orderList, new StrategyType(BENEVOLENT)) {}
 
-void BenevolentPlayerStrategy::issueOrder(string orderType, shared_ptr<Map> map)
+string BenevolentPlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-
-}
-
-list<shared_ptr<Territory>> BenevolentPlayerStrategy::toDefend(shared_ptr<Map> map)
-{
-	return list<shared_ptr<Territory>>();
-}
-
-list<shared_ptr<Territory>> BenevolentPlayerStrategy::toAttack(shared_ptr<Map> map)
-{
-	return list<shared_ptr<Territory>>();
+	return "Finish";
 }
 
 //********* NeutralPlayerStrategy  **********//
+NeutralPlayerStrategy::NeutralPlayerStrategy(unsigned int playerID, Hand* hand, OrderList* orderList) : PlayerStrategy(playerID, hand, orderList, new StrategyType(NEUTRAL)) {}
 
-void NeutralPlayerStrategy::issueOrder(string orderType, shared_ptr<Map> map)
+string NeutralPlayerStrategy::issueOrder(shared_ptr<Map> map)
 {
-
+	return "Finish";
 }
 
-list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(shared_ptr<Map> map)
+list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList)
 {
 	return list<shared_ptr<Territory>>();
 }
 
-list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(shared_ptr<Map> map)
+list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(shared_ptr<Map> map, list<shared_ptr<Territory>> territoryList)
 {
 	return list<shared_ptr<Territory>>();
 }
