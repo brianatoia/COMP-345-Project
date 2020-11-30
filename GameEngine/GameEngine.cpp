@@ -76,8 +76,25 @@ void GameEngine::gameStart()
 void GameEngine::loadMap()
 {
 	//declaring map loader
-	//shared_ptr<MapLoader> mapLoader(new MapLoader());
-	shared_ptr<ConquestFileReader> conquestFileReader(new ConquestFileReader);
+	string mapType;
+	
+	do {
+		cout << "Choose a type of Map. Domination or Conquest: " << endl;
+		cin >> mapType;
+		transform(mapType.begin(), mapType.end(), mapType.begin(), ::tolower);
+	} while (mapType.compare("domination") != 0 && mapType.compare("conquest") != 0);
+
+	shared_ptr<MapLoader> mapLoader(new MapLoader);
+	shared_ptr<ConquestFileReaderAdapter> conquestFileReaderAdapter(new ConquestFileReaderAdapter());
+
+	if (mapType.compare("domination") == 0) 
+	{
+		mapFilePath = "DominationMaps/";
+	}
+	else
+	{
+		mapFilePath = "ConquestMaps/";
+	}
 
 	//implement vector of maps, player can choose one
 	vector <shared_ptr<Map>> loadedMaps;
@@ -110,8 +127,16 @@ void GameEngine::loadMap()
 		}
 		else
 		{
-			//shared_ptr<Map> loadedMap = mapLoader->createMap(userInput, "MapDirectory/");
-			shared_ptr<Map> loadedMap = conquestFileReader->createMap(userInput, "MapDirectory/");
+			shared_ptr<Map> loadedMap;
+			if (mapType.compare("domination") == 0)
+			{
+				loadedMap = mapLoader->createMap(userInput, mapFilePath);
+			}
+			else
+			{
+				loadedMap = conquestFileReaderAdapter->createMap(userInput, mapFilePath);
+			}
+
 			if (loadedMap != nullptr)
 			{
 				loadedMaps.push_back(loadedMap);
@@ -160,10 +185,10 @@ void GameEngine::loadMap()
 	}
 
 	//Resetting MapLoader
-	//mapLoader.reset();
-	//mapLoader = nullptr;
-	conquestFileReader.reset();
-	conquestFileReader = nullptr;
+	mapLoader.reset();
+	mapLoader = nullptr;
+	conquestFileReaderAdapter.reset();
+	conquestFileReaderAdapter = nullptr;
 }
 
 string GameEngine::selectMap()
@@ -181,7 +206,7 @@ string GameEngine::selectMap()
 
 bool GameEngine::isMapInDirectory(string fileName)
 {
-	ifstream file("MapDirectory/" + fileName);
+	ifstream file(mapFilePath + fileName);
 	if (!file)
 		return false;
 	else
@@ -748,9 +773,9 @@ vector<string> GameEngine::findMapNames() {
 	WIN32_FIND_DATA fdFile;
 	HANDLE hFind = NULL;
 
-	char sPath[] = "MapDirectory\\*.map";
+	string sPath = mapFilePath.compare("DominationMaps/") == 0 ? "DominationMaps\\*.map" : "ConquestMaps\\*.map";
 
-	if ((hFind = FindFirstFile(sPath, &fdFile)) == INVALID_HANDLE_VALUE)
+	if ((hFind = FindFirstFile(sPath.c_str(), &fdFile)) == INVALID_HANDLE_VALUE)
 	{
 		printf("Error loading map files. Make sure there is a MapDirectory folder.");
 		exit(1);

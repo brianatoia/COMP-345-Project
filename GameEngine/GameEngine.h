@@ -81,6 +81,7 @@ private:
 	Deck* deck;
 	shared_ptr<Map> map;
 	vector<shared_ptr<Player>> players;
+	string mapFilePath;
 
 	bool phaseObserver;
 	bool mapObserver;

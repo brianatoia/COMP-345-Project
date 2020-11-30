@@ -30,3 +30,18 @@ public:
 
 	shared_ptr<Map> createMap(string fileName, string pathToDirectory = "");
 };
+
+class ConquestFileReaderAdapter : public MapLoader
+{
+private:
+	ConquestFileReader* conquestFileReader;
+
+public:
+	ConquestFileReaderAdapter();
+	ConquestFileReaderAdapter(const ConquestFileReaderAdapter&);
+	~ConquestFileReaderAdapter();
+	ConquestFileReaderAdapter& operator=(const ConquestFileReaderAdapter&);
+	friend ostream& operator<<(ostream& strm, ConquestFileReaderAdapter& conquestFileReaderAdapter);
+
+	shared_ptr<Map> createMap(string fileName, string pathToDirectory = "");
+};

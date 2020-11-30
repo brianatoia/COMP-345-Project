@@ -101,11 +101,6 @@ void Order::setOrderEffect(string orderEffect)
 }
 
 
-bool Order::validate() { return false; } //inherited & implemented in subclasses, false if invalid order type is created
-
-void Order::execute() {} //inherited & implemented in subclasses
-
-
 //OrderList Default Constructor
 OrderList::OrderList()
 {

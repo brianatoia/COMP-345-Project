@@ -69,7 +69,6 @@ shared_ptr<Map> MapLoader::createMap(string fileName, string pathToDirectory)
 		if (inContinents)
 		{
 			string continentName, bonus, temp;
-			cout << nextWord;
 			continentName = nextWord;
 			inputFileStream >> bonus;
 			inputFileStream >> temp;
@@ -275,3 +274,40 @@ shared_ptr<Map> ConquestFileReader::createMap(string fileName, string pathToDire
 	return map;
 }
 
+ConquestFileReaderAdapter::ConquestFileReaderAdapter() : MapLoader()
+{
+	conquestFileReader = new ConquestFileReader();
+}
+
+ConquestFileReaderAdapter::ConquestFileReaderAdapter(const ConquestFileReaderAdapter& conquestFileReaderAdapter)
+{
+	conquestFileReader = new ConquestFileReader();
+	*conquestFileReader = *conquestFileReaderAdapter.conquestFileReader;
+}
+
+ConquestFileReaderAdapter::~ConquestFileReaderAdapter()
+{
+	delete conquestFileReader;
+	conquestFileReader = nullptr;
+}
+
+ConquestFileReaderAdapter& ConquestFileReaderAdapter::operator=(const ConquestFileReaderAdapter& rightSide)
+{
+	if (&rightSide != this)
+	{
+		delete conquestFileReader;
+		conquestFileReader = new ConquestFileReader();
+		*conquestFileReader = *rightSide.conquestFileReader;
+	}
+	return *this;
+}
+
+ostream& operator<<(ostream& strm, ConquestFileReaderAdapter& conquestFileReaderAdapter)
+{
+	return strm << "This is an Adapter. Adapts MapLoader to ConquestFileReader.";
+}
+
+shared_ptr<Map> ConquestFileReaderAdapter::createMap(string fileName, string pathToDirectory)
+{
+	return conquestFileReader->createMap(fileName, pathToDirectory);
+}
