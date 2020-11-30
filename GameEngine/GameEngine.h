@@ -66,7 +66,6 @@ public:
 	void mainGameLoop();
 	void reinforcementsPhase();
 	int findContinentBonusTotal(shared_ptr<Player> player);
-	void deployLoop(shared_ptr<Player>);
 	void issueOrdersPhase();
 	bool atleastOneOfType(string type);
 	void executeOrdersPhase();
