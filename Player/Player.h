@@ -84,8 +84,7 @@ public:
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType, shared_ptr<Map> map = NULL);
-    void issueOrder2(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck);
+    void issueOrder(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck);
 
     //********** PlayerStrategy methods *************//
     void setPlayerStrategy(PlayerStrategy* newPS);

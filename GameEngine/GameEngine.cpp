@@ -468,7 +468,7 @@ void GameEngine::issueOrdersPhase()
 	{
 		player->updateAvailableUnits();	//reset the temp display units (shows addition of subtraction of armies from deploy and advance before execution)
 
-		player->issueOrder2(this, map, deck);
+		player->issueOrder(this, map, deck);
 	}
 }
 

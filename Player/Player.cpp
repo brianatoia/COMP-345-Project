@@ -341,41 +341,8 @@ OrderList* Player::getOrderList()
 	return orderList;
 }
 
-//Method issueOrder - creates a new order objects according to orderType and adds it to the players OrderList
-void Player::issueOrder(string orderType, shared_ptr<Map> map)
-{
-	if (orderType == "Deploy")
-	{
-		
-
-	}
-	else if (orderType == "Advance")
-	{
-		
-	}
-	else if (orderType == "Bomb")
-	{
-		
-	}
-	else if (orderType == "Blockade")
-	{
-		
-	}
-	else if (orderType == "Airlift")
-	{
-		
-	}
-	else if (orderType == "Negotiate")
-	{
-		
-	}
-	else
-	{
-		cerr << "Invalid Order Type" << endl;
-	}
-}
-
-void Player::issueOrder2(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck)
+//Method issueOrder - delegates to player strategy
+void Player::issueOrder(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck)
 {
 	this->playerStrategy->issueOrder(gameEngine, this, map, deck);
 }
