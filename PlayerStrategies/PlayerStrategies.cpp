@@ -184,7 +184,9 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 
 				sourceTerritory->availableUnits -= numOfArmies;
 
-				shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
+				auto targetPlayer = gameEngine->getPlayer(targetTerritory->ownerID - 1);
+
+				shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), targetPlayer != nullptr ? targetPlayer->getTerritoryList() : nullptr, player->getCapturedTerritory(), &playersNegotiated));
 				player->getOrderList()->addOrder(order);
 			}
 			else cout << "You no longer have any armies to advance!" << endl;
@@ -278,7 +280,10 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 
 				targetTerritory->availableUnits += numOfArmies;
 
-				shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
+
+				auto targetPlayer = gameEngine->getPlayer(targetTerritory->ownerID - 1);
+
+				shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), targetPlayer != nullptr ? targetPlayer->getTerritoryList() : nullptr, player->getCapturedTerritory(), &playersNegotiated));
 				player->getOrderList()->addOrder(order);
 
 
@@ -571,7 +576,9 @@ void AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player
 			int numOfArmies = sourceTerritory->availableUnits;
 			sourceTerritory->availableUnits -= numOfArmies;
 
-			shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
+			auto targetPlayer = gameEngine->getPlayer(targetTerritory->ownerID - 1);
+
+			shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), targetPlayer != nullptr ? targetPlayer->getTerritoryList() : nullptr, player->getCapturedTerritory(), &playersNegotiated));
 			player->getOrderList()->addOrder(order);
 		}
 	}

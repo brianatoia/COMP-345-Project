@@ -58,6 +58,7 @@ public:
 	//******     Player Methods    *****//
 	void addPlayers(shared_ptr<Player> player);
 	vector<shared_ptr <Player>> getPlayers();
+	shared_ptr<Player> getPlayer(int id);
 	string getPlayersInfo();
 	string getPlayersNames();
 	

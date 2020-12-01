@@ -314,6 +314,19 @@ vector<shared_ptr<Player>> GameEngine::getPlayers()
 	return players;
 }
 
+shared_ptr<Player> GameEngine::getPlayer(int id)
+{
+	for (shared_ptr<Player> p : players)
+	{
+		if (p->getPlayerID() == id)
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}
+
 //Return players stored in players vector list as string
 string GameEngine::getPlayersInfo()
 {

@@ -386,7 +386,9 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	if (targetTerritory->units == 0)
 	{
 		targetTerritory->ownerID = 0;
-		targetPlayerTerritories->remove(targetTerritory);
+
+		if (targetPlayerTerritories != nullptr)
+			targetPlayerTerritories->remove(targetTerritory);
 
 		s += targetTerritory->name + " has been defeated.\n";
 
