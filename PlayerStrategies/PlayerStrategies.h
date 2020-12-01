@@ -30,6 +30,9 @@ public:
 	void issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck);
 	list<shared_ptr<Territory>> toDefend(shared_ptr<Map> map);
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
+	HumanPlayerStrategy(const HumanPlayerStrategy& hps);
+	HumanPlayerStrategy& operator=(const HumanPlayerStrategy& hps);
+	friend ostream& operator<<(ostream& strm, HumanPlayerStrategy hps);
 };
 
 class AggressivePlayerStrategy : public PlayerStrategy
@@ -38,6 +41,9 @@ public:
 	void issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck);
 	list<shared_ptr<Territory>> toDefend(shared_ptr<Map> map);
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
+	AggressivePlayerStrategy(const AggressivePlayerStrategy& hps);
+	AggressivePlayerStrategy& operator=(const AggressivePlayerStrategy& hps);
+	friend ostream& operator<<(ostream& strm, AggressivePlayerStrategy hps);
 };
 
 class BenevolentPlayerStrategy : public PlayerStrategy
@@ -46,6 +52,9 @@ public:
 	void issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck);
 	list<shared_ptr<Territory>> toDefend(shared_ptr<Map> map);
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
+	BenevolentPlayerStrategy(const BenevolentPlayerStrategy& hps);
+	BenevolentPlayerStrategy& operator=(const BenevolentPlayerStrategy& hps);
+	friend ostream& operator<<(ostream& strm, BenevolentPlayerStrategy hps);
 };
 
 class NeutralPlayerStrategy : public PlayerStrategy
@@ -54,6 +63,9 @@ public:
 	void issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck);
 	list<shared_ptr<Territory>> toDefend(shared_ptr<Map> map);
 	list<shared_ptr<Territory>> toAttack(shared_ptr<Map> map);
+	NeutralPlayerStrategy(const NeutralPlayerStrategy& hps);
+	NeutralPlayerStrategy& operator=(const NeutralPlayerStrategy& hps);
+	friend ostream& operator<<(ostream& strm, NeutralPlayerStrategy hps);
 };
 
 #endif

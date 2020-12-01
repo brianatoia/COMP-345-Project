@@ -32,6 +32,7 @@ Player::Player()
 	this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
+	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
 }
 
 //Destructor which clears all parameters of pointer type
@@ -44,8 +45,8 @@ Player::~Player()
 	territoryList.clear();
 
 	// This fails (we fixed it in a later commit
-	delete ps;
-	ps = nullptr;
+	delete playerStrategy;
+	playerStrategy = nullptr;
 
 	delete hand;    //Delete pointer to hand stucture
 	hand = nullptr;     //Resolve dangling pointer
@@ -71,6 +72,7 @@ Player::Player(string playerName)
 	this->orderList = new OrderList();
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
+	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
 }
 
 //Copy constructor enables deep copy of pointer attributes
@@ -85,11 +87,13 @@ Player::Player(const Player& aPlayer)
 	{
 		this->territoryList.push_back(*i);
 	}
-
+	
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
 	playerTerritories.push_back(&territoryList);
+	
+
 }
 
 //Assignment operator
@@ -119,7 +123,7 @@ Player& Player::operator=(const Player& aPlayer)
 //ToString method of Player
 string Player::to_string()
 {
-	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " has:";
+	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and player strategy " + this->getStrategyType() + ":";
 	str += "\nList of Territories--------\n";
 	str += printList(*getTerritoryList());
 	str += "\nArmies to deploy--------\n";
@@ -369,12 +373,37 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 
 void Player::issueOrder2(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck)
 {
-	this->ps->issueOrder(gameEngine, this, map, deck);
+	this->playerStrategy->issueOrder(gameEngine, this, map, deck);
 }
 
 //********** PlayerStrategy methods *************//
 
 void Player::setPlayerStrategy(PlayerStrategy* newPS)
 {
-	this->ps = newPS;
+	this->playerStrategy = newPS;
+}
+
+//Returns the concrete strategy type of the player as a string
+string Player::getStrategyType()
+{
+	string concreteStrategyType = "";
+	switch (this->playerStrategy->getStrategyType())
+	{
+	case HUMAN:
+		concreteStrategyType = "HumanPlayerStrategy";
+		break;
+	case AGGRESSIVE:
+		concreteStrategyType = "AggressivePlayerStrategy";
+		break;
+	case BENEVOLENT:
+		concreteStrategyType = "BenevolentPlayerStrategy";
+		break;
+	case NEUTRAL:
+		concreteStrategyType = "NeutralPlayerStrategy";
+		break;
+	default:
+		concreteStrategyType = "No valid strategy";
+		break;
+	}
+	return concreteStrategyType;//after add this to to_string()
 }
