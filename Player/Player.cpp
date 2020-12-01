@@ -32,7 +32,7 @@ Player::Player()
 	this->orderList = new OrderList();  //Creates a pointer to an orderlist object containing pointers to order objects
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
-	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
+	this->playerStrategy = new NeutralPlayerStrategy();
 }
 
 //Destructor which clears all parameters of pointer type
@@ -72,7 +72,7 @@ Player::Player(string playerName)
 	this->orderList = new OrderList();
 	this->capturedTerritory = new bool(false);
 	playerTerritories.push_back(&territoryList);
-	this->playerStrategy = new NeutralPlayerStrategy(this->playerID, this->hand, this->orderList);
+	this->playerStrategy = new NeutralPlayerStrategy();
 }
 
 //Copy constructor enables deep copy of pointer attributes
@@ -92,8 +92,8 @@ Player::Player(const Player& aPlayer)
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
 	playerTerritories.push_back(&territoryList);
-	
 
+	
 }
 
 //Assignment operator
@@ -117,13 +117,16 @@ Player& Player::operator=(const Player& aPlayer)
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
+
+	
+
 	return *this;
 }
 
 //ToString method of Player
 string Player::to_string()
 {
-	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and player strategy " + this->getStrategyType() + ":";
+	string str = "\n\nPlayer " + name + " with ID " + ::to_string(playerID) + " and player strategy " + this->playerStrategy->to_string() + ":";
 	str += "\nList of Territories--------\n";
 	str += printList(*getTerritoryList());
 	str += "\nArmies to deploy--------\n";
@@ -384,26 +387,26 @@ void Player::setPlayerStrategy(PlayerStrategy* newPS)
 }
 
 //Returns the concrete strategy type of the player as a string
-string Player::getStrategyType()
+PlayerStrategy* Player::copyPlayerStrategy()
 {
-	string concreteStrategyType = "";
-	switch (this->playerStrategy->getStrategyType())
+	if (this->playerStrategy->to_string() == "HumanPlayerStrategy")
 	{
-	case HUMAN:
-		concreteStrategyType = "HumanPlayerStrategy";
-		break;
-	case AGGRESSIVE:
-		concreteStrategyType = "AggressivePlayerStrategy";
-		break;
-	case BENEVOLENT:
-		concreteStrategyType = "BenevolentPlayerStrategy";
-		break;
-	case NEUTRAL:
-		concreteStrategyType = "NeutralPlayerStrategy";
-		break;
-	default:
-		concreteStrategyType = "No valid strategy";
-		break;
+		HumanPlayerStrategy* hPS = new HumanPlayerStrategy();
+		return hPS;
 	}
-	return concreteStrategyType;//after add this to to_string()
+	else if (this->playerStrategy->to_string() == "AggressivePlayerStrategy")
+	{
+		AggressivePlayerStrategy* aPS = new AggressivePlayerStrategy();
+		return aPS;
+	}
+	else if (this->playerStrategy->to_string() == "BenevolentPlayerStrategy")
+	{
+		BenevolentPlayerStrategy* bPS = new BenevolentPlayerStrategy();
+		return bPS;
+	}
+	else if (this->playerStrategy->to_string() == "NeutralPlayerStrategy")
+	{
+		NeutralPlayerStrategy* nPS = new NeutralPlayerStrategy();
+		return nPS;
+	}
 }

@@ -1,5 +1,9 @@
 #include "../PlayerStrategies/PlayerStrategies.h"
 
+
+HumanPlayerStrategy::HumanPlayerStrategy(): PlayerStrategy ()
+{}
+
 void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
 	//Deploying phase, force player to deploy first
@@ -475,6 +479,26 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 	}
 }
 
+
+HumanPlayerStrategy::HumanPlayerStrategy(const HumanPlayerStrategy& hps) : PlayerStrategy()
+{
+}
+HumanPlayerStrategy& HumanPlayerStrategy::operator=(const HumanPlayerStrategy& hps) 
+{
+	PlayerStrategy::operator=(hps);
+	return *this;
+}
+
+string HumanPlayerStrategy::to_string()
+{
+	return "HumanPlayerStrategy";
+}
+
+ostream& operator<<(ostream& strm, HumanPlayerStrategy hps)
+{
+	return strm << "HumanPlayerStrategy";
+}
+
 list<shared_ptr<Territory>> HumanPlayerStrategy::toDefend(shared_ptr<Map> map)
 {
 	return list<shared_ptr<Territory>>();
@@ -486,6 +510,10 @@ list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(shared_ptr<Map> map)
 }
 
 //*********  AggressivePlayerStrategy  **********//
+AggressivePlayerStrategy::AggressivePlayerStrategy() : PlayerStrategy()
+{
+}
+
 void AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
 
@@ -501,11 +529,33 @@ list<shared_ptr<Territory>> AggressivePlayerStrategy::toAttack(shared_ptr<Map> m
 	return list<shared_ptr<Territory>>();
 }
 
+AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy& hps) : PlayerStrategy()
+{
+}
+AggressivePlayerStrategy& AggressivePlayerStrategy::operator=(const AggressivePlayerStrategy& hps)
+{
+	PlayerStrategy::operator=(hps);
+	return *this;
+}
+
+string AggressivePlayerStrategy::to_string()
+{
+	return "AggressivePlayerStrategy";
+}
+
+ostream& operator<<(ostream& strm, AggressivePlayerStrategy hps)
+{
+	return strm << "AggressivePlayerStrategy";
+}
+
 //********* BenevolentPlayerStrategy  **********//
+
+BenevolentPlayerStrategy::BenevolentPlayerStrategy() : PlayerStrategy()
+{
+}
 
 void BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
-
 }
 
 list<shared_ptr<Territory>> BenevolentPlayerStrategy::toDefend(shared_ptr<Map> map)
@@ -518,7 +568,30 @@ list<shared_ptr<Territory>> BenevolentPlayerStrategy::toAttack(shared_ptr<Map> m
 	return list<shared_ptr<Territory>>();
 }
 
+BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrategy& hps) : PlayerStrategy()
+{
+}
+BenevolentPlayerStrategy& BenevolentPlayerStrategy::operator=(const BenevolentPlayerStrategy& hps)
+{
+	PlayerStrategy::operator=(hps);
+	return *this;
+}
+
+string BenevolentPlayerStrategy::to_string()
+{
+	return "BenevolentPlayerStrategy";
+}
+
+ostream& operator<<(ostream& strm, BenevolentPlayerStrategy hps)
+{
+	return strm << "BenevolentPlayerStrategy";
+}
+
 //********* NeutralPlayerStrategy  **********//
+
+NeutralPlayerStrategy::NeutralPlayerStrategy() : PlayerStrategy()
+{
+}
 
 void NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
@@ -533,4 +606,23 @@ list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(shared_ptr<Map> map)
 list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(shared_ptr<Map> map)
 {
 	return list<shared_ptr<Territory>>();
+}
+
+NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy& hps) : PlayerStrategy()
+{
+}
+NeutralPlayerStrategy& NeutralPlayerStrategy::operator=(const NeutralPlayerStrategy& hps)
+{
+	PlayerStrategy::operator=(hps);
+	return *this;
+}
+
+string NeutralPlayerStrategy::to_string()
+{
+	return "NeutralPlayerStrategy";
+}
+
+ostream& operator<<(ostream& strm, NeutralPlayerStrategy hps)
+{
+	return strm << "NeutralPlayerStrategy";
 }
