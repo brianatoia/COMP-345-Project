@@ -686,6 +686,24 @@ shared_ptr<Player> GameEngine::checkForWinner()
 	return nullptr;
 }
 
+shared_ptr<Player> GameEngine::checkForLeader()
+{
+	int maxTerritories = 0;
+	shared_ptr<Player> leader = nullptr;
+
+	for (auto player : players)
+	{
+		if (player->getTerritoryList()->size() >= maxTerritories)
+		{
+			leader = player;
+
+			maxTerritories = leader->getTerritoryList()->size();
+		}
+	}
+
+	return leader;
+}
+
 void GameEngine::reassignTerritories()
 {
 	for (auto player : players)
