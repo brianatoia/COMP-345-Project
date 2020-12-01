@@ -40,6 +40,8 @@ public:
 
 class AggressivePlayerStrategy : public PlayerStrategy
 {
+	shared_ptr<Territory> maxArmyTerritory(list<shared_ptr<Territory>> territoryList);
+	shared_ptr<Territory> findTargetTerritory(shared_ptr<Territory> territory, shared_ptr<Map> map);
 public:
 	AggressivePlayerStrategy();
 	void issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck);
