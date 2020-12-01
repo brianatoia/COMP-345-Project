@@ -416,12 +416,16 @@ void Advance::execute()
 	if (validate())
 	{
 		string s;
+
+		numOfArmies = std::min((unsigned)numOfArmies, sourceTerritory->units);
+
 		//if target territory does not have an owner, can take it 
 		if (targetTerritory->ownerID == NULL && targetTerritory->units == 0)
 		{
 			targetTerritory->ownerID = sourceTerritory->ownerID;
-			targetTerritory->units += numOfArmies;
-			sourceTerritory->units -= numOfArmies;
+
+			targetTerritory->units += (unsigned)numOfArmies;
+			sourceTerritory->units -= (unsigned)numOfArmies;
 			playerTerritories->push_back(targetTerritory);
 			*capturedTerritory = true;
 
@@ -430,8 +434,8 @@ void Advance::execute()
 		//if target territory is owned by the attacking territory owner
 		else if (sourceTerritory->ownerID == targetTerritory->ownerID)
 		{
-			sourceTerritory->units -= numOfArmies;
-			targetTerritory->units += numOfArmies;
+			sourceTerritory->units -= (unsigned)numOfArmies;
+			targetTerritory->units += (unsigned)numOfArmies;
 
 			s = "Target territory belongs to player. Deploying " + std::to_string(numOfArmies) + " armies from " + sourceTerritory->name + " to " + targetTerritory->name;
 		}
@@ -630,6 +634,8 @@ void Airlift::execute()
 {
 	if (validate())
 	{
+		numOfArmies = std::min(sourceTerritory->units, (unsigned)numOfArmies);
+
 		sourceTerritory->units -= numOfArmies;
 		targetTerritory->units += numOfArmies;
 

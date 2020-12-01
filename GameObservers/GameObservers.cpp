@@ -204,7 +204,6 @@ void StatisticsObserver::show()
 		printf("== ==================== ====================\n");
 		for (shared_ptr<Player> p : activePlayers)
 		{
-
 			printf("%2d %-20s %.2f %%\n", p->getPlayerID(), p->getName().c_str(), 100.0f * (float)p->getTerritoryList()->size() / (float)numOfTerritories);
 		};
 
@@ -224,7 +223,17 @@ void StatisticsObserver::show()
 			for (int t = 0; t < continent->territoryIDs.size(); t++)
 			{
 				shared_ptr<Territory> territory = map->getTerritory(continent->territoryIDs[t]);
-				string playerName = (territory->ownerID >= 1) ? players[territory->ownerID-1]->getName() : "None";
+
+				string playerName = "None";
+
+				for (shared_ptr<Player> p : activePlayers)
+				{
+					if (territory->ownerID == p->getPlayerID())
+					{
+						playerName = p->getName();
+					}
+				}
+
 				string borderList = "";
 
 				list<unsigned int> borders = list<unsigned int>(territory->borders.begin(), territory->borders.end());

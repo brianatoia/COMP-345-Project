@@ -314,7 +314,7 @@ vector<shared_ptr<Player>> GameEngine::getPlayers()
 	return players;
 }
 
-shared_ptr<Player> GameEngine::getPlayer(int id)
+shared_ptr<Player> GameEngine::getPlayer(unsigned int id)
 {
 	for (shared_ptr<Player> p : players)
 	{

@@ -603,8 +603,8 @@ shared_ptr<Territory> AggressivePlayerStrategy::maxArmyTerritory(list<shared_ptr
 
 shared_ptr<Territory> AggressivePlayerStrategy::findTargetTerritory(shared_ptr<Territory> territory, shared_ptr<Map> map)
 {
-	list<shared_ptr<Territory>> targets;
-	list<shared_ptr<Territory>> friends;
+	list<shared_ptr<Territory>> targets = list<shared_ptr<Territory>>();
+	list<shared_ptr<Territory>> friends = list<shared_ptr<Territory>>();
 
 	for (unsigned int i : territory->borders)
 	{
@@ -632,7 +632,7 @@ shared_ptr<Territory> AggressivePlayerStrategy::findTargetTerritory(shared_ptr<T
 
 				if (t->ownerID != other->ownerID)
 				{
-					return other;
+					return t;
 				}
 			}
 		}
