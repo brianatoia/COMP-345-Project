@@ -89,7 +89,7 @@ public:
 
     //********** PlayerStrategy methods *************//
     void setPlayerStrategy(PlayerStrategy* newPS);
-    PlayerStrategy* copyPlayerStrategy();
+    PlayerStrategy* copyPlayerStrategy(const Player& aPlayer);
 
 };
 

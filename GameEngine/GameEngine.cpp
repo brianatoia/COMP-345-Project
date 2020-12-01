@@ -85,12 +85,12 @@ void GameEngine::gameStart()
 			}
 			else if (strategy == 2)
 			{
-				players[i]->setPlayerStrategy(new AggressivePlayerStrategy);
+				players[i]->setPlayerStrategy(new AggressivePlayerStrategy());
 				break;
 			}
 			else if (strategy == 3)
 			{
-				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy);
+				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy());
 				break;
 			}
 			else
