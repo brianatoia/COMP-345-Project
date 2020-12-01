@@ -1,11 +1,17 @@
+#ifndef GAME_OBSERVER_H
+#define GAME_OBSERVER_H
+
 #pragma once
+
 #include <list>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <windows.h>
+
 #include "../Map/Map.h"
-#include "../Player/Player.h"
+
+class Player;
 
 using namespace std;
 
@@ -60,3 +66,7 @@ public:
 	void update(string message);
 	void show();
 };
+
+#include "../Player/Player.h"
+
+#endif

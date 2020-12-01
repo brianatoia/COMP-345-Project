@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H 1
+
 //
 //  Player.h
 //  Player header, provides the declarations of functions contained in the Player.cpp file.
@@ -11,13 +14,15 @@
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
 #include "../PlayerStrategies/PlayerStrategies.h"
+#include "../GameEngine/GameEngine.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <tuple>
 
-
+class GameEngine;
+class PlayerStrategy;
 
 using namespace std;
 
@@ -80,8 +85,10 @@ public:
     //********** Order methods *************//
     OrderList* getOrderList();
     void issueOrder(string orderType, shared_ptr<Map> map = NULL);
+    void issueOrder2(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck);
 
     //********** PlayerStrategy methods *************//
     void setPlayerStrategy(PlayerStrategy* newPS);
 };
 
+#endif

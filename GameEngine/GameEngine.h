@@ -1,11 +1,13 @@
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H 1
+
 #pragma once
 
-#include "../Player/Player.h"
+#include "../GameObservers/GameObservers.h"
 #include "../Cards/Cards.h"
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Orders/Orders.h"
-#include "../GameObservers/GameObservers.h"
 #include "../PlayerStrategies/PlayerStrategies.h"
 
 #include <iostream>
@@ -14,6 +16,8 @@
 #include <iterator>
 #include <vector>
 #include <windows.h>
+
+class Player;
 
 using namespace std;
 
@@ -83,3 +87,5 @@ private:
 	bool phaseObserver;
 	bool mapObserver;
 };
+
+#endif

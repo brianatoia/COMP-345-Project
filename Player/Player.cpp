@@ -367,6 +367,10 @@ void Player::issueOrder(string orderType, shared_ptr<Map> map)
 	}
 }
 
+void Player::issueOrder2(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck)
+{
+	this->ps->issueOrder(gameEngine, this, map, deck);
+}
 
 //********** PlayerStrategy methods *************//
 
