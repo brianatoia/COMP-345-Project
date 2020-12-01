@@ -180,7 +180,7 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 
 				sourceTerritory->availableUnits -= numOfArmies;
 
-				shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), Player::getPlayerTerritories(targetTerritory->ownerID - 1), player->getCapturedTerritory(), &playersNegotiated));
+				shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
 				player->getOrderList()->addOrder(order);
 			}
 			else cout << "You no longer have any armies to advance!" << endl;
@@ -274,7 +274,7 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 
 				targetTerritory->availableUnits += numOfArmies;
 
-				shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), Player::getPlayerTerritories(targetTerritory->ownerID - 1), player->getCapturedTerritory(), &playersNegotiated));
+				shared_ptr<Order> order(new Airlift(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
 				player->getOrderList()->addOrder(order);
 
 
@@ -488,7 +488,126 @@ list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(shared_ptr<Map> map)
 //*********  AggressivePlayerStrategy  **********//
 void AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
+	//Deploying phase, force player to deploy first
 
+	cout << player->getName() << " deploying their armies..." << endl;
+
+	shared_ptr<Territory> territory = this->maxArmyTerritory(*player->getTerritoryList());
+
+	int numberOfArmiesToDeploy = player->getArmies();
+
+	territory->availableUnits += numberOfArmiesToDeploy;
+	player->setArmies(player->getArmies() - numberOfArmiesToDeploy);
+
+	shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, *player->getTerritoryList()));
+	player->getOrderList()->addOrder(order);
+
+	// Reinforcement cards
+	while (player->getHand()->findCardType("Reinforcement"))
+	{
+		player->getHand()->play(player->getHand()->getCard("Reinforcement"), deck);
+		player->addArmies(20);	//Reinforcement is not an order so do it directly and treat it as a deploy
+		
+		shared_ptr<Territory> territory = this->maxArmyTerritory(*player->getTerritoryList());
+
+		int numberOfArmiesToDeploy = player->getArmies();
+
+		territory->availableUnits += numberOfArmiesToDeploy;
+		player->setArmies(player->getArmies() - numberOfArmiesToDeploy);
+
+		shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, *player->getTerritoryList()));
+		player->getOrderList()->addOrder(order);
+	}
+
+	while (player->getHand()->findCardType("Bomb"))
+	{
+		if (player->toAttack(map).size() == 0) break;
+		else
+		{
+			shared_ptr<Territory> territory = this->maxArmyTerritory(player->toAttack(map));
+
+			shared_ptr<Order> order(new Bomb(player->getPlayerID(), territory, player->getTerritoryList(), &playersNegotiated));
+			player->getOrderList()->addOrder(order);
+			player->getHand()->play(player->getHand()->getCard("Bomb"), deck);
+		}
+	}
+
+	cout << player->canAdvance() << endl;
+
+	if (player->canAdvance()) {
+		shared_ptr<Territory> sourceTerritory = this->maxArmyTerritory(*player->getTerritoryList());
+		shared_ptr<Territory> targetTerritory = this->findTargetTerritory(sourceTerritory, map);
+
+		if (targetTerritory != nullptr)
+		{
+			int numOfArmies = sourceTerritory->availableUnits;
+			sourceTerritory->availableUnits -= numOfArmies;
+
+			shared_ptr<Order> order(new Advance(numOfArmies, sourceTerritory, targetTerritory, player->getTerritoryList(), gameEngine->getPlayers()[targetTerritory->ownerID - 1]->getTerritoryList(), player->getCapturedTerritory(), &playersNegotiated));
+			player->getOrderList()->addOrder(order);
+		}
+	}
+
+}
+
+shared_ptr<Territory> AggressivePlayerStrategy::maxArmyTerritory(list<shared_ptr<Territory>> territoryList)
+{
+	shared_ptr<Territory> max = territoryList.front();
+
+	for (shared_ptr<Territory> t : territoryList)
+	{
+		if (t->availableUnits > max->availableUnits)
+		{
+			max = t;
+		}
+	}
+
+	return max;
+}
+
+
+shared_ptr<Territory> AggressivePlayerStrategy::findTargetTerritory(shared_ptr<Territory> territory, shared_ptr<Map> map)
+{
+	list<shared_ptr<Territory>> targets;
+	list<shared_ptr<Territory>> friends;
+
+	for (unsigned int i : territory->borders)
+	{
+		shared_ptr<Territory> t = map->getTerritory(i);
+	
+		if (t->ownerID != territory->ownerID)
+		{
+			targets.push_back(t);
+		}
+		else
+		{
+			friends.push_back(t);
+		}
+	}
+
+	if (targets.size() > 0)
+		return this->maxArmyTerritory(targets);
+	else
+	{
+		for (shared_ptr<Territory> t : friends)
+		{
+			for (unsigned int i : t->borders)
+			{
+				shared_ptr<Territory> other = map->getTerritory(i);
+
+				if (t->ownerID != other->ownerID)
+				{
+					return other;
+				}
+			}
+		}
+
+		if (friends.size() > 0) return friends.front();
+	}
+
+	cout << "targeting no one" << endl;
+
+	return nullptr;
 }
 
 list<shared_ptr<Territory>> AggressivePlayerStrategy::toDefend(shared_ptr<Map> map)
