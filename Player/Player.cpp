@@ -92,8 +92,7 @@ Player::Player(const Player& aPlayer)
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
 	playerTerritories.push_back(&territoryList);
-
-	
+	this->playerStrategy = copyPlayerStrategy(aPlayer);
 }
 
 //Assignment operator
@@ -117,8 +116,10 @@ Player& Player::operator=(const Player& aPlayer)
 	this->hand = new Hand(*(aPlayer.hand));
 	this->orderList = new OrderList(*(aPlayer.orderList));
 	this->capturedTerritory = aPlayer.capturedTerritory;
-
 	
+	delete this->playerStrategy;
+	this->playerStrategy = nullptr;
+	this->playerStrategy = copyPlayerStrategy(aPlayer);
 
 	return *this;
 }
@@ -387,24 +388,24 @@ void Player::setPlayerStrategy(PlayerStrategy* newPS)
 }
 
 //Returns the concrete strategy type of the player as a string
-PlayerStrategy* Player::copyPlayerStrategy()
+PlayerStrategy* Player::copyPlayerStrategy(const Player& aPlayer)
 {
-	if (this->playerStrategy->to_string() == "HumanPlayerStrategy")
+	if (aPlayer.playerStrategy->to_string() == "HumanPlayerStrategy")
 	{
 		HumanPlayerStrategy* hPS = new HumanPlayerStrategy();
 		return hPS;
 	}
-	else if (this->playerStrategy->to_string() == "AggressivePlayerStrategy")
+	else if (aPlayer.playerStrategy->to_string() == "AggressivePlayerStrategy")
 	{
 		AggressivePlayerStrategy* aPS = new AggressivePlayerStrategy();
 		return aPS;
 	}
-	else if (this->playerStrategy->to_string() == "BenevolentPlayerStrategy")
+	else if (aPlayer.playerStrategy->to_string() == "BenevolentPlayerStrategy")
 	{
 		BenevolentPlayerStrategy* bPS = new BenevolentPlayerStrategy();
 		return bPS;
 	}
-	else if (this->playerStrategy->to_string() == "NeutralPlayerStrategy")
+	else if (aPlayer.playerStrategy->to_string() == "NeutralPlayerStrategy")
 	{
 		NeutralPlayerStrategy* nPS = new NeutralPlayerStrategy();
 		return nPS;
