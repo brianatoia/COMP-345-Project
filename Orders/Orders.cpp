@@ -303,6 +303,12 @@ bool Advance::validate()
 	bool playerOwnsSource = false;
 	bool sourceBordersTarget = false;
 
+	if (sourceTerritory->units <= 0)
+	{
+		cerr << "\nInvalid Order. Source territory no longer has any units." << endl;
+		return false;
+	}
+
 	for (shared_ptr<Territory> t : *playerTerritories)
 	{
 		if (t == sourceTerritory)
@@ -377,24 +383,32 @@ string attack(int numOfArmies, shared_ptr<Territory> sourceTerritory, shared_ptr
 	//Defending army defeated all of Attacking territoy armies
 	if (sourceTerritory->units == 0 && numOfArmies == 0)
 	{
-		sourceTerritory->ownerID = 0;
-		playerTerritories->remove(sourceTerritory);
-
-		s += sourceTerritory->name + " has no armies remaining. Player " + std::to_string(sourceTerritory->ownerID) + " no longer owns this territory.\n";
+		s += sourceTerritory->name + " has no armies remaining.\n";
 	}
 	//Attacking army defeated all Defending territory armies
 	if (targetTerritory->units == 0)
 	{
-		targetTerritory->ownerID = 0;
-
-		if (targetPlayerTerritories != nullptr)
-			targetPlayerTerritories->remove(targetTerritory);
-
 		s += targetTerritory->name + " has been defeated.\n";
 
 		//If Attacking army still has units, can capture the defeated target territory 
 		if (numOfArmies != 0)
 		{
+			if (targetPlayerTerritories != nullptr)
+			{
+				bool removed = true;
+				while (removed)
+					removed = false;
+					for (auto it = targetPlayerTerritories->begin(); it != targetPlayerTerritories->end(); ++it)
+					{
+						if (it->get()->getID() == targetTerritory->getID())
+						{
+							targetPlayerTerritories->erase(it);
+							removed = true;
+							break;
+						}
+					}
+			}
+			
 			targetTerritory->units = numOfArmies;
 			targetTerritory->ownerID = sourceTerritory->ownerID;
 			playerTerritories->push_back(targetTerritory);

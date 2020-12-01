@@ -501,7 +501,6 @@ void GameEngine::executeOrdersPhase()
 
 	if (this->phaseObserver)
 	{
-		this->notify("map");
 		this->notify("execute_orders_phase_start");
 	}
 
@@ -652,7 +651,9 @@ void GameEngine::executeOrdersPhase()
 
 		}
 	}
-	
+
+	reassignTerritories();
+
 	if (this->mapObserver)
 	{
 		this->notify("map");
@@ -683,6 +684,23 @@ shared_ptr<Player> GameEngine::checkForWinner()
 			return player;
 	}
 	return nullptr;
+}
+
+void GameEngine::reassignTerritories()
+{
+	for (auto player : players)
+	{
+		player->getTerritoryList()->clear();
+	}
+
+	for (int i = 1; i < map->getTerritoriesCount(); i++)
+	{
+		shared_ptr<Territory> t = map->getTerritory(i);
+		shared_ptr<Player> p = this->getPlayer(t->ownerID);
+
+		if (p != nullptr)
+			p->addTerritory(t);
+	}
 }
 
 void GameEngine::mainGameLoop()

@@ -76,6 +76,7 @@ public:
 	void executeOrdersPhase();
 	void checkForEliminatedPlayers();
 	shared_ptr<Player> checkForWinner();
+	void reassignTerritories();
 
 
 	//******     Private Members    *****//
