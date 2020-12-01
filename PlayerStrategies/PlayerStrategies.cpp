@@ -4,6 +4,9 @@
 HumanPlayerStrategy::HumanPlayerStrategy(): PlayerStrategy ()
 {}
 
+HumanPlayerStrategy::~HumanPlayerStrategy()
+{}
+
 void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
 	//Deploying phase, force player to deploy first
@@ -445,7 +448,7 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 				do {
 					cout << "\nWhich territory would you like to bomb?" << endl;
 					cout << "--------------------------------------------" << endl;
-					for (shared_ptr<Territory> t : player->toAttack(map))
+					for (shared_ptr<Territory> t : this->toAttack(player, map))
 					{
 						cout << t->name << endl;
 					}
@@ -454,7 +457,7 @@ void HumanPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, sha
 
 					territory = map->findTerritory(territoryName);
 
-					for (shared_ptr<Territory> t : player->toAttack(map))
+					for (shared_ptr<Territory> t : this->toAttack(player, map))
 					{
 						if (t == territory)
 						{
@@ -504,20 +507,22 @@ ostream& operator<<(ostream& strm, HumanPlayerStrategy hps)
 	return strm << "HumanPlayerStrategy";
 }
 
-list<shared_ptr<Territory>> HumanPlayerStrategy::toDefend(shared_ptr<Map> map)
+list<shared_ptr<Territory>> HumanPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	return player->toDefend(map);
 }
 
-list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(shared_ptr<Map> map)
+list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	return player->toAttack(map);
 }
 
 //*********  AggressivePlayerStrategy  **********//
 AggressivePlayerStrategy::AggressivePlayerStrategy() : PlayerStrategy()
-{
-}
+{}
+
+AggressivePlayerStrategy::~AggressivePlayerStrategy()
+{}
 
 void AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
@@ -554,18 +559,16 @@ void AggressivePlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player
 
 	while (player->getHand()->findCardType("Bomb"))
 	{
-		if (player->toAttack(map).size() == 0) break;
+		if (this->toAttack(player, map).size() == 0) break;
 		else
 		{
-			shared_ptr<Territory> territory = this->maxArmyTerritory(player->toAttack(map));
+			shared_ptr<Territory> territory = this->maxArmyTerritory(this->toAttack(player, map));
 
 			shared_ptr<Order> order(new Bomb(player->getPlayerID(), territory, player->getTerritoryList(), &playersNegotiated));
 			player->getOrderList()->addOrder(order);
 			player->getHand()->play(player->getHand()->getCard("Bomb"), deck);
 		}
 	}
-
-	cout << player->canAdvance() << endl;
 
 	if (player->canAdvance()) {
 		shared_ptr<Territory> sourceTerritory = this->maxArmyTerritory(*player->getTerritoryList());
@@ -640,19 +643,17 @@ shared_ptr<Territory> AggressivePlayerStrategy::findTargetTerritory(shared_ptr<T
 		if (friends.size() > 0) return friends.front();
 	}
 
-	cout << "targeting no one" << endl;
-
 	return nullptr;
 }
 
-list<shared_ptr<Territory>> AggressivePlayerStrategy::toDefend(shared_ptr<Map> map)
+list<shared_ptr<Territory>> AggressivePlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	return player->toDefend(map);
 }
 
-list<shared_ptr<Territory>> AggressivePlayerStrategy::toAttack(shared_ptr<Map> map)
+list<shared_ptr<Territory>> AggressivePlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	return player->toAttack(map);
 }
 
 AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy& hps) : PlayerStrategy()
@@ -677,21 +678,130 @@ ostream& operator<<(ostream& strm, AggressivePlayerStrategy hps)
 //********* BenevolentPlayerStrategy  **********//
 
 BenevolentPlayerStrategy::BenevolentPlayerStrategy() : PlayerStrategy()
-{
-}
+{}
+
+BenevolentPlayerStrategy::~BenevolentPlayerStrategy()
+{}
 
 void BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
+	//Deploying phase, force player to deploy first
+
+	cout << player->getName() << " deploying their armies..." << endl;
+
+	bool deployed = true;
+
+	while (deployed)
+	{
+		deployed = false;
+
+		for (shared_ptr<Territory> territory : *player->getTerritoryList())
+		{
+			int numberOfArmiesToDeploy = 1;
+
+			if (territory->ownerID == player->getPlayerID() && player->getArmies() > 0)
+			{
+				territory->availableUnits += numberOfArmiesToDeploy;
+				player->setArmies(player->getArmies() - numberOfArmiesToDeploy);
+				shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, *player->getTerritoryList()));
+				player->getOrderList()->addOrder(order);
+				deployed = true;
+			}
+		}		
+	}
+
+	// Reinforcement cards
+	while (player->getHand()->findCardType("Reinforcement"))
+	{
+		player->getHand()->play(player->getHand()->getCard("Reinforcement"), deck);
+		player->addArmies(20);	//Reinforcement is not an order so do it directly and treat it as a deploy
+
+		shared_ptr<Territory> territory = this->minArmyTerritory(*player->getTerritoryList(), player->getPlayerID());
+
+		if (territory != nullptr)
+		{
+			int numberOfArmiesToDeploy = player->getArmies();
+
+			territory->availableUnits += numberOfArmiesToDeploy;
+			player->setArmies(player->getArmies() - numberOfArmiesToDeploy);
+
+			shared_ptr<Order> order(new Deploy(numberOfArmiesToDeploy, territory, *player->getTerritoryList()));
+			player->getOrderList()->addOrder(order);
+		}
+	}
+
+	while (player->getHand()->findCardType("Blockade"))
+	{
+		bool blockaded = false;
+		shared_ptr<Territory> territory = this->maxArmyTerritory(this->toDefend(player, map), player->getPlayerID());
+
+		if (territory != nullptr)
+		{
+			blockaded = true;
+			shared_ptr<Order> order(new Blockade(territory, player->getTerritoryList()));
+			player->getOrderList()->addOrder(order);
+			player->getHand()->play(player->getHand()->getCard("Blockade"), deck);
+		}
+
+		if (!blockaded)
+			break;
+	}
+
+	if (player->getHand()->findCardType("Diplomacy"))
+	{
+		shared_ptr<Player> leader = gameEngine->checkForLeader();
+
+		if (leader != nullptr && leader->getPlayerID() != player->getPlayerID())
+		{
+			shared_ptr<Order> order(new Negotiate(player->getPlayerID(), leader->getPlayerID(), &playersNegotiated));
+			player->getOrderList()->addOrder(order);
+			player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
+		}
+	}
 }
 
-list<shared_ptr<Territory>> BenevolentPlayerStrategy::toDefend(shared_ptr<Map> map)
+shared_ptr<Territory> BenevolentPlayerStrategy::minArmyTerritory(list<shared_ptr<Territory>> territoryList, unsigned int ownerID)
 {
-	return list<shared_ptr<Territory>>();
+	unsigned int minUnits = -1;
+	shared_ptr<Territory> min = nullptr;
+
+	for (shared_ptr<Territory> t : territoryList)
+	{
+		if (t->availableUnits <= minUnits && t->ownerID == ownerID)
+		{
+			min = t;
+			minUnits = t->availableUnits;
+		}
+	}
+
+	return min;
 }
 
-list<shared_ptr<Territory>> BenevolentPlayerStrategy::toAttack(shared_ptr<Map> map)
+shared_ptr<Territory> BenevolentPlayerStrategy::maxArmyTerritory(list<shared_ptr<Territory>> territoryList, unsigned int ownerID)
 {
-	return list<shared_ptr<Territory>>();
+	unsigned int maxUnits = 0;
+	shared_ptr<Territory> max = nullptr;
+
+	for (shared_ptr<Territory> t : territoryList)
+	{
+		if (t->availableUnits >= maxUnits && t->ownerID == ownerID)
+		{
+			max = t;
+			maxUnits = t->availableUnits;
+		}
+	}
+
+	return max;
+}
+
+list<shared_ptr<Territory>> BenevolentPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
+{
+	return player->toDefend(map);
+}
+
+list<shared_ptr<Territory>> BenevolentPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
+{
+	return player->toAttack(map);
 }
 
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrategy& hps) : PlayerStrategy()
@@ -716,20 +826,22 @@ ostream& operator<<(ostream& strm, BenevolentPlayerStrategy hps)
 //********* NeutralPlayerStrategy  **********//
 
 NeutralPlayerStrategy::NeutralPlayerStrategy() : PlayerStrategy()
-{
-}
+{}
+
+NeutralPlayerStrategy::~NeutralPlayerStrategy()
+{}
 
 void NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, shared_ptr<Map> map, Deck* deck)
 {
 
 }
 
-list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(shared_ptr<Map> map)
+list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
 	return list<shared_ptr<Territory>>();
 }
 
-list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(shared_ptr<Map> map)
+list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
 	return list<shared_ptr<Territory>>();
 }
