@@ -3,13 +3,22 @@ project(COMP345-A1-Part1)
 
 include_directories(".")
 
-file(GLOB map_files
-    "MapDirectory/*.map"
+file(GLOB dom_map_files
+    "DominationMaps/*.map"
 )
 
-foreach(mf ${map_files})
-    file(COPY ${mf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/MapDirectory/)
+foreach(mf ${dom_map_files})
+    file(COPY ${mf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/DominationMaps/)
 endforeach()
+
+file(GLOB con_map_files
+    "ConquestMaps/*.map"
+)
+
+foreach(mf ${con_map_files})
+    file(COPY ${mf} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/ConquestMaps/)
+endforeach()
+
 
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
