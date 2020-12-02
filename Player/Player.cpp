@@ -261,55 +261,13 @@ bool Player::canAdvance()
 //Method toAttack - returns list of pointers to territory objects having adjacent territory not owned by the player
 list<shared_ptr<Territory>> Player::toAttack(shared_ptr<Map> aMap)
 {
-	list<shared_ptr<Territory>> copyList;
-	list<shared_ptr<Territory>>::iterator i = territoryList.begin();
-
-
-	for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
-	{
-		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
-		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
-		{
-			shared_ptr<Territory> t = aMap->getTerritory(*iD);
-
-			if (t->ownerID != playerID) //if adjacent territory is not owned by player, add
-			{
-				copyList.push_back(t);
-			}
-		}
-	}
-
-	copyList.sort();
-	copyList.unique();
-
-	return copyList;
+	return playerStrategy->toAttack(this, aMap);
 }
 
 //Method toDefend - returns list of pointers to territory objects having adjacent territory owned by the player
 list<shared_ptr<Territory>> Player::toDefend(shared_ptr<Map> aMap)
 {
-	list<shared_ptr<Territory>> copyList;
-	list<shared_ptr<Territory>>::iterator i = territoryList.begin();
-
-
-	for (i = territoryList.begin(); i != territoryList.end(); advance(i, 1))
-	{
-		vector <unsigned int> territoryIDs = (*i)->borders;
-		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
-		{
-			shared_ptr<Territory> t = aMap->getTerritory(*iD);
-
-			if (t->ownerID == playerID) //if adjacent territory is owned by the player, add
-			{
-				copyList.push_back(t);
-			}
-		}
-	}
-
-	copyList.sort();
-	copyList.unique();
-
-	return copyList;
+	return playerStrategy->toDefend(this, aMap);
 }
 
 //method that takes any list or pointers as input and returns it as string
