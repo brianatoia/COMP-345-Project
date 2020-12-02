@@ -842,6 +842,28 @@ void BenevolentPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player
 			player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
 		}
 	}
+
+	if (player->canAdvance())
+	{
+		for (shared_ptr<Territory> territory : *player->getTerritoryList())
+		{
+			if (territory->ownerID == player->getPlayerID() && player->getArmies() > 0)
+			{
+				for (auto id : territory->borders) {
+					shared_ptr<Territory> neighbor = map->getTerritory(id);
+
+					if (territory->units > neighbor->units && neighbor->ownerID == player->getPlayerID())
+					{
+						int unitsToAdvance = max((territory->units - neighbor->units) / 2, 1);
+
+						shared_ptr<Order> order(new Advance(unitsToAdvance, territory, neighbor, player->getTerritoryList(), nullptr, player->getCapturedTerritory(), &playersNegotiated));
+						player->getOrderList()->addOrder(order);
+					}
+
+				}
+			}
+		}
+	}
 }
 
 shared_ptr<Territory> BenevolentPlayerStrategy::minArmyTerritory(list<shared_ptr<Territory>> territoryList, unsigned int ownerID)
