@@ -509,12 +509,54 @@ ostream& operator<<(ostream& strm, HumanPlayerStrategy hps)
 
 list<shared_ptr<Territory>> HumanPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return player->toDefend(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders;
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID == player->getPlayerID()) //if adjacent territory is owned by the player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 list<shared_ptr<Territory>> HumanPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return player->toAttack(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID != player->getPlayerID()) //if adjacent territory is not owned by player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 //*********  AggressivePlayerStrategy  **********//
@@ -648,12 +690,54 @@ shared_ptr<Territory> AggressivePlayerStrategy::findTargetTerritory(shared_ptr<T
 
 list<shared_ptr<Territory>> AggressivePlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return player->toDefend(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders;
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID == player->getPlayerID()) //if adjacent territory is owned by the player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 list<shared_ptr<Territory>> AggressivePlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return player->toAttack(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID != player->getPlayerID()) //if adjacent territory is not owned by player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 AggressivePlayerStrategy::AggressivePlayerStrategy(const AggressivePlayerStrategy& hps) : PlayerStrategy()
@@ -796,12 +880,54 @@ shared_ptr<Territory> BenevolentPlayerStrategy::maxArmyTerritory(list<shared_ptr
 
 list<shared_ptr<Territory>> BenevolentPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return player->toDefend(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders;
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID == player->getPlayerID()) //if adjacent territory is owned by the player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 list<shared_ptr<Territory>> BenevolentPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return player->toAttack(map);
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID != player->getPlayerID()) //if adjacent territory is not owned by player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 BenevolentPlayerStrategy::BenevolentPlayerStrategy(const BenevolentPlayerStrategy& hps) : PlayerStrategy()
@@ -838,12 +964,54 @@ void NeutralPlayerStrategy::issueOrder(GameEngine* gameEngine, Player* player, s
 
 list<shared_ptr<Territory>> NeutralPlayerStrategy::toDefend(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders;
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID == player->getPlayerID()) //if adjacent territory is owned by the player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 list<shared_ptr<Territory>> NeutralPlayerStrategy::toAttack(Player* player, shared_ptr<Map> map)
 {
-	return list<shared_ptr<Territory>>();
+	list<shared_ptr<Territory>> copyList;
+	list<shared_ptr<Territory>>::iterator i = player->getTerritoryList()->begin();
+
+
+	for (i = player->getTerritoryList()->begin(); i != player->getTerritoryList()->end(); advance(i, 1))
+	{
+		vector <unsigned int> territoryIDs = (*i)->borders; //loop through adjacent territories
+		for (auto iD = territoryIDs.begin(); iD != territoryIDs.end(); iD++)
+		{
+			shared_ptr<Territory> t = map->getTerritory(*iD);
+
+			if (t->ownerID != player->getPlayerID()) //if adjacent territory is not owned by player, add
+			{
+				copyList.push_back(t);
+			}
+		}
+	}
+
+	copyList.sort();
+	copyList.unique();
+
+	return copyList;
 }
 
 NeutralPlayerStrategy::NeutralPlayerStrategy(const NeutralPlayerStrategy& hps) : PlayerStrategy()
