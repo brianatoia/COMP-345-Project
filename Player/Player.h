@@ -1,3 +1,6 @@
+#ifndef PLAYER_H
+#define PLAYER_H 1
+
 //
 //  Player.h
 //  Player header, provides the declarations of functions contained in the Player.cpp file.
@@ -10,13 +13,16 @@
 #include "../Map/Map.h"
 #include "../Orders/Orders.h"
 #include "../Cards/Cards.h"
+#include "../PlayerStrategies/PlayerStrategies.h"
+#include "../GameEngine/GameEngine.h"
 
 #include <stdio.h>
 #include <iostream>
 #include <string>
 #include <tuple>
 
-
+class GameEngine;
+class PlayerStrategy;
 
 using namespace std;
 
@@ -31,6 +37,7 @@ private:
     string name;
     bool* capturedTerritory;
     unsigned int armies;    //number of armies player has to place
+    PlayerStrategy* playerStrategy;   //pointer to different concrete player strategies
 
     list<shared_ptr<Territory>> territoryList;  //Territory list holding pointers to territories
     Hand* hand; //A pointer to a vector list holding ptrs to warzone cards
@@ -47,12 +54,14 @@ public:
     string to_string();
     friend ostream& operator <<(ostream&, Player&);
 
-
+    //********* Player Methods **********//
     void setName(string playerName);
     string getName();
     static int getPlayerCount();
     void setPlayerID(unsigned int ID);
     unsigned int getPlayerID();
+
+    //********* Game Engine Player Methods **********//
     void clearPlayersNegotiated();
     bool* getCapturedTerritory();
     void resetCapturedTerritory();
@@ -75,17 +84,12 @@ public:
 
     //********** Order methods *************//
     OrderList* getOrderList();
-    void issueOrder(string orderType, shared_ptr<Map> map = NULL);
+    void issueOrder(GameEngine* gameEngine, shared_ptr<Map> map, Deck* deck);
+
+    //********** PlayerStrategy methods *************//
+    void setPlayerStrategy(PlayerStrategy* newPS);
+    PlayerStrategy* copyPlayerStrategy(const Player& aPlayer);
+
 };
 
-//*************      INSTRUCTIONS    ****************
-
-// Player owns a collection of territories
-
-// Players own a HandCards of Warzone cards
-
-// Player contains methods toDefend() and toAttack() that return a list of territories that are to be defended and to be attaked, respectively
-
-// Players contains an issueOrder() method that creates an order object and adds it to the list of orders
-
-// Driver creates players and demonstrates that the above features are available
+#endif

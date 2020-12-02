@@ -5,7 +5,7 @@ using namespace std;
 
 Card::Card()
 {
-	this->cardType = NULL;
+	this->cardType = nullptr;
 }
 
 Card::~Card()
@@ -119,17 +119,8 @@ Hand::Hand()
 
 Hand::~Hand()
 {
-	for (auto i : hand)
-	{
-		delete i;
-		i = nullptr;
-	}
-
-	for (auto p : playCards)
-	{
-		delete p;
-		p = nullptr;
-	}
+	hand.clear();
+	playCards.clear();
 }
 
 void Hand::addCard(Card* aCard)

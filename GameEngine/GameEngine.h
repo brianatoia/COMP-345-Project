@@ -1,12 +1,14 @@
+#ifndef GAME_ENGINE_H
+#define GAME_ENGINE_H 1
+
 #pragma once
 
-#include "../Player/Player.h"
+#include "../GameObservers/GameObservers.h"
 #include "../Cards/Cards.h"
 #include "../Map/Map.h"
 #include "../MapLoader/MapLoader.h"
 #include "../Orders/Orders.h"
-#include "../GameObservers/GameObservers.h"
-
+#include "../PlayerStrategies/PlayerStrategies.h"
 
 #include <iostream>
 #include <algorithm>
@@ -15,6 +17,7 @@
 #include <vector>
 #include <windows.h>
 
+class Player;
 
 using namespace std;
 
@@ -55,6 +58,7 @@ public:
 	//******     Player Methods    *****//
 	void addPlayers(shared_ptr<Player> player);
 	vector<shared_ptr <Player>> getPlayers();
+	shared_ptr<Player> getPlayer(unsigned int id);
 	string getPlayersInfo();
 	string getPlayersNames();
 	
@@ -67,12 +71,13 @@ public:
 	void mainGameLoop();
 	void reinforcementsPhase();
 	int findContinentBonusTotal(shared_ptr<Player> player);
-	void deployLoop(shared_ptr<Player>);
 	void issueOrdersPhase();
 	bool atleastOneOfType(string type);
 	void executeOrdersPhase();
 	void checkForEliminatedPlayers();
 	shared_ptr<Player> checkForWinner();
+	shared_ptr<Player> checkForLeader();
+	void reassignTerritories();
 
 
 	//******     Private Members    *****//
@@ -86,3 +91,5 @@ private:
 	bool phaseObserver;
 	bool mapObserver;
 };
+
+#endif

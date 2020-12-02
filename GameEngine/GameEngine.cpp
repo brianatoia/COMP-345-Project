@@ -62,6 +62,42 @@ void GameEngine::gameStart()
 		addPlayers(player);
 	}
 
+	//Ask for player strategies
+	cout << "Please select a player stategy for each player by selecting either 1, 2 or 3: [1] Human, [2] Aggressive, [3] Benevolent." << endl;
+	for (int i = 0; i < numOfPlayers; i++)
+	{
+		while (true)
+		{
+			int strategy;	//User input to decide 1 for Human, 2 for Aggressive, 3 for Benevolent
+			cout << "Player strategy for player #" << (i + 1) << " with name " << players[i]->getName() << ": ";
+
+			while (!(cin >> strategy))	//while cin is not a numerical value
+			{
+				cout << "Only numerical values are accepted. Please select a number between 1 and 3: ";
+				cin.clear();
+				cin.ignore(123, '\n');
+			}
+			//If numerical value was entered, verify it was between 1 - 3 and set strategy accordingly
+			if (strategy == 1)
+			{
+				players[i]->setPlayerStrategy(new HumanPlayerStrategy());
+				break;
+			}
+			else if (strategy == 2)
+			{
+				players[i]->setPlayerStrategy(new AggressivePlayerStrategy());
+				break;
+			}
+			else if (strategy == 3)
+			{
+				players[i]->setPlayerStrategy(new BenevolentPlayerStrategy());
+				break;
+			}
+			else
+				cout << "The strategy number you have entered has been deemed invalid. ";
+		}
+	}
+
 	//initialize a card deck with amount of players
 	deck->initializeDeck(numOfPlayers);
 
@@ -307,6 +343,19 @@ vector<shared_ptr<Player>> GameEngine::getPlayers()
 	return players;
 }
 
+shared_ptr<Player> GameEngine::getPlayer(unsigned int id)
+{
+	for (shared_ptr<Player> p : players)
+	{
+		if (p->getPlayerID() == id)
+		{
+			return p;
+		}
+	}
+
+	return nullptr;
+}
+
 //Return players stored in players vector list as string
 string GameEngine::getPlayersInfo()
 {
@@ -435,14 +484,6 @@ int GameEngine::findContinentBonusTotal(shared_ptr<Player> player)
 	return bonus;
 }
 
-void GameEngine::deployLoop(shared_ptr<Player> player)
-{
-	do
-	{
-		player->issueOrder("Deploy", map);
-	} while (player->getArmies() > 0);
-}
-
 void GameEngine::issueOrdersPhase()
 {
 	if (this->phaseObserver)
@@ -456,94 +497,7 @@ void GameEngine::issueOrdersPhase()
 	{
 		player->updateAvailableUnits();	//reset the temp display units (shows addition of subtraction of armies from deploy and advance before execution)
 
-		//Deploying phase, force player to deploy first
-		deployLoop(player);
-
-		cout << "\n==================================================" << endl;
-		cout << player->getName() << " place your orders!" << endl;
-		cout << "==================================================" << endl;
-		
-		if (this->phaseObserver)
-		{
-			string message = "wait";
-			string time = std::to_string(1000);
-			this->notify(message + " " + time);
-		}
-
-
-		//Player issues orders here
-		string decision = "";
-		while (true)
-		{
-			if (this->phaseObserver)
-			{
-				string message = "order ";
-				string id = std::to_string(player->getPlayerID());
-				this->notify(message+id);
-			}
-
-			cin >> decision;
-
-			if (_stricmp(decision.c_str(), "Advance") == 0)
-			{
-				if (player->canAdvance()) player->issueOrder("Advance", map);
-				else cout << "You no longer have any armies to advance!" << endl;
-			}																				// === format followed for all order types === //
-			else if (_stricmp(decision.c_str(), "Airlift") == 0)							//case where player chooses airlift
-			{
-				if (player->getHand()->findCardType("Airlift"))								//check if player has atleast 1 airlift card
-				{
-					player->issueOrder("Airlift", map);										//issue the order (puts it in order list)
-					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);	//play the card
-				}
-				else cout << "Not enough cards!" << endl;									//if not enough cards tell player
-			}
-			else if (_stricmp(decision.c_str(), "Blockade") == 0)
-			{
-				if (player->getHand()->findCardType("Blockade"))
-				{
-					player->issueOrder("Blockade", map);
-					player->getHand()->play(player->getHand()->getCard("Blockade"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Reinforcement") == 0)
-			{
-				if (player->getHand()->findCardType("Reinforcement"))
-				{
-					player->getHand()->play(player->getHand()->getCard("Airlift"), deck);
-					player->addArmies(20);	//Reinforcement is not an order so do it directly and treat it as a deploy
-					deployLoop(player);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Negotiate") == 0)
-			{
-				if (player->getHand()->findCardType("Diplomacy"))	//Different names for the same thing, just following the assignment
-				{
-					player->issueOrder("Negotiate");
-					player->getHand()->play(player->getHand()->getCard("Diplomacy"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Bomb") == 0)
-			{
-				if (player->getHand()->findCardType("Bomb"))
-				{
-					player->issueOrder("Bomb", map);
-					player->getHand()->play(player->getHand()->getCard("Bomb"), deck);
-				}
-				else cout << "Not enough cards!" << endl;
-			}
-			else if (_stricmp(decision.c_str(), "Finish") == 0)
-			{
-				break;
-			}
-			else
-			{
-				cout << "Invalid input" << endl;
-			}
-		}
+		player->issueOrder(this, map, deck);
 	}
 }
 
@@ -576,7 +530,6 @@ void GameEngine::executeOrdersPhase()
 
 	if (this->phaseObserver)
 	{
-		this->notify("map");
 		this->notify("execute_orders_phase_start");
 	}
 
@@ -727,7 +680,9 @@ void GameEngine::executeOrdersPhase()
 
 		}
 	}
-	
+
+	reassignTerritories();
+
 	if (this->mapObserver)
 	{
 		this->notify("map");
@@ -758,6 +713,41 @@ shared_ptr<Player> GameEngine::checkForWinner()
 			return player;
 	}
 	return nullptr;
+}
+
+shared_ptr<Player> GameEngine::checkForLeader()
+{
+	int maxTerritories = 0;
+	shared_ptr<Player> leader = nullptr;
+
+	for (auto player : players)
+	{
+		if (player->getTerritoryList()->size() >= maxTerritories)
+		{
+			leader = player;
+
+			maxTerritories = leader->getTerritoryList()->size();
+		}
+	}
+
+	return leader;
+}
+
+void GameEngine::reassignTerritories()
+{
+	for (auto player : players)
+	{
+		player->getTerritoryList()->clear();
+	}
+
+	for (int i = 1; i < map->getTerritoriesCount(); i++)
+	{
+		shared_ptr<Territory> t = map->getTerritory(i);
+		shared_ptr<Player> p = this->getPlayer(t->ownerID);
+
+		if (p != nullptr)
+			p->addTerritory(t);
+	}
 }
 
 void GameEngine::mainGameLoop()

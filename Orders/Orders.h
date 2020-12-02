@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <list>
+#include <algorithm>
 #include "../Map/Map.h"
 
 using namespace std;
